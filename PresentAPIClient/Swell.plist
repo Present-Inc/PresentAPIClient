@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>SWLQuickFormat</key>
+	<string>NameDateMessage</string>
+	<key>APILogger</key>
+	<dict>
+		<key>SWLLevel</key>
+		<string>info</string>
+	</dict>
+	<key>User</key>
+	<dict>
+		<key>SWLLevel</key>
+		<string>error</string>
+	</dict>
+	<key>UserSession</key>
+	<dict>
+		<key>SWLLevel</key>
+		<string>info</string>
+	</dict>
+	<key>Friendship</key>
+	<dict>
+		<key>SWLLevel</key>
+		<string>debug</string>
+	</dict>
+</dict>
+</plist>
