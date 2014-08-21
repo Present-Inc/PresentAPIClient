@@ -23,6 +23,6 @@ public extension NSDate {
         dateFormatter.timeZone = NSTimeZone.localTimeZone()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
         
-        return dateFormatter.dateFromString(string)
+        return dateFormatter.dateFromString(string)!
     }
 }

@@ -14,7 +14,7 @@ public class Object: NSObject, ObjectSubclass {
     internal class var apiResourcePath: String { return "" }
     
     public var isNew: Bool {
-        return _id == nil
+        return _id.isEmpty
     }
     
     public var id: String {
@@ -59,12 +59,7 @@ public class Object: NSObject, ObjectSubclass {
     }
     
     internal class func pathForResource(resource: String) -> String {
-        var resourcePath: String? = self.apiResourcePath
-        if resourcePath == nil {
-            resourcePath = "null"
-        }
-        
-        return "\(resourcePath)/\(resource)"
+        return "\(self.apiResourcePath)/\(resource)"
     }
     
     public override init() {
@@ -102,8 +97,14 @@ public class Object: NSObject, ObjectSubclass {
     
     public func encodeWithCoder(aCoder: NSCoder!) {
         aCoder.encodeObject(_id, forKey: "_id")
-        aCoder.encodeObject(_creationDate, forKey: "creationDate")
-        aCoder.encodeObject(_lastUpdated, forKey: "lastUpdated")
+        
+        if _creationDate != nil {
+            aCoder.encodeObject(_creationDate!, forKey: "creationDate")
+        }
+        
+        if _lastUpdated != nil {
+            aCoder.encodeObject(_lastUpdated!, forKey: "lastUpdated")
+        }
     }
     
     public override func isEqual(object: AnyObject!) -> Bool {
@@ -121,7 +122,7 @@ public class Object: NSObject, ObjectSubclass {
     }
     
     public func mergeResultsFromObject(object: Object) {
-        if _id == "" || _id == nil {
+        if _id.isEmpty {
             _id = object._id
         }
         

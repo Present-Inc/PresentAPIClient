@@ -22,7 +22,8 @@ public typealias RequestFailureBlock = (NSHTTPURLResponse!, AnyObject!, NSError?
     let subDomain = "api"
 #endif
 
-let baseURL = "https://\(subDomain).present.tv/\(apiVersion)/"
+// !!!: This will only post to the staging API!
+let baseURL = "https://api-staging.present.tv/\(apiVersion)/"
 
 let SessionTokenHeader = "Present-User-Context-Session-Token"
 let UserIdHeader = "Present-User-Context-User-Id"
@@ -30,7 +31,9 @@ let UserIdHeader = "Present-User-Context-User-Id"
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
     
-    init() { }
+    init() {
+        Alamofire.Manager.sharedInstance.operationQueue.maxConcurrentOperationCount = 5
+    }
     
     class func sharedInstance() -> APIManager {
         struct Static {
@@ -40,19 +43,26 @@ public class APIManager {
         return Static.instance
     }
     
-    // ???: func setValue(value: String, forHeaderKey key: String) { ... }
-    // ???: func setValues(values: [String], forHeaderKeys keys: [String]) { ... }
+    func setValue(value: String?, forHeaderKey key: String!) {
+        Alamofire.Manager.sharedInstance.defaultHeaders[key] = value
+    }
+    
+    func setValues(values: [String], forHeaderKeys keys: [String]) {
+        for i in 0..<keys.count {
+            self.setValue(values[i], forHeaderKey: keys[i])
+        }
+    }
     
     func setUserContextHeaders(userContext: UserContext) {
-        Alamofire.Manager.sharedInstance.defaultHeaders[SessionTokenHeader] = userContext.sessionToken
-        Alamofire.Manager.sharedInstance.defaultHeaders[UserIdHeader] = userContext.user.id
+        self.setValue(userContext.sessionToken, forHeaderKey: SessionTokenHeader)
+        self.setValue(userContext.user.id, forHeaderKey: UserIdHeader)
         
         logger.info("Default headers for all requests set to \(Alamofire.Manager.sharedInstance.defaultHeaders)")
     }
     
     func clearUserContextHeaders() {
-        Alamofire.Manager.sharedInstance.defaultHeaders[SessionTokenHeader] = nil
-        Alamofire.Manager.sharedInstance.defaultHeaders[UserIdHeader] = nil
+        self.setValue(nil, forHeaderKey: SessionTokenHeader)
+        self.setValue(nil, forHeaderKey: UserIdHeader)
         
         logger.info("Reset default headers to \(Alamofire.Manager.sharedInstance.defaultHeaders)")
     }
@@ -129,7 +139,6 @@ private extension APIManager {
     func resourceSuccessClosure(success: ResourceSuccessBlock?) -> RequestSuccessBlock? {
         var successBlock: RequestSuccessBlock? = { httpResponse, data in
             self.logger.info("Response status code: \(httpResponse.statusCode)")
-            self.logger.debug("Response Received:\n\tData: \(data)")
             
             let jsonData = JSONValue(data)
             success?(jsonData)
@@ -141,7 +150,6 @@ private extension APIManager {
     func collectionSuccessClosure(success: CollectionSuccessBlock?) -> RequestSuccessBlock? {
         var requestSuccess: RequestSuccessBlock? = { httpResponse, data in
             self.logger.info("Response status code: \(httpResponse.statusCode)")
-            self.logger.debug("Response Received:\n\tData: \(data)")
             
             let jsonData = JSONValue(data)
             
@@ -156,7 +164,7 @@ private extension APIManager {
     
     func failureClosure(failure: FailureBlock?) -> RequestFailureBlock? {
         var requestFailure: RequestFailureBlock? = { httpResponse, data, error in
-            self.logger.error("Response Error:\n\t\(error)")
+            self.logger.error("Response Error:\n\t\(data)")
             
             failure?(error)
         }

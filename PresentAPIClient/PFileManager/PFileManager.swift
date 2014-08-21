@@ -59,7 +59,11 @@ public class PFileManager: NSObject {
     }
     
     public class func deleteFileAtURL(fileUrl: NSURL) -> Bool {
-        return deleteFileWithName(fileUrl.path)
+        if let filePath = fileUrl.path {
+            return deleteFileWithName(filePath)
+        }
+        
+        return false
     }
     
     public class func deleteFile(fileName: String, inSearchPathDirectory directory: NSSearchPathDirectory) -> Bool {
@@ -72,8 +76,7 @@ public class PFileManager: NSObject {
         var fileManager = NSFileManager.defaultManager(),
             enumerator = fileManager.enumeratorAtPath(directoryName)
         
-        var filePath: String
-        while (filePath = enumerator.nextObject() as String) != nil {
+        while let filePath = enumerator.nextObject() as? String {
             block?(filePath)
         }
     }

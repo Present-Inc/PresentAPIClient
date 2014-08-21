@@ -96,8 +96,6 @@ public class Video: Object {
     }
     
     public override init(json: JSONValue) {
-        self.logger.debug("Initial json value: \(json)")
-        
         if let startDateString = json["creationTimeRange"]["startDate"].string {
             _startDate = NSDate.dateFromISOString(startDateString)
         }
@@ -118,6 +116,8 @@ public class Video: Object {
         if let coverString = json["mediaUrls"]["images"]["480px"].string {
             _coverUrl = NSURL(string: coverString)
         }
+        
+        _creator = User(json: json["creatorUser"]["object"])
         
         super.init(json: json)
         
@@ -305,9 +305,7 @@ public extension Video {
             success?(self)
         }
         
-        if self.startDate != nil {
-            parameters["creation_time_range_start_date"] = NSDate.ISOStringFromDate(self._startDate)
-        }
+        parameters["creation_time_range_start_date"] = NSDate.ISOStringFromDate(self._startDate)
         
         if self.caption != nil {
             parameters["title"] = self.caption!
@@ -441,17 +439,21 @@ private extension Video {
         return { jsonResponse in
             var video = Video(json: jsonResponse["object"])
             completion?(video)
+            
+            var subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonResponse["subjectiveObjectMeta"])
+            UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
         }
     }
     
     class func collectionSuccessWithCompletion(completion: (([Video], Int) -> ())?) -> CollectionSuccessBlock {
         return { jsonArray, nextCursor in
-            self._logger().debug("JSON Array results: \(jsonArray)")
-            
             var videoResults = [Video]()
             for jsonVideo: JSONValue in jsonArray {
                 var video = Video(json: jsonVideo["object"])
                 videoResults.append(video)
+                
+                var subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonVideo["subjectiveObjectMeta"])
+                UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
             }
             
             completion?(videoResults, nextCursor)

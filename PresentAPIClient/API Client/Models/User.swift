@@ -17,7 +17,7 @@ public class User: Object {
     }
     
     public var password: String!
-    public var fullName: String!
+    public var fullName: String! = "No Name"
     public var email: String?
     
     private var profileImageUrlString: String!
@@ -46,8 +46,9 @@ public class User: Object {
     private let logger = User._logger()
     private let videosCollection = CursoredCollection<Video>()
     
-    public init(username: String, fullName: String, email: String) {
+    public init(username: String, password: String, fullName: String, email: String) {
         self._username = username
+        self.password = password
         self.fullName = fullName
         self.email = email
         
@@ -120,7 +121,7 @@ public class User: Object {
         aCoder.encodeObject(fullName, forKey: "fullName")
         
         if email != nil {
-            aCoder.encodeObject(email, forKey: "email")
+            aCoder.encodeObject(email!, forKey: "email")
         }
         
         aCoder.encodeObject(friendCount, forKey: "friendCount")
@@ -143,6 +144,31 @@ private extension User {
 
 public extension User {
     // MARK: Fetch Users
+    
+    public class func getTeam(success: (([User]) -> ())?, failure: FailureBlock?) {
+        var successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
+            println(jsonArray)
+            var teamUsers: [User] = [User]()
+            for jsonUser: JSONValue in jsonArray {
+                let objectMeta = SubjectiveObjectMeta(json: jsonUser["subjectiveObjectMeta"]),
+                    user = User(json: jsonUser["object"])
+                
+                UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: user)
+                teamUsers.append(user)
+            }
+            
+            success?(teamUsers)
+        }
+        
+        APIManager
+            .sharedInstance()
+            .getCollection(
+                self.pathForResource("list_team_users"),
+                parameters: nil,
+                success: successHandler,
+                failure: failure
+        )
+    }
     
     public class func getUserWithUsername(username: String, success: ((User) -> ())?, failure: FailureBlock?) {
         self.getUserWithParameters(["username": username], success: success, failure: failure)
@@ -210,14 +236,15 @@ public extension User {
         // TODO: Validate email
         
         var parameters = [
-            "username": self._username as NSString,
+            "username": self.username as NSString,
             "password": self.password as NSString,
         ],
         successHandler: ResourceSuccessBlock = { jsonResponse in
             self.logger.debug("Successfully created user")
             
             var user = User(json: jsonResponse["object"])
-            success?(user)
+            self.mergeResultsFromObject(user)
+            success?(self)
         }
         
         if let email = self.email {

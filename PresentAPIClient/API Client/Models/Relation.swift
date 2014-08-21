@@ -22,4 +22,16 @@ public class Relation: NSObject {
         
         super.init()
     }
+    
+    public init(json: JSONValue) {
+        if let forwardJSON = json["forward"].bool {
+            forward = forwardJSON
+        }
+        
+        if let backwardJSON = json["backward"].bool {
+            backward = backwardJSON
+        }
+        
+        super.init()
+    }
 }

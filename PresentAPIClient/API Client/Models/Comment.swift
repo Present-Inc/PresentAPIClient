@@ -9,6 +9,8 @@
 import UIKit
 
 public class Comment: Object {
+    override class var apiResourcePath: String { return "comments" }
+    
     public var video: Video {
         return _video
     }
@@ -36,8 +38,6 @@ public class Comment: Object {
     }
     
     public override init(json: JSONValue) {
-        self.logger.debug("Initial JSON value: \(json)")
-        
         if let bodyString = json["body"].string {
             _body = bodyString
         }

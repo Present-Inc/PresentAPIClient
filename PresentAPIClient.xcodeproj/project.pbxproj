@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7C4733B719A5288C009124FA /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4733B619A5288C009124FA /* UserSession.swift */; };
 		7CCFEAE6199C15BC00D87880 /* PresentAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7CCFEB02199C169A00D87880 /* APIManagerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEAF9199C169A00D87880 /* APIManagerSpec.swift */; };
 		7CCFEB03199C169A00D87880 /* CommentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEAFA199C169A00D87880 /* CommentSpec.swift */; };
@@ -30,7 +31,6 @@
 		7CCFEB26199C16AA00D87880 /* SubjectiveObjectMeta.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB17199C16AA00D87880 /* SubjectiveObjectMeta.swift */; };
 		7CCFEB27199C16AA00D87880 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB18199C16AA00D87880 /* User.swift */; };
 		7CCFEB28199C16AA00D87880 /* UserContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB19199C16AA00D87880 /* UserContext.swift */; };
-		7CCFEB29199C16AA00D87880 /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB1A199C16AA00D87880 /* UserSession.swift */; };
 		7CCFEB2A199C16AA00D87880 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB1B199C16AA00D87880 /* Video.swift */; };
 		7CCFEB38199C16CE00D87880 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB2D199C16CE00D87880 /* Alamofire.swift */; };
 		7CCFEB39199C16CE00D87880 /* Formatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB30199C16CE00D87880 /* Formatter.swift */; };
@@ -46,6 +46,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		7C4733B619A5288C009124FA /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PresentAPIClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CCFEAE4199C15BC00D87880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PresentAPIClient.h; sourceTree = "<group>"; };
@@ -73,7 +74,6 @@
 		7CCFEB17199C16AA00D87880 /* SubjectiveObjectMeta.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubjectiveObjectMeta.swift; sourceTree = "<group>"; };
 		7CCFEB18199C16AA00D87880 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		7CCFEB19199C16AA00D87880 /* UserContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserContext.swift; sourceTree = "<group>"; };
-		7CCFEB1A199C16AA00D87880 /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		7CCFEB1B199C16AA00D87880 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
 		7CCFEB2D199C16CE00D87880 /* Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alamofire.swift; sourceTree = "<group>"; };
 		7CCFEB30199C16CE00D87880 /* Formatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
@@ -182,6 +182,7 @@
 		7CCFEB0D199C16AA00D87880 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				7CCFEB54199C1FF600D87880 /* Activity.swift */,
 				7CCFEB0E199C16AA00D87880 /* Comment.swift */,
 				7CCFEB0F199C16AA00D87880 /* CursoredCollection.swift */,
 				7CCFEB10199C16AA00D87880 /* Friendship.swift */,
@@ -194,9 +195,8 @@
 				7CCFEB17199C16AA00D87880 /* SubjectiveObjectMeta.swift */,
 				7CCFEB18199C16AA00D87880 /* User.swift */,
 				7CCFEB19199C16AA00D87880 /* UserContext.swift */,
-				7CCFEB1A199C16AA00D87880 /* UserSession.swift */,
 				7CCFEB1B199C16AA00D87880 /* Video.swift */,
-				7CCFEB54199C1FF600D87880 /* Activity.swift */,
+				7C4733B619A5288C009124FA /* UserSession.swift */,
 			);
 			name = Models;
 			path = "API Client/Models";
@@ -361,10 +361,10 @@
 				7CCFEB1C199C16AA00D87880 /* APIManager.swift in Sources */,
 				7CCFEB24199C16AA00D87880 /* Relation.swift in Sources */,
 				7CCFEB26199C16AA00D87880 /* SubjectiveObjectMeta.swift in Sources */,
-				7CCFEB29199C16AA00D87880 /* UserSession.swift in Sources */,
 				7CCFEB2A199C16AA00D87880 /* Video.swift in Sources */,
 				7CCFEB55199C1FF600D87880 /* Activity.swift in Sources */,
 				7CCFEB3D199C16CE00D87880 /* LogSelector.swift in Sources */,
+				7C4733B719A5288C009124FA /* UserSession.swift in Sources */,
 				7CCFEB1D199C16AA00D87880 /* Comment.swift in Sources */,
 				7CCFEB1E199C16AA00D87880 /* CursoredCollection.swift in Sources */,
 				7CCFEB41199C171D00D87880 /* PFileManager.swift in Sources */,
@@ -425,7 +425,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
+				DEFINES_MODULE = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
@@ -472,7 +472,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
+				DEFINES_MODULE = NO;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -501,10 +501,11 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = PresentAPIClient/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				INSTALL_PATH = "@executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -517,10 +518,11 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				INFOPLIST_FILE = PresentAPIClient/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				INSTALL_PATH = "@executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};

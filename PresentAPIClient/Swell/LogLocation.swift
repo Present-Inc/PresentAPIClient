@@ -95,7 +95,7 @@ public class FileLocation: LogLocation {
         let output = message() + "\n"
         if let handle = fileHandle {
             handle.seekToEndOfFile()
-            handle.writeData(output.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false))
+            handle.writeData(output.dataUsingEncoding(NSUTF8StringEncoding, allowLossyConversion: false)!)
         }
 
     }

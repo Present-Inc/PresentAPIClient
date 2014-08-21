@@ -71,84 +71,84 @@ public class Swell {
     // Global/convenience log methods used for quick logging
 
     public class func trace<T>(message: @autoclosure() -> T) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.trace(message)
     }
     
     public class func debug<T>(message: @autoclosure() -> T) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.debug(message)
     }
     
     public class func info<T>(message: @autoclosure() -> T) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.info(message)
     }
     
     public class func warn<T>(message: @autoclosure() -> T) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.warn(message)
     }
     
     public class func error<T>(message: @autoclosure() -> T) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.error(message)
     }
     
     public class func severe<T>(message: @autoclosure() -> T) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.severe(message)
     }
 
     public class func trace(fn: () -> String) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.trace(fn)
     }
     
     public class func debug(fn: () -> String) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.debug(fn)
     }
     
     public class func info(fn: () -> String) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.info(fn)
     }
     
     public class func warn(fn: () -> String) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.warn(fn)
     }
     
     public class func error(fn: () -> String) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.error(fn)
     }
     
     public class func severe(fn: () -> String) {
-        if (!globalSwell.swellLogger) {
+        if (globalSwell.swellLogger != nil) {
             globalSwell.initInternalLogger()
         }
         globalSwell.swellLogger.severe(fn)
@@ -300,14 +300,11 @@ public class Swell {
 //            filename = path;
 //        }
 
-        var filename: String? = nil;
-        if NSBundle.mainBundle() {
-            filename = NSBundle.mainBundle().pathForResource("Swell", ofType: "plist")
-        }
+        var filename: String? = NSBundle.mainBundle().pathForResource("Swell", ofType: "plist")
         
-        var dict: NSDictionary? = nil;
+        var dict: NSDictionary? = nil
         if filename != nil {
-            dict = NSDictionary(contentsOfFile: filename)
+            dict = NSDictionary(contentsOfFile: filename!)
         }
         if let map: Dictionary<String, AnyObject> = dict as? Dictionary<String, AnyObject> {
             

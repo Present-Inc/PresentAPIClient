@@ -9,6 +9,8 @@
 import UIKit
 
 public class Like: Object {
+    override class var apiResourcePath: String { return "likes" }
+    
     public var user: User {
         return _user
     }

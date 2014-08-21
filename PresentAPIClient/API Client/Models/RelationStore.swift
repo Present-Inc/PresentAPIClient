@@ -14,7 +14,7 @@ import UIKit
 public class RelationStore: NSObject {
     var friendships: NSCache = NSCache()
     var likes: NSCache = NSCache()
-    var demands: NSCache = NSCache()
+    var views: NSCache = NSCache()
     
     // MARK: Initializers
     
@@ -43,18 +43,22 @@ extension RelationStore {
         if let like = objectMeta.like {
             self.storeLike(like, forKey: key)
         }
+        
+        if let view = objectMeta.view {
+            self.storeView(view, forKey: key)
+        }
     }
 }
 
-// MARK: Demands
+// MARK: Views
 
 extension RelationStore {
-    func storeDemand(demandRelation: Relation, forKey key: String) {
-        self.store(demandRelation, forKey: key, inCache: self.demands)
+    func storeView(viewRelation: Relation, forKey key: String) {
+        self.store(viewRelation, forKey: key, inCache: self.views)
     }
     
-    func getDemand(key: String) -> Relation? {
-        return self.getRelation(key, inCache: self.demands)
+    func getView(key: String) -> Relation? {
+        return self.getRelation(key, inCache: self.views)
     }
 }
 
