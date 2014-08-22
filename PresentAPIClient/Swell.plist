@@ -14,11 +14,6 @@
 		<key>SWLLevel</key>
 		<string>error</string>
 	</dict>
-	<key>UserSession</key>
-	<dict>
-		<key>SWLLevel</key>
-		<string>info</string>
-	</dict>
 	<key>Friendship</key>
 	<dict>
 		<key>SWLLevel</key>

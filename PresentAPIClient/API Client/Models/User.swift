@@ -220,6 +220,7 @@ public extension User {
         }
         
         self._logger().debug("Searching for page \(cursor) of \"\(queryString)\" results")
+        println("Searching for page \(cursor) of \"\(queryString)\" results")
         
         APIManager
             .sharedInstance()

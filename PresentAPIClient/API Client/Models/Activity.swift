@@ -90,8 +90,6 @@ public extension Activity {
                 activities.append(activity)
             }
             
-            println("Serialized data")
-            
             success?(activities, nextCursor)
         }
         

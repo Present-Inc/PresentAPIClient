@@ -165,6 +165,7 @@ private extension APIManager {
     func failureClosure(failure: FailureBlock?) -> RequestFailureBlock? {
         var requestFailure: RequestFailureBlock? = { httpResponse, data, error in
             self.logger.error("Response Error:\n\t\(data)")
+            println(data)
             
             failure?(error)
         }

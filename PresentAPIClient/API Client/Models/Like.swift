@@ -32,7 +32,8 @@ public class Like: Object {
     }
     
     public override init(json: JSONValue) {
-        
+        _user = User(json: json["sourceUser"]["object"])
+        _video = Video(json: json["targetVideo"]["object"])
         
         super.init(json: json)
     }

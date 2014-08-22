@@ -9,7 +9,7 @@
 import Foundation
 
 public class UserSession: NSObject, NSCoding {
-    private let logger = Swell.getLogger("UserSession")
+    private let logger = UserSession._logger()
 
     public var context: UserContext?
 
@@ -23,6 +23,10 @@ public class UserSession: NSObject, NSCoding {
 
     private struct Static {
         static var instance: UserSession? = nil
+    }
+    
+    private class func _logger() -> Logger {
+        return Swell.getLogger("UserSession")
     }
     
     // MARK: Initializers
@@ -61,6 +65,7 @@ public class UserSession: NSObject, NSCoding {
         var successBlock: ((UserContext) -> ()) = { userContext in
             self._logger().debug("Current user context is \(userContext.user)")
             self.setCurrentSession(UserSession(userContext: userContext))
+            
             success?(userContext)
         }
         
@@ -143,10 +148,3 @@ public class UserSession: NSObject, NSCoding {
         return subjectiveObjectMeta
     }
 }
-
-private extension UserSession {
-    class func _logger() -> Logger {
-        return Swell.getLogger("UserSession")
-    }
-}
-

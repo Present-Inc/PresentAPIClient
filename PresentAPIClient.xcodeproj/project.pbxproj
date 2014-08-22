@@ -41,7 +41,6 @@
 		7CCFEB3E199C16CE00D87880 /* Swell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB35199C16CE00D87880 /* Swell.swift */; };
 		7CCFEB3F199C16CE00D87880 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */; };
 		7CCFEB41199C171D00D87880 /* PFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB40199C171D00D87880 /* PFileManager.swift */; };
-		7CCFEB51199C199700D87880 /* Swell.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7CCFEB50199C199700D87880 /* Swell.plist */; };
 		7CCFEB55199C1FF600D87880 /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB54199C1FF600D87880 /* Activity.swift */; };
 /* End PBXBuildFile section */
 
@@ -84,7 +83,6 @@
 		7CCFEB35199C16CE00D87880 /* Swell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Swell.swift; sourceTree = "<group>"; };
 		7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		7CCFEB40199C171D00D87880 /* PFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PFileManager.swift; sourceTree = "<group>"; };
-		7CCFEB50199C199700D87880 /* Swell.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Swell.plist; sourceTree = "<group>"; };
 		7CCFEB54199C1FF600D87880 /* Activity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -139,7 +137,6 @@
 		7CCFEAE3199C15BC00D87880 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				7CCFEB50199C199700D87880 /* Swell.plist */,
 				7CCFEAE4199C15BC00D87880 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -340,7 +337,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7CCFEB51199C199700D87880 /* Swell.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -104,7 +104,7 @@ public extension Comment {
     // MARK: Instance Resource Methods
     
     public func create(success: ((Comment) -> ())?, failure: FailureBlock?) {
-        if self.body == "" /*|| body.isEmpty()*/ {
+        if body.isEmpty {
             var error = NSError(domain: "CommentErrorDomain", code: 100, userInfo: [NSLocalizedDescriptionKey: "Comment body is empty."])
             failure?(error)
         }

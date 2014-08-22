@@ -104,16 +104,18 @@ public class Video: Object {
             _endDate = NSDate.dateFromISOString(endDateString)
         }
         
-        if let liveString = json["mediaUrls"]["playlists"]["live"].string {
+        if let liveString = json["mediaUrls"]["playlists"]["live"]["master"].string {
             _liveUrl = NSURL(string: liveString)
         }
         
-        if let replayString = json["mediaUrls"]["playlists"]["replay"].string {
+        if let replayString = json["mediaUrls"]["playlists"]["replay"]["master"].string {
             _replayUrl = NSURL(string: replayString)
         }
         
         // !!!: This is not a long-term solution, particularly with the new video resolution
         if let coverString = json["mediaUrls"]["images"]["480px"].string {
+            _coverUrl = NSURL(string: coverString)
+        } else if let coverString = json["mediaUrls"]["images"]["800px"].string {
             _coverUrl = NSURL(string: coverString)
         }
         
@@ -123,7 +125,7 @@ public class Video: Object {
         
         if let mostRecentLikes = json["likes"]["results"].array {
             for jsonLike: JSONValue in mostRecentLikes {
-                var like = Like(json: json["object"])
+                var like = Like(json: jsonLike["object"])
                 like._video = self
                 
                 self.likesCollection.addObject(like)
