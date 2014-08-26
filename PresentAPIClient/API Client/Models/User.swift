@@ -268,19 +268,27 @@ public extension User {
         // TODO: Use the Friendships.getBackwardFriendships() method
     }
     
-    public func getFriends(cursor: Int? = 0, success: (([User]) -> ())?, failure: FailureBlock?) {
+    public func getFriends(cursor: Int? = 0, success: (([User], Int) -> ())?, failure: FailureBlock?) {
         // TODO: Use the Friendships.getForwardFriendships() method
     }
     
     // MARK: Likes
     
-    public func getLikes(cursor: Int? = 0, success: (([Like]) -> ())?, failure: FailureBlock?) {
+    public func getLikes(success: (([Like], Int) -> ())?, failure: FailureBlock?) {
         // TODO: Use the Likes.getLikesForUser() method
     }
     
     // MARK: Videos
     
-    public func getVideos(cursor: Int? = 0, success: (([Video]) -> ())?, failure: FailureBlock?) {
-        // TODO: Use the Videos.getVideosForUser() method
+    public func getVideos(success: (([Video], Int) -> ())?, failure: FailureBlock?) {
+        Video.getVideosForUser(self, cursor: self.videosCursor, success: { videos, nextCursor in
+            self.videosCollection.addObjects(videos)
+            self.videosCollection.cursor = nextCursor
+            
+            success?(videos, nextCursor)
+            }, failure: { error in
+                self.logger.error("Failed to get videos for user: \(self)")
+                failure?(error)
+            })
     }
 }

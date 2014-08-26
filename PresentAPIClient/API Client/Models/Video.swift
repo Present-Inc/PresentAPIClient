@@ -191,8 +191,29 @@ private extension Video {
 
 public extension Video {
     // MARK: Class Resource Methods
-    // MARK: Search Videos
+
+    // MARK: Append Segments
     
+    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: ((Video) -> ())?, failure: FailureBlock?) {
+        var parameters = [
+            "video_id": videoId as NSString,
+            "media_sequence": mediaSequence
+        ]
+
+        APIManager
+            .sharedInstance()
+            .multipartPost(
+                segmentUrl,
+                resource: self.pathForResource("append"),
+                parameters: parameters,
+                success: self.resourceSuccessWithCompletion(success),
+                failure: failure
+            )
+
+    }
+    
+    // MARK: Search Videos
+
     public class func search(queryString: String, cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: FailureBlock?) {
         var parameters = [
             "query": queryString as NSString,
@@ -241,7 +262,8 @@ public extension Video {
                 self.pathForResource("list_brand_new_videos"),
                 parameters: parameters,
                 success: collectionSuccessWithCompletion(success),
-                failure: failure)
+                failure: failure
+        )
     }
     
     public class func getPopularVideos(cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: FailureBlock?) {
@@ -291,10 +313,6 @@ public extension Video {
     }
     
     // MARK: Instance Resource Methods
-    
-    public func append(segmentUrl: NSURL, success: ((Video) -> ())?, failure: FailureBlock?) {
-        
-    }
     
     public func create(success: ((Video) -> ())?, failure: FailureBlock?) {
         var parameters: [String: NSObject] = [String: NSObject](),

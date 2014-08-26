@@ -70,11 +70,21 @@ public class APIManager {
     // MARK: GET
     
     func getResource(resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        self.get(resource, parameters: parameters, success: self.resourceSuccessClosure(success), failure: self.failureClosure(failure))
+        self.get(
+            resource,
+            parameters: parameters,
+            success: self.resourceSuccessClosure(success),
+            failure: self.failureClosure(failure)
+        )
     }
     
     func getCollection(resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
-        self.get(resource, parameters: parameters, success: self.collectionSuccessClosure(success), failure: self.failureClosure(failure))
+        self.get(
+            resource,
+            parameters: parameters,
+            success: self.collectionSuccessClosure(success),
+            failure: self.failureClosure(failure)
+        )
     }
     
     // MARK: POST
@@ -87,8 +97,21 @@ public class APIManager {
         self.post(resource, parameters: parameters, success: self.collectionSuccessClosure(success), failure: self.failureClosure(failure))
     }
     
-    func multipartPost(data: NSData, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        // TODO: This is not implemented
+    func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
+        let requestURL = baseURL + resource,
+            filename = url.lastPathComponent
+
+        logger.info("Multi-part POST \(requestURL) with \(url)")
+        Alamofire
+            .multipartUpload(.POST, requestURL, parameters: parameters, files: [(fileURL: url, name: "segment", filename: "media_segment", mimeType: "video/MP2T")])
+            .responseJSON { request, response, JSON, error in
+                if error != nil || response?.statusCode >= 300 {
+                    self.logger.error("Multi-part POST \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error) \(JSON)")
+                    failure?(error)
+                } else {
+                    self.logger.info("Multi-part POST \(request.URL) succeeded")
+                }
+            }
     }
 }
 

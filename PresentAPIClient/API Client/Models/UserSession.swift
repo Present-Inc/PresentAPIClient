@@ -48,8 +48,6 @@ public class UserSession: NSObject, NSCoding {
             self.setCurrentSession(self.loadSession())
         }
 
-        self._logger().debug("Returning \(Static.instance) as current user session")
-
         return Static.instance
     }
 
