@@ -32,7 +32,6 @@
 		7CCFEB27199C16AA00D87880 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB18199C16AA00D87880 /* User.swift */; };
 		7CCFEB28199C16AA00D87880 /* UserContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB19199C16AA00D87880 /* UserContext.swift */; };
 		7CCFEB2A199C16AA00D87880 /* Video.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB1B199C16AA00D87880 /* Video.swift */; };
-		7CCFEB38199C16CE00D87880 /* Alamofire.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB2D199C16CE00D87880 /* Alamofire.swift */; };
 		7CCFEB39199C16CE00D87880 /* Formatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB30199C16CE00D87880 /* Formatter.swift */; };
 		7CCFEB3A199C16CE00D87880 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB31199C16CE00D87880 /* Logger.swift */; };
 		7CCFEB3B199C16CE00D87880 /* LogLevel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB32199C16CE00D87880 /* LogLevel.swift */; };
@@ -74,7 +73,6 @@
 		7CCFEB18199C16AA00D87880 /* User.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		7CCFEB19199C16AA00D87880 /* UserContext.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserContext.swift; sourceTree = "<group>"; };
 		7CCFEB1B199C16AA00D87880 /* Video.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Video.swift; sourceTree = "<group>"; };
-		7CCFEB2D199C16CE00D87880 /* Alamofire.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Alamofire.swift; sourceTree = "<group>"; };
 		7CCFEB30199C16CE00D87880 /* Formatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
 		7CCFEB31199C16CE00D87880 /* Logger.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
 		7CCFEB32199C16CE00D87880 /* LogLevel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogLevel.swift; sourceTree = "<group>"; };
@@ -202,20 +200,11 @@
 		7CCFEB2B199C16B300D87880 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7CCFEB2C199C16CE00D87880 /* Alamofire */,
 				7CCFEB2E199C16CE00D87880 /* PFileManager */,
 				7CCFEB2F199C16CE00D87880 /* Swell */,
 				7CCFEB36199C16CE00D87880 /* SwiftyJSON */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		7CCFEB2C199C16CE00D87880 /* Alamofire */ = {
-			isa = PBXGroup;
-			children = (
-				7CCFEB2D199C16CE00D87880 /* Alamofire.swift */,
-			);
-			path = Alamofire;
 			sourceTree = "<group>";
 		};
 		7CCFEB2E199C16CE00D87880 /* PFileManager */ = {
@@ -368,7 +357,6 @@
 				7CCFEB28199C16AA00D87880 /* UserContext.swift in Sources */,
 				7CCFEB22199C16AA00D87880 /* Object.swift in Sources */,
 				7CCFEB1F199C16AA00D87880 /* Friendship.swift in Sources */,
-				7CCFEB38199C16CE00D87880 /* Alamofire.swift in Sources */,
 				7CCFEB3C199C16CE00D87880 /* LogLocation.swift in Sources */,
 				7CCFEB39199C16CE00D87880 /* Formatter.swift in Sources */,
 				7CCFEB20199C16AA00D87880 /* Like.swift in Sources */,
