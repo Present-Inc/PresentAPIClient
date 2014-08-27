@@ -56,15 +56,11 @@ public class APIManager {
     func setUserContextHeaders(userContext: UserContext) {
         self.setValue(userContext.sessionToken, forHeaderKey: SessionTokenHeader)
         self.setValue(userContext.user.id, forHeaderKey: UserIdHeader)
-        
-        logger.info("Default headers for all requests set to \(Alamofire.Manager.sharedInstance.defaultHeaders)")
     }
     
     func clearUserContextHeaders() {
         self.setValue(nil, forHeaderKey: SessionTokenHeader)
         self.setValue(nil, forHeaderKey: UserIdHeader)
-        
-        logger.info("Reset default headers to \(Alamofire.Manager.sharedInstance.defaultHeaders)")
     }
     
     // MARK: GET
