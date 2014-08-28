@@ -31,10 +31,9 @@ public class RelationStore: NSObject {
     internal func getRelation(key: String, inCache cache: NSCache) -> Relation? {
         return cache.objectForKey(key) as? Relation
     }
-}
 
-// MARK: Subjective Object Meta
-extension RelationStore {
+    // MARK: Subjective Object Meta
+
     public func store(objectMeta: SubjectiveObjectMeta, forKey key: String) {
         if let friendship = objectMeta.friendship {
             self.storeFriendship(friendship, forKey: key)
@@ -48,11 +47,9 @@ extension RelationStore {
             self.storeView(view, forKey: key)
         }
     }
-}
 
-// MARK: Views
+    // MARK: Views
 
-extension RelationStore {
     func storeView(viewRelation: Relation, forKey key: String) {
         self.store(viewRelation, forKey: key, inCache: self.views)
     }
@@ -60,11 +57,9 @@ extension RelationStore {
     func getView(key: String) -> Relation? {
         return self.getRelation(key, inCache: self.views)
     }
-}
 
-// MARK: Friendships
+    // MARK: Friendships
 
-extension RelationStore {
     func storeFriendship(friendshipRelation: Relation, forKey key: String) {
         self.store(friendshipRelation, forKey: key, inCache: self.friendships)
     }
@@ -72,11 +67,7 @@ extension RelationStore {
     func getFriendship(key: String) -> Relation? {
         return self.getRelation(key, inCache: self.friendships)
     }
-}
-
-// MARK: Likes
-
-extension RelationStore {
+    
     func storeLike(likeRelation: Relation, forKey key: String) {
         self.store(likeRelation, forKey: key, inCache: self.likes)
     }

@@ -25,8 +25,8 @@ public class Friendship: Object {
     
     public override init(json: JSONValue) {
         // TODO: Handle the subjectiveObjectMeta in sourceUser.subjectiveObjectMeta
-        if let sourceuserId = json["sourceUser"].string {
-            if sourceuserId == UserSession.currentUser()?.id {
+        if let sourceUserId = json["sourceUser"].string {
+            if sourceUserId == UserSession.currentUser()?.id {
                 self.logger.debug("Setting the current user to the source user")
                 self.sourceUser = UserSession.currentUser()
             }

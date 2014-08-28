@@ -75,7 +75,7 @@ class UserSpec: QuickSpec {
             var currentUser: User! = UserSession.currentUser()
             
             it ("can retrieve it's likes") {
-                currentUser.getLikes(cursor: 0, success: { likes in
+                currentUser.getLikes({ likes, nextCursor in
                     
                     }, failure: { error in
                         
@@ -83,7 +83,7 @@ class UserSpec: QuickSpec {
             }
             
             it ("can retrieve it's followers") {
-                currentUser.getFollowers(cursor: 0, success: { users in
+                currentUser.getFollowers({ users, nextCursor in
                     
                     }, failure: { error in
                         
@@ -91,7 +91,7 @@ class UserSpec: QuickSpec {
             }
             
             it ("can retrieve it's friends") {
-                currentUser.getFriends(cursor: 0, success: { users in
+                currentUser.getFriends({ users, nextCursor in
                     
                     }, failure: { error in
                         
@@ -99,7 +99,7 @@ class UserSpec: QuickSpec {
             }
             
             it ("can retrieve it's videos") {
-                currentUser.getVideos(cursor: 0, success: { videos in
+                currentUser.getVideos({ videos, nextCursor in
                     
                     }, failure: { error in
                         

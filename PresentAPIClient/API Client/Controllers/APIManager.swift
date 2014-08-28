@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 
 public typealias ResourceSuccessBlock = (JSONValue) -> ()
 public typealias CollectionSuccessBlock = (Array<JSONValue>, Int) -> ()
@@ -30,10 +31,6 @@ let UserIdHeader = "Present-User-Context-User-Id"
 
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
-    
-    init() {
-        Alamofire.Manager.sharedInstance.operationQueue.maxConcurrentOperationCount = 5
-    }
     
     class func sharedInstance() -> APIManager {
         struct Static {
@@ -98,20 +95,10 @@ public class APIManager {
             filename = url.lastPathComponent
 
         logger.info("Multi-part POST \(requestURL) with \(url)")
-        Alamofire
-            .multipartUpload(.POST, requestURL, parameters: parameters, files: [(fileURL: url, name: "segment", filename: "media_segment", mimeType: "video/MP2T")])
-            .responseJSON { request, response, JSON, error in
-                if error != nil || response?.statusCode >= 300 {
-                    self.logger.error("Multi-part POST \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error) \(JSON)")
-                    failure?(error)
-                } else {
-                    self.logger.info("Multi-part POST \(request.URL) succeeded")
-                }
-            }
-    }
-}
 
-private extension APIManager {
+        // TODO: Waiting on multipart integration in Alamofire.
+    }
+    
     
     // MARK: Private POST Methods
     

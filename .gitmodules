@@ -1,0 +1,9 @@
+[submodule "PresentAPIClient/Alamofire"]
+	path = PresentAPIClient/Alamofire
+	url = https://github.com/Alamofire/Alamofire.git
+[submodule "PresentAPIClient/Quick"]
+	path = PresentAPIClient/Quick
+	url = https://github.com/Quick/Quick.git
+[submodule "PresentAPIClient/Nimble"]
+	path = PresentAPIClient/Nimble
+	url = https://github.com/Quick/Nimble.git

@@ -39,14 +39,14 @@ class VideoSpec: QuickSpec {
             
             it ("can merge in values from another object") {
                 var aVideo = Video(id: "123456")
-                aVideo.title = "This is a video with a title"
+                aVideo.caption = "This is a video with a title"
                 
-                expect(video.title).to(beNil())
+                expect(video.caption).to(beNil())
                 expect(video.id).to(beNil())
                 
                 video.mergeResultsFromObject(aVideo)
                 
-                expect(video.title).to(beIdenticalTo(aVideo.title))
+                expect(video.caption).to(beIdenticalTo(aVideo.caption))
                 expect(video.id).to(beIdenticalTo(aVideo.id))
             }
             

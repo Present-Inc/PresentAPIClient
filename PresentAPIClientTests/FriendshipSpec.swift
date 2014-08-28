@@ -17,7 +17,7 @@ class FriendshipSpec: QuickSpec {
                 var forwardFriendships: [Friendship]?,
                     forwardCursor: Int = 0,
                     friendshipError: NSError?,
-                    justin = User(username: "justin", fullName: "Justin Makaila", email: "justin@present.tv")
+                justin = User(username: "justin", password: "password", fullName: "Justin Makaila", email: "justin@present.tv")
                 
                 Friendship.getForwardFriendships(justin, cursor: 0, success: { friendships, nextCursor in
                     forwardFriendships = friendships
@@ -35,7 +35,7 @@ class FriendshipSpec: QuickSpec {
                 var backwardFriendships: [Friendship]?,
                     backwardCursor: Int = 0,
                     friendshipError: NSError?,
-                    justin = User(username: "justin", fullName: "Justin Makaila", email: "justin@present.tv")
+                    justin = User(username: "justin", password: "password", fullName: "Justin Makaila", email: "justin@present.tv")
                 
                 Friendship.getBackwardFriendships(justin, cursor: 0, success: { friendships, nextCursor in
                     backwardFriendships = friendships
@@ -52,8 +52,8 @@ class FriendshipSpec: QuickSpec {
         
         pending ("an instance") {
             it ("can be created to represent a friendship between two users") {
-                var sourceUser = User(username: "herb", fullName: "Herb Adis", email: "herb@present.tv"),
-                    targetUser = User(username: "justin", fullName: "Justin Makaila", email: "justin@present.tv"),
+                var sourceUser = User(username: "herb", password: "password", fullName: "Herb Adis", email: "herb@present.tv"),
+                    targetUser = User(username: "justin", password: "password", fullName: "Justin Makaila", email: "justin@present.tv"),
                     friendshipInstance = Friendship(sourceUser: sourceUser, targetUser: targetUser),
                     createdFriendship: Friendship?,
                     createError: NSError?

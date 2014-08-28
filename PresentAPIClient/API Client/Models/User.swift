@@ -264,11 +264,11 @@ public extension User {
     
     // MARK: Friendships
     
-    public func getFollowers(cursor: Int? = 0, success: (([User], Int) -> ())?, failure: FailureBlock?) {
+    public func getFollowers(success: (([User], Int) -> ())?, failure: FailureBlock?) {
         // TODO: Use the Friendships.getBackwardFriendships() method
     }
     
-    public func getFriends(cursor: Int? = 0, success: (([User], Int) -> ())?, failure: FailureBlock?) {
+    public func getFriends(success: (([User], Int) -> ())?, failure: FailureBlock?) {
         // TODO: Use the Friendships.getForwardFriendships() method
     }
     

@@ -34,7 +34,7 @@ class UserSessionSpec: QuickSpec {
             var session: UserSession? = nil
             
             beforeEach {
-                sessionUser = User(username: "justin", fullName: "Justin Makaila", email: "justin@present.tv")
+                sessionUser = User(username: "justin", password: "password", fullName: "Justin Makaila", email: "justin@present.tv")
                 sessionContext = UserContext(sessionToken: "456464363737hfhfh", user: sessionUser!)
                 session = UserSession(userContext: sessionContext!)
                 
@@ -86,8 +86,8 @@ class UserSessionSpec: QuickSpec {
                 let currentSession = UserSession.currentSession()!
                 
                 var someObject = Object(id: "666")
-                var objectMeta = SubjectiveObjectMeta()
-                objectMeta.friendship = Relation(forward: true, backward: false)
+                var friendshipRelation = Relation(forward: true, backward: false)
+                var objectMeta = SubjectiveObjectMeta(like: nil, friendship: friendshipRelation, view: nil)
                 
                 currentSession.storeObjectMeta(objectMeta, forObject: someObject)
                 
