@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7C2BE55219B603FC00BDCB4A /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2BE55119B603FB00BDCB4A /* Error.swift */; };
 		7C3DBD1019AE31A600A657C4 /* Nimble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C3DBD0719AE314B00A657C4 /* Nimble.framework */; };
 		7C3DBD1119AE31AB00A657C4 /* Quick.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C3DBCE819AE311500A657C4 /* Quick.framework */; };
 		7C3DBD1319AE326600A657C4 /* PresentAPIClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */; };
@@ -142,6 +143,7 @@
 
 /* Begin PBXFileReference section */
 		7C2B176D19ACDF0700B7DFC6 /* Alamofire.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Alamofire.xcodeproj; path = Alamofire/Alamofire.xcodeproj; sourceTree = "<group>"; };
+		7C2BE55119B603FB00BDCB4A /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		7C3DBCDE19AE311500A657C4 /* Quick.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Quick.xcodeproj; path = Quick/Quick/Quick.xcodeproj; sourceTree = "<group>"; };
 		7C3DBCF119AE314600A657C4 /* Nimble.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Nimble.xcodeproj; path = Nimble/Nimble.xcodeproj; sourceTree = "<group>"; };
 		7C4733B619A5288C009124FA /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
@@ -326,6 +328,7 @@
 				7CCFEB19199C16AA00D87880 /* UserContext.swift */,
 				7CCFEB1B199C16AA00D87880 /* Video.swift */,
 				7C4733B619A5288C009124FA /* UserSession.swift */,
+				7C2BE55119B603FB00BDCB4A /* Error.swift */,
 			);
 			name = Models;
 			path = "API Client/Models";
@@ -592,6 +595,7 @@
 				7CCFEB3B199C16CE00D87880 /* LogLevel.swift in Sources */,
 				7CCFEB3E199C16CE00D87880 /* Swell.swift in Sources */,
 				7CCFEB23199C16AA00D87880 /* ObjectSubclass.swift in Sources */,
+				7C2BE55219B603FC00BDCB4A /* Error.swift in Sources */,
 				7CCFEB21199C16AA00D87880 /* NSDateISO8601.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

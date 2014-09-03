@@ -8,8 +8,6 @@
 
 import UIKit
 
-var kObjectCachedKeysKey = "CachedPropertyKeysKey"
-
 public class Object: NSObject, ObjectSubclass {
     internal class var apiResourcePath: String { return "" }
     
@@ -113,7 +111,7 @@ public class Object: NSObject, ObjectSubclass {
         }
         
         if let objectInstance = object as? Object {
-            if self._id == objectInstance._id {
+            if self == objectInstance {
                 return true
             }
         }
@@ -132,4 +130,8 @@ public class Object: NSObject, ObjectSubclass {
         
         _lastUpdated = object._lastUpdated
     }
+}
+
+func ==(lhs: Object, rhs: Object) -> Bool {
+    return lhs._id == rhs._id
 }

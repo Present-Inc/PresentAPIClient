@@ -11,8 +11,16 @@ import UIKit
 public class UserContext: Object {
     override class var apiResourcePath: String { return "user_contexts" }
     
-    private(set) var sessionToken: String!
-    private(set) var user: User!
+    public var sessionToken: String!
+    public var user: User!
+    
+    private struct Static {
+        static var pushNotificationIdentifier: String? = nil
+    }
+
+    class func _logger() -> Logger {
+        return Swell.getLogger("UserContext")
+    }
     
     public init(sessionToken: String, user: User) {
         self.sessionToken = sessionToken
@@ -44,26 +52,25 @@ public class UserContext: Object {
         
         super.encodeWithCoder(aCoder)
     }
-}
-
-private extension UserContext {
-    class func _logger() -> Logger {
-        return Swell.getLogger("UserContext")
+    
+    public class func setPushNotificationDeviceIdentifier(deviceIdentifier: String) {
+        Static.pushNotificationIdentifier = deviceIdentifier
     }
-}
-
-public extension UserContext {
+    
     public class func authenticate(username: String, password: String, success: ((UserContext) -> ())?, failure: FailureBlock?) {
-        var authCredentials: Dictionary<String, AnyObject> = [
+        var authCredentials: [String: AnyObject] = [
             "username": username,
-            "password": password
+            "password": password,
+            "push_notification_platform": "APNS"
         ],
         successHandler: ResourceSuccessBlock = { jsonResponse in
             let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
             success?(currentUserContext)
         }
         
-        // TODO: If there are push credentials, send them
+        if let deviceIdentifier = Static.pushNotificationIdentifier {
+            authCredentials["device_identifier"] = deviceIdentifier
+        }
         
         APIManager
             .sharedInstance()
@@ -73,6 +80,27 @@ public extension UserContext {
                 success: successHandler,
                 failure: failure
         )
+    }
+    
+    public class func updatePushNotificationIdentifier(pushIdentifier: String, success: ((UserContext) -> ())? = nil, failure: FailureBlock? = nil) {
+        self.setPushNotificationDeviceIdentifier(pushIdentifier)
+        
+        if UserSession.currentSession() != nil {
+            var pushCredentials = ["device_identifier": pushIdentifier],
+            successHandler: ResourceSuccessBlock = { jsonResponse in
+                let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
+                success?(currentUserContext)
+            }
+            
+            APIManager
+                .sharedInstance()
+                .postResource(
+                    self.updateResource(),
+                    parameters: pushCredentials,
+                    success: successHandler,
+                    failure: failure
+            )
+        }
     }
     
     public class func logOut(completion: ((NSError?) -> ())? = nil) {

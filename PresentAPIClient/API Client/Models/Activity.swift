@@ -16,6 +16,11 @@ public enum ActivityType: String {
     case NewVideoByFriend = "newVideoByFriend"
     case NewVideoMention = "newVideoMention"
     case NewViewer = "newViewer"
+    case NewDemand = "newDemand"
+
+    public func isVideoType() -> Bool {
+        return (self == .NewComment || self == .NewCommentMention || self == .NewVideoByFriend || self == NewVideoMention)
+    }
 }
 
 public class Activity: Object {
@@ -48,6 +53,10 @@ public class Activity: Object {
     private var _type: ActivityType!
     
     private let logger = Activity._logger()
+
+    private class func _logger() -> Logger {
+        return Swell.getLogger("Activity")
+    }
     
     public override init(json: JSONValue) {
         if let isUnread = json["isUnread"].bool {
@@ -64,32 +73,18 @@ public class Activity: Object {
         
         _fromUser = User(json: json["sourceUser"]["object"])
         _video = Video(json: json["video"]["object"])
-        //_comment = Comment(json: ["comment"]["object"])
         
         super.init(json: json)
     }
-}
-
-private extension Activity {
-    class func _logger() -> Logger {
-        return Swell.getLogger("Activity")
-    }
-}
-
-public extension Activity {
+    
     // MARK: Class Resource Methods
     
-    class func getActivities(cursor: Int? = 0, success: (([Activity], Int) -> ())?, failure: FailureBlock?) {
+    public class func getActivities(cursor: Int? = 0, success: (([Activity], Int) -> ())?, failure: FailureBlock?) {
         var parameters = [
             "cursor": cursor!
         ],
         successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            var activities = [Activity]()
-            for jsonActivity in jsonArray {
-                var activity = Activity(json: jsonActivity["object"])
-                activities.append(activity)
-            }
-            
+            var activities = jsonArray.map({ Activity(json: $0["object"]) })
             success?(activities, nextCursor)
         }
         
@@ -103,7 +98,7 @@ public extension Activity {
         )
     }
     
-    class func markAsRead(activities: [Activity], success: ((AnyObject) -> ())?, failure: FailureBlock?) {
+    public class func markAsRead(activities: [Activity], success: ((AnyObject) -> ())?, failure: FailureBlock?) {
         var markAsRead = [String]()
         for activity in activities {
             markAsRead.append(activity.id)

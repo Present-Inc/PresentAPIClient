@@ -9,17 +9,23 @@
 import Foundation
 
 public class CursoredCollection<T: Equatable> {
-    var collection: [T] = [T]()
-    var cursor: Int = 0
-    var count: Int = 0
+    private var _collection: [T] = [T]()
+    public var collection: [T] {
+        return _collection
+    }
+    
+    public var cursor: Int = 0
+    public var count: Int = 0
+    
+    init() { }
     
     func reset() {
-        self.collection.removeAll(keepCapacity: false)
+        self._collection.removeAll(keepCapacity: false)
         self.cursor = 0
     }
     
     func addObject(object: T) {
-        self.collection.append(object)
+        self._collection.append(object)
     }
     
     func addObjects(objects: [T]) {
@@ -29,8 +35,8 @@ public class CursoredCollection<T: Equatable> {
     }
     
     func removeObject(index: Int) -> Bool {
-        if index >= 0 && index < self.collection.count {
-            self.collection.removeAtIndex(index)
+        if index >= 0 && index < self._collection.count {
+            self._collection.removeAtIndex(index)
             return true
         }
         
@@ -38,7 +44,7 @@ public class CursoredCollection<T: Equatable> {
     }
     
     func removeObject(object: T) -> Bool {
-        var index = find(self.collection, object)
+        var index = find(self._collection, object)
         if index != nil {
             return self.removeObject(index!)
         }

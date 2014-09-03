@@ -143,7 +143,7 @@ public class APIManager {
     // MARK: Response Closures
     
     func resourceSuccessClosure(success: ResourceSuccessBlock?) -> RequestSuccessBlock? {
-        var successBlock: RequestSuccessBlock? = { httpResponse, data in
+        var successBlock: RequestSuccessBlock = { httpResponse, data in
             self.logger.info("Response status code: \(httpResponse.statusCode)")
             
             let jsonData = JSONValue(data)
@@ -170,10 +170,15 @@ public class APIManager {
     
     func failureClosure(failure: FailureBlock?) -> RequestFailureBlock? {
         var requestFailure: RequestFailureBlock? = { httpResponse, data, error in
-            self.logger.error("Response Error:\n\t\(data)")
-            println(data)
+            let jsonData = JSONValue(data)
+            let apiError = Error(json: jsonData)
+            var requestError = NSError(domain: "APIManagerErrorDomain", code: apiError.code ?? 0, userInfo: [
+                "APIError": apiError
+                ])
             
-            failure?(error)
+            self.logger.error("Response Error:\n\t\(requestError)")
+            
+            failure?(requestError)
         }
         
         return requestFailure

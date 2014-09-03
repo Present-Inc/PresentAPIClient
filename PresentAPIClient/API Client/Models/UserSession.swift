@@ -73,20 +73,17 @@ public class UserSession: NSObject, NSCoding {
     public class func register(user: User, success: ((UserContext) -> ())?, failure: FailureBlock?) {
         // TODO: Create the user
         user.create({ createdUser in
-            
-            }, failure: { error in
-
-            })
+            self.login(createdUser.username, password: createdUser.password, success: success, failure: failure)
+            }, failure: failure)
         // TODO: Authenticate the new user
         // TODO: Return the user context
     }
     
-    public class func logOut(completion: ((AnyObject?) -> ())?) {
+    public class func logOut(completion: ((AnyObject?) -> ())? = nil) {
         self._logger().debug("Logging out the current user")
 
         UserContext.logOut { result in
             self.setCurrentSession(nil)
-
             completion?(result)
         }
     }
@@ -104,7 +101,6 @@ public class UserSession: NSObject, NSCoding {
                 logger.debug("Successfully saved current session.")
             } else {
                 logger.debug("Failed to save current session.")
-                // ???: Recursion?
             }
         } else {
             APIManager.sharedInstance().clearUserContextHeaders()

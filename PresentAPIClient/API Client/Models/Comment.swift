@@ -29,35 +29,24 @@ public class Comment: Object {
     
     private var logger = Comment._logger()
 
-    public init(body: String, author: User, video: Video) {
-        _body = body
-        _author = author
-        _video = video
-        
-        super.init()
-    }
-    
-    public override init(json: JSONValue) {
-        if let bodyString = json["body"].string {
-            _body = bodyString
-        }
-        
-        _author = User(json: json["sourceUser"])
-        _video = Video(json: json["targetVideo"])
-        
-        super.init(json: json)
-    }
-}
-
-private extension Comment {
-    class func _logger() -> Logger {
+    private class func _logger() -> Logger {
         return Swell.getLogger("Comment")
     }
-}
-
-public extension Comment {
-    // MARK: Class Resource Methods
     
+    class func resourceSuccessWithCompletion(completion: ((Comment) -> ())?) -> ResourceSuccessBlock {
+        return { jsonResponse in
+            var comment = Comment(json: jsonResponse["object"])
+            completion?(comment)
+        }
+    }
+    
+    class func collectionSuccessWithCompletion(completion: (([Comment], Int) -> ())?) -> CollectionSuccessBlock {
+        return { jsonArray, nextCursor in
+            var commentResults = jsonArray.map { Comment(json: $0["object"]) }
+            completion?(commentResults, nextCursor)
+        }
+    }
+
     public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: (([Comment], Int) -> ())?, failure: FailureBlock) {
         var parameters: [String: AnyObject] = [
             "video_id": video.id,
@@ -100,9 +89,26 @@ public extension Comment {
                 failure: failure
         )
     }
+
+    public init(body: String, author: User, video: Video) {
+        _body = body
+        _author = author
+        _video = video
+        
+        super.init()
+    }
     
-    // MARK: Instance Resource Methods
-    
+    public override init(json: JSONValue) {
+        if let bodyString = json["body"].string {
+            _body = bodyString
+        }
+        
+        _author = User(json: json["sourceUser"]["object"])
+        _video = Video(json: json["targetVideo"]["object"])
+        
+        super.init(json: json)
+    }
+
     public func create(success: ((Comment) -> ())?, failure: FailureBlock?) {
         if body.isEmpty {
             var error = NSError(domain: "CommentErrorDomain", code: 100, userInfo: [NSLocalizedDescriptionKey: "Comment body is empty."])
@@ -166,28 +172,5 @@ public extension Comment {
             success: successHandler,
             failure: failure
         )
-    }
-}
-
-private extension Comment {
-    class func resourceSuccessWithCompletion(completion: ((Comment) -> ())?) -> ResourceSuccessBlock {
-        return { jsonResponse in
-            var comment = Comment(json: jsonResponse["object"])
-            completion?(comment)
-        }
-    }
-    
-    class func collectionSuccessWithCompletion(completion: (([Comment], Int) -> ())?) -> CollectionSuccessBlock {
-        return { jsonArray, nextCursor in
-            self._logger().debug("JSON Array results: \(jsonArray)")
-            
-            var commentResults = [Comment]()
-            for jsonComment: JSONValue in jsonArray {
-                var comment = Comment(json: jsonComment["object"])
-                commentResults.append(comment)
-            }
-            
-            completion?(commentResults, nextCursor)
-        }
     }
 }

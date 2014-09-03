@@ -467,16 +467,12 @@ private extension Video {
     
     class func collectionSuccessWithCompletion(completion: (([Video], Int) -> ())?) -> CollectionSuccessBlock {
         return { jsonArray, nextCursor in
-            var videoResults = [Video]()
-            for jsonVideo: JSONValue in jsonArray {
-                var video = Video(json: jsonVideo["object"])
-                videoResults.append(video)
-                
-                var subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonVideo["subjectiveObjectMeta"])
-                UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
-            }
+            var videos = jsonArray.map { Video(json: $0["object"]) }
+
+//            var subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonVideo["subjectiveObjectMeta"])
+//                UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
             
-            completion?(videoResults, nextCursor)
+            completion?(videos, nextCursor)
         }
     }
 }

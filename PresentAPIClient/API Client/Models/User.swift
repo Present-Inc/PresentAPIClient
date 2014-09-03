@@ -33,7 +33,14 @@ public class User: Object {
     public var followerCount: Int = 0
     public var viewCount: Int = 0
     public var likeCount: Int = 0
-    public var videoCount: Int = 0
+    public var videoCount: Int = 0 /*{
+        get {
+            return videosCollection.count
+        }
+        set (newValue) {
+            videosCollection.count = newValue
+        }
+    }*/
     
     public var videos: [Video] {
         return videosCollection.collection
@@ -44,8 +51,12 @@ public class User: Object {
     }
     
     private let logger = User._logger()
-    private let videosCollection = CursoredCollection<Video>()
+    private lazy var videosCollection = CursoredCollection<Video>()
     
+    class func _logger() -> Logger {
+        return Swell.getLogger("User")
+    }
+
     public init(username: String, password: String, fullName: String, email: String) {
         self._username = username
         self.password = password
@@ -56,6 +67,8 @@ public class User: Object {
     }
     
     public override init(json: JSONValue) {
+        super.init(json: json)
+        
         if let username = json["displayUsername"].string {
             self._username = username
         }
@@ -91,11 +104,11 @@ public class User: Object {
         if let description = json["profile"]["description"].string {
             self.userDescription = description
         }
-        
-        super.init(json: json)
     }
     
     public override init(coder aDecoder: NSCoder!) {
+        super.init(coder: aDecoder)
+        
         _username = aDecoder.decodeObjectForKey("username") as? String
         fullName = aDecoder.decodeObjectForKey("fullName") as? String
         email = aDecoder.decodeObjectForKey("email") as? String
@@ -112,8 +125,6 @@ public class User: Object {
         if let urlString = aDecoder.decodeObjectForKey("profileImageUrlString") as? String {
             profileImageUrlString = urlString
         }
-        
-        super.init(coder: aDecoder)
     }
     
     override public func encodeWithCoder(aCoder: NSCoder!) {
@@ -134,15 +145,7 @@ public class User: Object {
         
         super.encodeWithCoder(aCoder)
     }
-}
 
-private extension User {
-    class func _logger() -> Logger {
-        return Swell.getLogger("User")
-    }
-}
-
-public extension User {
     // MARK: Fetch Users
     
     public class func getTeam(success: (([User]) -> ())?, failure: FailureBlock?) {
@@ -185,7 +188,7 @@ public extension User {
             let objectMeta = SubjectiveObjectMeta(json: jsonResponse["result"]["subjectiveObjectMeta"]),
                 user = User(json: jsonResponse["result"]["object"])
             
-            UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: user) 
+            UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: user)
             
             success?(user)
         }
@@ -210,12 +213,7 @@ public extension User {
         successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
             self._logger().debug("JSON Array results: \(jsonArray)")
             
-            var userResults = [User]()
-            for jsonUser: JSONValue in jsonArray {
-                var user = User(json: jsonUser["object"])
-                userResults.append(user)
-            }
-            
+            var userResults = jsonArray.map { User(json: $0["object"]) }
             success?(userResults, nextCursor)
         }
         
@@ -276,6 +274,7 @@ public extension User {
     
     public func getLikes(success: (([Like], Int) -> ())?, failure: FailureBlock?) {
         // TODO: Use the Likes.getLikesForUser() method
+        //Like.getForwardLikes(self, cursor: self.likesCursor, success: <#(([Like], Int) -> ())?##([Like], Int) -> ()#>, failure: <#FailureBlock?##(NSError?) -> ()#>)
     }
     
     // MARK: Videos
@@ -291,4 +290,5 @@ public extension User {
                 failure?(error)
             })
     }
+
 }

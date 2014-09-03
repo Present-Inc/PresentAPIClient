@@ -73,11 +73,12 @@ public class PFileManager: NSObject {
     // MARK: File Enumeration
     
     public class func enumerateFilesInDirectory(directoryName: String, withBlock block: ((String) -> ())?) {
-        var fileManager = NSFileManager.defaultManager(),
-            enumerator = fileManager.enumeratorAtPath(directoryName)
+        var fileManager = NSFileManager.defaultManager()
         
-        while let filePath = enumerator.nextObject() as? String {
-            block?(filePath)
+        if let enumerator = fileManager.enumeratorAtPath(directoryName) {
+            while let filePath = enumerator.nextObject() as? String {
+                block?(filePath)
+            }
         }
     }
     
