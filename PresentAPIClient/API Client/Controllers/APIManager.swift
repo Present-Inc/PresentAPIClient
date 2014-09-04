@@ -10,10 +10,8 @@ import UIKit
 import Alamofire
 
 public typealias ResourceSuccessBlock = (JSONValue) -> ()
-public typealias CollectionSuccessBlock = (Array<JSONValue>, Int) -> ()
+public typealias CollectionSuccessBlock = ([JSONValue], Int) -> ()
 public typealias FailureBlock = (NSError?) -> ()
-public typealias RequestSuccessBlock = (NSHTTPURLResponse!, AnyObject!) -> ()
-public typealias RequestFailureBlock = (NSHTTPURLResponse!, AnyObject!, NSError?) -> ()
 
 #if DEBUG
     let apiVersion = "v1"
@@ -31,6 +29,11 @@ let UserIdHeader = "Present-User-Context-User-Id"
 
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
+    
+    private var _callbackQueue = dispatch_queue_create("tv.Present.Present.PresentAPIClient.serializationQueue", DISPATCH_QUEUE_CONCURRENT)
+    var callbackQueue: dispatch_queue_t {
+        return _callbackQueue
+    }
     
     class func sharedInstance() -> APIManager {
         struct Static {
@@ -63,32 +66,24 @@ public class APIManager {
     // MARK: GET
     
     func getResource(resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        self.get(
-            resource,
-            parameters: parameters,
-            success: self.resourceSuccessClosure(success),
-            failure: self.failureClosure(failure)
-        )
+        self.requestResource(.GET, resource: resource, parameters: parameters, success: success, failure: failure)
     }
     
     func getCollection(resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
-        self.get(
-            resource,
-            parameters: parameters,
-            success: self.collectionSuccessClosure(success),
-            failure: self.failureClosure(failure)
-        )
+        self.requestCollection(.GET, resource: resource, parameters: parameters, success: success, failure: failure)
     }
     
     // MARK: POST
     
     func postResource(resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        self.post(resource, parameters: parameters, success: self.resourceSuccessClosure(success), failure: self.failureClosure(failure))
+        self.requestResource(.POST, resource: resource, parameters: parameters, success: success, failure: failure)
     }
     
     func postCollection(resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
-        self.post(resource, parameters: parameters, success: self.collectionSuccessClosure(success), failure: self.failureClosure(failure))
+        self.requestCollection(.POST, resource: resource, parameters: parameters, success: success, failure: failure)
     }
+    
+    // MARK: Multi-part POST
     
     func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
         let requestURL = baseURL + resource,
@@ -98,89 +93,56 @@ public class APIManager {
 
         // TODO: Waiting on multipart integration in Alamofire.
     }
+}
+
+private extension APIManager {
+    private func requestURLWithResource(resource: String) -> String {
+        return baseURL + resource
+    }
     
+    private func resourceCompletionHandler(success: ResourceSuccessBlock?, failure: FailureBlock?) -> APIResourceResponseCompletionBlock {
+        return { request, response, object, error in
+            if error != nil || response?.statusCode >= 300 {
+                self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
+                failure?(error)
+            } else {
+                self.logger.debug("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) succeeded.")
+                success?(object!)
+            }
+        }
+    }
     
-    // MARK: Private POST Methods
+    private func collectionCompletionHandler(success: CollectionSuccessBlock?, failure: FailureBlock?) -> APICollectionResponseCompletionBlock {
+        return { request, response, results, nextCursor, error in
+            if error != nil || response?.statusCode >= 300 {
+                self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
+                failure?(error)
+            } else {
+                self.logger.debug("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) succeeded.")
+                success?(results!, nextCursor!)
+            }
+        }
+    }
     
-    private func post(resource: String, parameters: [String: AnyObject]?, success: RequestSuccessBlock?, failure: RequestFailureBlock?) {
-        let requestURL = baseURL + resource
+    // MARK: Request
+    
+    private func requestResource(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
+        let requestURL = requestURLWithResource(resource)
         
-        logger.info("POST \(requestURL) with parameters \(parameters)")
+        logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
         
         Alamofire
-            .request(.POST, requestURL, parameters: parameters, encoding: .URL)
-            .responseJSON { request, response, JSON, error in
-                if error != nil || response?.statusCode >= 300 {
-                    self.logger.error("POST \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
-                    failure?(response, JSON, error)
-                } else {
-                    self.logger.info("POST \(request.URL) succeeded.")
-                    success?(response, JSON)
-                }
-        }
+            .request(httpMethod, requestURL, parameters: parameters, encoding: .URL)
+            .resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
     }
     
-    // MARK: Private GET Methods
-    
-    private func get(resource: String, parameters: [String: AnyObject]?, success: RequestSuccessBlock?, failure: RequestFailureBlock?) {
-        let requestURL = baseURL + resource
+    private func requestCollection(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
+        let requestURL = requestURLWithResource(resource)
         
-        logger.info("GET \(requestURL) with parameters \(parameters)")
+        logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
         
         Alamofire
-            .request(.GET, requestURL, parameters: parameters, encoding: .URL)
-            .responseJSON { request, response, JSON, error in
-                if error != nil || response?.statusCode >= 300 {
-                    self.logger.error("GET \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
-                    failure?(response, JSON, error)
-                } else {
-                    self.logger.info("GET \(request.URL) succeeded.")
-                    success?(response, JSON)
-                }
-        }
-    }
-    
-    // MARK: Response Closures
-    
-    func resourceSuccessClosure(success: ResourceSuccessBlock?) -> RequestSuccessBlock? {
-        var successBlock: RequestSuccessBlock = { httpResponse, data in
-            self.logger.info("Response status code: \(httpResponse.statusCode)")
-            
-            let jsonData = JSONValue(data)
-            success?(jsonData)
-        }
-        
-        return successBlock
-    }
-    
-    func collectionSuccessClosure(success: CollectionSuccessBlock?) -> RequestSuccessBlock? {
-        var requestSuccess: RequestSuccessBlock? = { httpResponse, data in
-            self.logger.info("Response status code: \(httpResponse.statusCode)")
-            
-            let jsonData = JSONValue(data)
-            
-            var results = jsonData["results"].array,
-                nextCursor = jsonData["nextCursor"].integer
-            
-            success?(results!, nextCursor!)
-        }
-        
-        return requestSuccess
-    }
-    
-    func failureClosure(failure: FailureBlock?) -> RequestFailureBlock? {
-        var requestFailure: RequestFailureBlock? = { httpResponse, data, error in
-            let jsonData = JSONValue(data)
-            let apiError = Error(json: jsonData)
-            var requestError = NSError(domain: "APIManagerErrorDomain", code: apiError.code ?? 0, userInfo: [
-                "APIError": apiError
-                ])
-            
-            self.logger.error("Response Error:\n\t\(requestError)")
-            
-            failure?(requestError)
-        }
-        
-        return requestFailure
+            .request(httpMethod, requestURLWithResource(resource), parameters: parameters, encoding: .URL)
+            .collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
     }
 }
