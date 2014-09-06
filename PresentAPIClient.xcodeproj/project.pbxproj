@@ -13,6 +13,7 @@
 		7C3DBD1319AE326600A657C4 /* PresentAPIClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */; };
 		7C3DBD3619AE7D7100A657C4 /* Alamofire.framework in CopyFiles */ = {isa = PBXBuildFile; fileRef = 7C2B177319ACDF0800B7DFC6 /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7C4733B719A5288C009124FA /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4733B619A5288C009124FA /* UserSession.swift */; };
+		7C79D47919B9018C0015468E /* AlamofireExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C79D47819B9018C0015468E /* AlamofireExtensions.swift */; };
 		7CCFEAE6199C15BC00D87880 /* PresentAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7CCFEB02199C169A00D87880 /* APIManagerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEAF9199C169A00D87880 /* APIManagerSpec.swift */; };
 		7CCFEB03199C169A00D87880 /* CommentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEAFA199C169A00D87880 /* CommentSpec.swift */; };
@@ -147,6 +148,7 @@
 		7C3DBCDE19AE311500A657C4 /* Quick.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Quick.xcodeproj; path = Quick/Quick/Quick.xcodeproj; sourceTree = "<group>"; };
 		7C3DBCF119AE314600A657C4 /* Nimble.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Nimble.xcodeproj; path = Nimble/Nimble.xcodeproj; sourceTree = "<group>"; };
 		7C4733B619A5288C009124FA /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
+		7C79D47819B9018C0015468E /* AlamofireExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtensions.swift; sourceTree = "<group>"; };
 		7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PresentAPIClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CCFEAE4199C15BC00D87880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PresentAPIClient.h; sourceTree = "<group>"; };
@@ -305,6 +307,7 @@
 			isa = PBXGroup;
 			children = (
 				7CCFEB0C199C16AA00D87880 /* APIManager.swift */,
+				7C79D47819B9018C0015468E /* AlamofireExtensions.swift */,
 			);
 			name = Controllers;
 			path = "API Client/Controllers";
@@ -584,6 +587,7 @@
 				7CCFEB41199C171D00D87880 /* PFileManager.swift in Sources */,
 				7CCFEB3F199C16CE00D87880 /* SwiftyJSON.swift in Sources */,
 				7CCFEB28199C16AA00D87880 /* UserContext.swift in Sources */,
+				7C79D47919B9018C0015468E /* AlamofireExtensions.swift in Sources */,
 				7CCFEB22199C16AA00D87880 /* Object.swift in Sources */,
 				7CCFEB1F199C16AA00D87880 /* Friendship.swift in Sources */,
 				7CCFEB3C199C16CE00D87880 /* LogLocation.swift in Sources */,

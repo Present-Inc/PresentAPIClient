@@ -19,9 +19,9 @@ internal extension Alamofire.Request {
     func collectionResponseJSON(completionHandler: APICollectionResponseCompletionBlock) -> Self {
         let completion: AlamofireResponseCompletionBlock = { request, response, JSON, error in
             var jsonData: JSONValue!,
-            results: [JSONValue]!,
-            nextCursor: Int!,
-            requestError: NSError?
+                results: [JSONValue]?,
+                nextCursor: Int!,
+                requestError: NSError?
             
             if let data: AnyObject = JSON {
                 jsonData = JSONValue(data)
@@ -50,13 +50,13 @@ internal extension Alamofire.Request {
     func resourceResponseJSON(completionHandler: APIResourceResponseCompletionBlock) -> Self {
         let completion: AlamofireResponseCompletionBlock = { request, response, JSON, error in
             var jsonData: JSONValue!,
-            requestError: NSError?
+                requestError: NSError?
             
             if let data: AnyObject = JSON {
                 jsonData = JSONValue(data)
                 
-                if error != nil {
-                    requestError = self.serializeRequestError(jsonData, error: error!)
+                if error != nil || response?.statusCode >= 300 {
+                    requestError = self.serializeRequestError(jsonData, error: error)
                 }
             }
             
@@ -82,16 +82,16 @@ internal extension Alamofire.Request {
     *
     *  @return NSError with JSON error serialized in userInfo["APIError"]
     */
-    private func serializeRequestError(json: JSONValue?, error: NSError) -> NSError? {
+    private func serializeRequestError(json: JSONValue?, error: NSError?) -> NSError? {
         var apiError: Error?,
-        requestError: NSError?
+            requestError: NSError? = error
         
         if let jsonError: JSONValue = json {
             apiError = Error(json: jsonError)
         }
         
         if apiError != nil {
-            requestError = NSError(domain: "APIManagerErrorDomain", code: apiError!.code ?? error.code, userInfo: [
+            requestError = NSError(domain: "APIManagerErrorDomain", code: apiError!.code ?? -1111, userInfo: [
                 "APIError": apiError!
                 ])
         }

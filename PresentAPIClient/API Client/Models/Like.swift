@@ -55,6 +55,36 @@ private extension Like {
 public extension Like {
     // MARK: Class Resource Methods
     
+    class func destroyLikeForVideo(video: Video, success: (() -> ())?, failure: FailureBlock?) {
+        var parameters: [String: AnyObject] = [
+            "video_id": video.id
+        ],
+        successHandler: ResourceSuccessBlock = { jsonResponse in
+            UserSession.currentSession()?
+                .storeObjectMeta(
+                    SubjectiveObjectMeta(
+                        like: Relation(forward: false),
+                        friendship: nil,
+                        view: nil
+                    ),
+                    forObject: video
+            )
+            
+            if success != nil {
+                success?()
+            }
+        }
+        
+        APIManager
+            .sharedInstance()
+            .postResource(
+                Like.destroyResource(),
+                parameters: parameters,
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
     class func getForwardLikes(user: User, cursor: Int? = 0, success: (([Like], Int) -> ())?, failure: FailureBlock?) {
         var parameters: [String: AnyObject] = [
             "cursor": cursor!,
@@ -91,11 +121,11 @@ public extension Like {
         successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
             self._logger().debug("JSON Array results: \(jsonArray)")
             
-            var likeResults = [Like]()
-            for jsonLike: JSONValue in jsonArray {
+            var likeResults = jsonArray.map { jsonLike -> Like in
                 var like = Like(json: jsonLike["object"])
                 like._video = video
-                likeResults.append(like)
+                
+                return like
             }
             
             success?(likeResults, nextCursor)
@@ -120,7 +150,8 @@ public extension Like {
         successHandler: ResourceSuccessBlock = { jsonResponse in
             if success != nil {
                 var like = Like(json: jsonResponse["object"])
-                success?(like)
+                self.mergeResultsFromObject(like)
+                success?(self)
             }
         }
         
@@ -135,22 +166,10 @@ public extension Like {
     }
     
     func destroy(success: ((Like) -> ())?, failure: FailureBlock?) {
-        var parameters: [String: AnyObject] = [
-            "comment_id": self.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+        Like.destroyLikeForVideo(self.video, success: {
             if success != nil {
-                success?(self)
+                success!(self)
             }
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Like.destroyResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+        }, failure: failure)
     }
 }

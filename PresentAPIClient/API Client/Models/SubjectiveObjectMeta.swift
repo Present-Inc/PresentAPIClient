@@ -27,7 +27,7 @@ public class SubjectiveObjectMeta: NSObject {
         super.init()
     }
     
-    public init(like: Relation?, friendship: Relation?, view: Relation?) {
+    public init(like: Relation? = nil, friendship: Relation? = nil, view: Relation? = nil) {
         _like = like
         _friendship = friendship
         _view = view

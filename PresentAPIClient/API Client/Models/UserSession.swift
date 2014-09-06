@@ -125,7 +125,11 @@ public class UserSession: NSObject, NSCoding {
     }
 
     public func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forObject object: Object) {
-        self.relationStore.store(objectMeta, forKey: object.id)
+        self.storeObjectMeta(objectMeta, forKey: object.id)
+    }
+    
+    public func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forKey key: String) {
+        self.relationStore.store(objectMeta, forKey: key)
     }
 
     public func getObjectMetaForObject(object: Object) -> SubjectiveObjectMeta {
@@ -136,8 +140,6 @@ public class UserSession: NSObject, NSCoding {
             friendship: self.relationStore.getFriendship(objectId),
             view: self.relationStore.getView(objectId)
         )
-
-        Swell.debug(subjectiveObjectMeta)
 
         return subjectiveObjectMeta
     }

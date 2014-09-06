@@ -183,8 +183,6 @@ public class User: Object {
     
     private class func getUserWithParameters(parameters: [String: NSObject], success: ((User) -> ())?, failure: FailureBlock?) {
         var successHandler: ResourceSuccessBlock = { jsonResponse in
-            self._logger().debug("Fetch results: \(jsonResponse)")
-            
             let objectMeta = SubjectiveObjectMeta(json: jsonResponse["result"]["subjectiveObjectMeta"]),
                 user = User(json: jsonResponse["result"]["object"])
             
@@ -231,8 +229,9 @@ public class User: Object {
     }
     
     public func create(success: ((User) -> ())?, failure: FailureBlock?) {
-        // TODO: Validate properties
-        // TODO: Validate email
+        if !self.id.isEmpty {
+            failure?(nil)
+        }
         
         var parameters = [
             "username": self.username as NSString,

@@ -47,7 +47,7 @@ public class Error: NSObject, Printable {
             _stack = stacktrace
         }
         
-        if let errorMessage = json["message"].string {
+        if let errorMessage = json["errorInfo"]["message"].string {
             _message = errorMessage
         }
     }

@@ -96,6 +96,28 @@ public class APIManager {
 }
 
 private extension APIManager {
+    // MARK: Request
+    
+    private func requestResource(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
+        let requestURL = requestURLWithResource(resource)
+        
+        logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
+        
+        Alamofire
+            .request(httpMethod, requestURL, parameters: parameters, encoding: .URL)
+            .resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
+    }
+    
+    private func requestCollection(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
+        let requestURL = requestURLWithResource(resource)
+        
+        logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
+        
+        Alamofire
+            .request(httpMethod, requestURL, parameters: parameters, encoding: .URL)
+            .collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
+    }
+    
     private func requestURLWithResource(resource: String) -> String {
         return baseURL + resource
     }
@@ -122,27 +144,5 @@ private extension APIManager {
                 success?(results!, nextCursor!)
             }
         }
-    }
-    
-    // MARK: Request
-    
-    private func requestResource(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        let requestURL = requestURLWithResource(resource)
-        
-        logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
-        
-        Alamofire
-            .request(httpMethod, requestURL, parameters: parameters, encoding: .URL)
-            .resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
-    }
-    
-    private func requestCollection(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
-        let requestURL = requestURLWithResource(resource)
-        
-        logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
-        
-        Alamofire
-            .request(httpMethod, requestURLWithResource(resource), parameters: parameters, encoding: .URL)
-            .collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
     }
 }

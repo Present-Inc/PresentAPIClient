@@ -457,20 +457,23 @@ public extension Video {
 private extension Video {
     class func resourceSuccessWithCompletion(completion: ((Video) -> ())?) -> ResourceSuccessBlock {
         return { jsonResponse in
-            var video = Video(json: jsonResponse["object"])
-            completion?(video)
-            
-            var subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonResponse["subjectiveObjectMeta"])
+            var video = Video(json: jsonResponse["object"]),
+                subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonResponse["subjectiveObjectMeta"])
             UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
+            
+            completion?(video)
         }
     }
     
     class func collectionSuccessWithCompletion(completion: (([Video], Int) -> ())?) -> CollectionSuccessBlock {
         return { jsonArray, nextCursor in
-            var videos = jsonArray.map { Video(json: $0["object"]) }
-
-//            var subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonVideo["subjectiveObjectMeta"])
-//                UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
+            var videos = jsonArray.map { jsonVideo -> Video in
+                var video = Video(json: jsonVideo["object"]),
+                    subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonVideo["subjectiveObjectMeta"])
+                UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
+                
+                return video
+            }
             
             completion?(videos, nextCursor)
         }

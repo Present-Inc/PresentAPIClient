@@ -16,7 +16,7 @@ public class Relation: NSObject {
         super.init()
     }
     
-    public init(forward: Bool, backward: Bool) {
+    public init(forward: Bool = false, backward: Bool = false) {
         self.forward = forward
         self.backward = backward
         
