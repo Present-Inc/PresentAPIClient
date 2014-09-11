@@ -24,14 +24,13 @@ public class Friendship: Object {
     }
     
     public override init(json: JSONValue) {
-        // TODO: Handle the subjectiveObjectMeta in sourceUser.subjectiveObjectMeta
         if let sourceUserId = json["sourceUser"].string {
             if sourceUserId == UserSession.currentUser()?.id {
                 self.logger.debug("Setting the current user to the source user")
                 self.sourceUser = UserSession.currentUser()
             }
         } else {
-            self.sourceUser = User(json: json["sourceUser"]["object"])
+            self.sourceUser = User(json: json["sourceUser"])
         }
         
         if let targetUserId = json["targetUser"].string {
@@ -40,7 +39,7 @@ public class Friendship: Object {
                 self.targetUser = UserSession.currentUser()
             }
         } else {
-            self.targetUser = User(json: json["targetUser"]["object"])
+            self.targetUser = User(json: json["targetUser"])
         }
         
         super.init(json: json)

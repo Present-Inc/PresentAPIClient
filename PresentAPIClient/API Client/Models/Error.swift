@@ -35,6 +35,8 @@ public class Error: NSObject, Printable {
     }
     
     init(json: JSONValue) {
+        println("Error json: \(json)")
+        
         if let errorCode = json["errorCode"].integer {
             _code = errorCode
         }

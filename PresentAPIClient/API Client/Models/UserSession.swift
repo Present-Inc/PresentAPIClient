@@ -14,6 +14,8 @@ public class UserSession: NSObject, NSCoding {
     public var context: UserContext?
 
     lazy var relationStore: RelationStore = RelationStore()
+    // TODO: Temporary solution to team caching for AboutViewController. This really doesn't belong in here.
+    lazy var presentTeam: [User] = [User]()
 
     public var isAuthenticated: Bool {
     get {
@@ -71,12 +73,9 @@ public class UserSession: NSObject, NSCoding {
     }
 
     public class func register(user: User, success: ((UserContext) -> ())?, failure: FailureBlock?) {
-        // TODO: Create the user
         user.create({ createdUser in
             self.login(createdUser.username, password: createdUser.password, success: success, failure: failure)
             }, failure: failure)
-        // TODO: Authenticate the new user
-        // TODO: Return the user context
     }
     
     public class func logOut(completion: ((AnyObject?) -> ())? = nil) {

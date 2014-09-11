@@ -71,8 +71,8 @@ public class Activity: Object {
             _type = ActivityType.fromRaw(activityType)
         }
         
-        _fromUser = User(json: json["sourceUser"]["object"])
-        _video = Video(json: json["video"]["object"])
+        _fromUser = User(json: json["sourceUser"])
+        _video = Video(json: json["video"])
         
         super.init(json: json)
     }

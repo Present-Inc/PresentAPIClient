@@ -43,6 +43,10 @@ public class APIManager {
         return Static.instance
     }
     
+    init() {
+        self.setValue("2014-09-09", forHeaderKey: "Present-Version")
+    }
+    
     func setValue(value: String?, forHeaderKey key: String!) {
         Alamofire.Manager.sharedInstance.defaultHeaders[key] = value
     }
@@ -86,12 +90,25 @@ public class APIManager {
     // MARK: Multi-part POST
     
     func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        let requestURL = baseURL + resource,
-            filename = url.lastPathComponent
-
+        var requestURL = baseURL + resource
+        
+        if parameters?.count > 0 {
+            var firstParameter = true
+            for (key, value: AnyObject) in parameters! {
+                if firstParameter {
+                    requestURL += "?\(key)=\(value)"
+                    firstParameter = false
+                }else {
+                    requestURL += "&\(key)=\(value)"
+                }
+            }
+        }
+        
         logger.info("Multi-part POST \(requestURL) with \(url)")
 
-        // TODO: Waiting on multipart integration in Alamofire.
+        Alamofire
+            .upload(.POST, requestURL, url)
+            .resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
     }
 }
 

@@ -32,7 +32,37 @@ public class Comment: Object {
     private class func _logger() -> Logger {
         return Swell.getLogger("Comment")
     }
+
+    public init(body: String, author: User, video: Video) {
+        _body = body
+        _author = author
+        _video = video
+        
+        super.init()
+    }
     
+    public override init(json: JSONValue) {
+        if let bodyString = json["body"].string {
+            _body = bodyString
+        }
+        
+        _author = User(json: json["sourceUser"])
+        _video = Video(json: json["targetVideo"])
+        
+        super.init(json: json)
+    }
+    
+    public override func mergeResultsFromObject(object: Object) {
+        let comment = object as Comment
+        if self.body != comment.body {
+            self._body = comment.body
+        }
+        
+        super.mergeResultsFromObject(object)
+    }
+}
+
+extension Comment {
     class func resourceSuccessWithCompletion(completion: ((Comment) -> ())?) -> ResourceSuccessBlock {
         return { jsonResponse in
             var comment = Comment(json: jsonResponse["object"])
@@ -46,7 +76,7 @@ public class Comment: Object {
             completion?(commentResults, nextCursor)
         }
     }
-
+    
     public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: (([Comment], Int) -> ())?, failure: FailureBlock) {
         var parameters: [String: AnyObject] = [
             "video_id": video.id,
@@ -89,26 +119,7 @@ public class Comment: Object {
                 failure: failure
         )
     }
-
-    public init(body: String, author: User, video: Video) {
-        _body = body
-        _author = author
-        _video = video
-        
-        super.init()
-    }
     
-    public override init(json: JSONValue) {
-        if let bodyString = json["body"].string {
-            _body = bodyString
-        }
-        
-        _author = User(json: json["sourceUser"]["object"])
-        _video = Video(json: json["targetVideo"]["object"])
-        
-        super.init(json: json)
-    }
-
     public func create(success: ((Comment) -> ())?, failure: FailureBlock?) {
         if body.isEmpty {
             var error = NSError(domain: "CommentErrorDomain", code: 100, userInfo: [NSLocalizedDescriptionKey: "Comment body is empty."])

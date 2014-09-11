@@ -34,7 +34,7 @@ public class UserContext: Object {
             sessionToken = token
         }
         
-        user = User(json: json["user"]["object"])
+        user = User(json: json["user"])
         
         super.init(json: json)
     }

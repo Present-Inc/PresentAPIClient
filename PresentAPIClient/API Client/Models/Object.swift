@@ -68,6 +68,7 @@ public class Object: NSObject, ObjectSubclass {
     public init(id: String) {
         _id = id
         _creationDate = NSDate()
+        
         super.init()
     }
     
@@ -120,7 +121,7 @@ public class Object: NSObject, ObjectSubclass {
     }
     
     public func mergeResultsFromObject(object: Object) {
-        if _id.isEmpty {
+        if _id == "" || _id.isEmpty {
             _id = object._id
         }
         

@@ -84,7 +84,7 @@ public class Video: Object {
         super.init()
     }
     
-    public init(creator: User, caption: String) {
+    public init(creator: User, caption: String? = nil) {
         self._creator = creator
         self.caption = caption
         
@@ -96,6 +96,15 @@ public class Video: Object {
     }
     
     public override init(json: JSONValue) {
+        super.init(json: json["object"])
+        
+        self.initializeWithObject(json["object"])
+
+        var objectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
+        UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: self)
+    }
+    
+    private func initializeWithObject(json: JSONValue) {
         if let startDateString = json["creationTimeRange"]["startDate"].string {
             _startDate = NSDate.dateFromISOString(startDateString)
         }
@@ -119,9 +128,7 @@ public class Video: Object {
             _coverUrl = NSURL(string: coverString)
         }
         
-        _creator = User(json: json["creatorUser"]["object"])
-        
-        super.init(json: json)
+        _creator = User(json: json["creatorUser"])
         
         if let mostRecentLikes = json["likes"]["results"].array {
             for jsonLike: JSONValue in mostRecentLikes {
@@ -146,7 +153,7 @@ public class Video: Object {
         }
         
         if let commentCount = json["comments"]["count"].integer {
-            self.commentsCollection.cursor = commentCount
+            self.commentsCollection.count = commentCount
         }
     }
     
@@ -317,7 +324,7 @@ public extension Video {
     public func create(success: ((Video) -> ())?, failure: FailureBlock?) {
         var parameters: [String: NSObject] = [String: NSObject](),
         successHandler: ResourceSuccessBlock = { jsonResponse in
-            var videoResponse = Video(json: jsonResponse["object"])
+            var videoResponse = Video(json: jsonResponse["result"])
             self.mergeResultsFromObject(videoResponse)
             
             self.logger.debug("Successfully created video \(self)")
@@ -389,7 +396,7 @@ public extension Video {
             "title": caption
         ],
         successHandler: ResourceSuccessBlock = { jsonResponse in
-            var videoResponse = Video(json: jsonResponse["object"])
+            var videoResponse = Video(json: jsonResponse)
             self.mergeResultsFromObject(videoResponse)
             
             self.logger.debug("Successfully updated video \(self)")
@@ -452,29 +459,37 @@ public extension Video {
                 failure?(error)
             })
     }
+    
+    public func createLike(success: ((Like) -> ())?, failure: FailureBlock?) {
+        var like = Like(user: UserSession.currentUser()!, video: self)
+        like.create(success, failure: failure)
+        
+        self.addLike(like)
+    }
+    
+    public func destroyLike(success: (() -> ())?, failure: FailureBlock?) {
+        Like.destroyLikeForVideo(self, success: success, failure: failure)
+        
+        for like in likes {
+            if like.user == UserSession.currentUser()! {
+                self.deleteLike(like)
+                break
+            }
+        }
+    }
 }
 
 private extension Video {
     class func resourceSuccessWithCompletion(completion: ((Video) -> ())?) -> ResourceSuccessBlock {
         return { jsonResponse in
-            var video = Video(json: jsonResponse["object"]),
-                subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonResponse["subjectiveObjectMeta"])
-            UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
-            
+            var video = Video(json: jsonResponse)
             completion?(video)
         }
     }
     
     class func collectionSuccessWithCompletion(completion: (([Video], Int) -> ())?) -> CollectionSuccessBlock {
         return { jsonArray, nextCursor in
-            var videos = jsonArray.map { jsonVideo -> Video in
-                var video = Video(json: jsonVideo["object"]),
-                    subjectiveObjectMeta = SubjectiveObjectMeta(json: jsonVideo["subjectiveObjectMeta"])
-                UserSession.currentSession()?.storeObjectMeta(subjectiveObjectMeta, forObject: video)
-                
-                return video
-            }
-            
+            var videos = jsonArray.map { Video(json: $0) }
             completion?(videos, nextCursor)
         }
     }

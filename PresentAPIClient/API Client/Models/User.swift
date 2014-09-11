@@ -12,7 +12,7 @@ public class User: Object {
     override class var apiResourcePath: String { return "users" }
     
     private var _username: String!
-    public var username: String! {
+    public var username: String {
         return _username
     }
     
@@ -20,7 +20,7 @@ public class User: Object {
     public var fullName: String! = "No Name"
     public var email: String?
     
-    private var profileImageUrlString: String!
+    private var profileImageUrlString: String = "https://user-assets.present.tv/profile-pictures/default.png"
     public var profileImageUrl: NSURL {
         return NSURL(string: self.profileImageUrlString)
     }
@@ -28,19 +28,23 @@ public class User: Object {
     public var userDescription: String = "No description yet."
     
     public var website: String?
+    public var location: String?
+    public var phoneNumber: String?
     
     public var friendCount: Int = 0
     public var followerCount: Int = 0
     public var viewCount: Int = 0
     public var likeCount: Int = 0
-    public var videoCount: Int = 0 /*{
-        get {
-            return videosCollection.count
-        }
-        set (newValue) {
-            videosCollection.count = newValue
-        }
-    }*/
+    public var videoCount: Int = 0
+    
+    private var _isAdmin: Bool = false
+    public var isAdmin: Bool {
+        return _isAdmin
+    }
+    
+    public var isCurrentUser: Bool {
+        return self == UserSession.currentUser()
+    }
     
     public var videos: [Video] {
         return videosCollection.collection
@@ -67,7 +71,18 @@ public class User: Object {
     }
     
     public override init(json: JSONValue) {
-        super.init(json: json)
+        super.init(json: json["object"])
+        
+        self.initializeWithObject(json["object"])
+        
+        var objectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
+        UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: self)
+    }
+    
+    private func initializeWithObject(json: JSONValue) {
+        if let admin = json["_isAdmin"].bool {
+            self._isAdmin = admin
+        }
         
         if let username = json["displayUsername"].string {
             self._username = username
@@ -104,6 +119,9 @@ public class User: Object {
         if let description = json["profile"]["description"].string {
             self.userDescription = description
         }
+        
+        self.location = json["profile"]["location"].string
+        self.website = json["profile"]["website"].string
     }
     
     public override init(coder aDecoder: NSCoder!) {
@@ -150,16 +168,7 @@ public class User: Object {
     
     public class func getTeam(success: (([User]) -> ())?, failure: FailureBlock?) {
         var successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            println(jsonArray)
-            var teamUsers: [User] = [User]()
-            for jsonUser: JSONValue in jsonArray {
-                let objectMeta = SubjectiveObjectMeta(json: jsonUser["subjectiveObjectMeta"]),
-                    user = User(json: jsonUser["object"])
-                
-                UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: user)
-                teamUsers.append(user)
-            }
-            
+            var teamUsers = jsonArray.map { User(json: $0) }
             success?(teamUsers)
         }
         
@@ -183,11 +192,7 @@ public class User: Object {
     
     private class func getUserWithParameters(parameters: [String: NSObject], success: ((User) -> ())?, failure: FailureBlock?) {
         var successHandler: ResourceSuccessBlock = { jsonResponse in
-            let objectMeta = SubjectiveObjectMeta(json: jsonResponse["result"]["subjectiveObjectMeta"]),
-                user = User(json: jsonResponse["result"]["object"])
-            
-            UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: user)
-            
+            var user = User(json: jsonResponse["result"])
             success?(user)
         }
         
@@ -209,14 +214,11 @@ public class User: Object {
             "cursor": cursor!
         ],
         successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            self._logger().debug("JSON Array results: \(jsonArray)")
-            
-            var userResults = jsonArray.map { User(json: $0["object"]) }
+            var userResults = jsonArray.map { User(json: $0) }
             success?(userResults, nextCursor)
         }
         
         self._logger().debug("Searching for page \(cursor) of \"\(queryString)\" results")
-        println("Searching for page \(cursor) of \"\(queryString)\" results")
         
         APIManager
             .sharedInstance()
@@ -240,7 +242,7 @@ public class User: Object {
         successHandler: ResourceSuccessBlock = { jsonResponse in
             self.logger.debug("Successfully created user")
             
-            var user = User(json: jsonResponse["object"])
+            var user = User(json: jsonResponse)
             self.mergeResultsFromObject(user)
             success?(self)
         }
@@ -254,6 +256,24 @@ public class User: Object {
             .postResource(
                 User.createResource(),
                 parameters: parameters,
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    public func update(properties: [String: String], success: ((User) -> ())?, failure: FailureBlock?) {
+        var successHandler: ResourceSuccessBlock = { jsonResponse in
+            self.logger.debug("Successfully updated user")
+            var user = User(json: jsonResponse)
+            self.mergeResultsFromObject(user)
+            success?(self)
+        }
+        
+        APIManager
+            .sharedInstance()
+            .postResource(
+                User.updateResource(),
+                parameters: properties as [String: AnyObject],
                 success: successHandler,
                 failure: failure
         )

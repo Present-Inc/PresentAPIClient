@@ -34,12 +34,12 @@ public class Like: Object {
     public override init(json: JSONValue) {
         var userId: String? = json["sourceUser"].string
         if userId == nil {
-            _user = User(json: json["sourceUser"]["object"])
+            _user = User(json: json["sourceUser"])
         }
         
         var videoId: String? = json["targetVideo"].string
         if videoId == nil {
-            _video = Video(json: json["targetVideo"]["object"])
+            _video = Video(json: json["targetVideo"])
         }
         
         super.init(json: json)
