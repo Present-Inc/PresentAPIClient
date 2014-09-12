@@ -105,6 +105,10 @@ public class Video: Object {
     }
     
     private func initializeWithObject(json: JSONValue) {
+        if let caption = json["title"].string {
+            self.caption = caption
+        }
+        
         if let startDateString = json["creationTimeRange"]["startDate"].string {
             _startDate = NSDate.dateFromISOString(startDateString)
         }
