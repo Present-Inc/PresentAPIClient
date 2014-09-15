@@ -35,6 +35,8 @@ public class APIManager {
         return _callbackQueue
     }
     
+    private var multipartManager: AFHTTPSessionManager
+    
     class func sharedInstance() -> APIManager {
         struct Static {
             static let instance: APIManager = APIManager()
@@ -44,11 +46,15 @@ public class APIManager {
     }
     
     init() {
+        self.multipartManager = AFHTTPSessionManager(baseURL: NSURL(string: baseURL))
+        self.multipartManager.requestSerializer = AFHTTPRequestSerializer()
+        self.multipartManager.responseSerializer = AFJSONResponseSerializer()
         self.setValue("2014-09-09", forHeaderKey: "Present-Version")
     }
     
     func setValue(value: String?, forHeaderKey key: String!) {
         Alamofire.Manager.sharedInstance.defaultHeaders[key] = value
+        multipartManager.requestSerializer.setValue(value, forHTTPHeaderField: key)
     }
     
     func setValues(values: [String], forHeaderKeys keys: [String]) {
@@ -92,23 +98,49 @@ public class APIManager {
     func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
         var requestURL = baseURL + resource
         
-        if parameters?.count > 0 {
-            var firstParameter = true
-            for (key, value: AnyObject) in parameters! {
-                if firstParameter {
-                    requestURL += "?\(key)=\(value)"
-                    firstParameter = false
-                }else {
-                    requestURL += "&\(key)=\(value)"
-                }
+//        if parameters?.count > 0 {
+//            var firstParameter = true
+//            for (key, value: AnyObject) in parameters! {
+//                if firstParameter {
+//                    requestURL += "?\(key)=\(value)"
+//                    firstParameter = false
+//                }else {
+//                    requestURL += "&\(key)=\(value)"
+//                }
+//            }
+//        }
+        
+        var multipartBodyBlock: (AFMultipartFormData!) -> () = { formData in
+            var error: NSError?
+            formData.appendPartWithFileURL(url, name: "media_segment", fileName: "index.ts", mimeType: "video/mp2t", error: &error)
+            
+            if error != nil {
+                self.logger.error("Error appending form data! \(error)")
             }
         }
         
+        var requestError: NSError?
+        var request = self.multipartManager.requestSerializer.multipartFormRequestWithMethod(
+            "POST",
+            URLString: requestURL,
+            parameters: parameters,
+            constructingBodyWithBlock: multipartBodyBlock,
+            error: &requestError
+        )
+        
+        var uploadTask = multipartManager.uploadTaskWithStreamedRequest(request, progress: nil, completionHandler: { response, data, error in
+            if error != nil {
+                self.logger.error("Multi-part POST \(requestURL) failed with error: \(error)")
+                failure?(error)
+            } else {
+                self.logger.debug("Multi-part POST \(requestURL) succeeded.")
+                success?(JSONValue("Something Else"))
+            }
+        })
+        
         logger.info("Multi-part POST \(requestURL) with \(url)")
-
-        Alamofire
-            .upload(.POST, requestURL, url)
-            .resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
+        
+        uploadTask.resume()
     }
 }
 

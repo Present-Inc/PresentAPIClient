@@ -7,3 +7,6 @@
 [submodule "PresentAPIClient/Nimble"]
 	path = PresentAPIClient/Nimble
 	url = https://github.com/Quick/Nimble.git
+[submodule "PresentAPIClient/AFNetworking"]
+	path = PresentAPIClient/AFNetworking
+	url = https://github.com/AFNetworking/AFNetworking.git
