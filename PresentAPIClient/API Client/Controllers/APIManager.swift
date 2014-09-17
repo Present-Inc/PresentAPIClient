@@ -98,18 +98,6 @@ public class APIManager {
     func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
         var requestURL = baseURL + resource
         
-//        if parameters?.count > 0 {
-//            var firstParameter = true
-//            for (key, value: AnyObject) in parameters! {
-//                if firstParameter {
-//                    requestURL += "?\(key)=\(value)"
-//                    firstParameter = false
-//                }else {
-//                    requestURL += "&\(key)=\(value)"
-//                }
-//            }
-//        }
-        
         var multipartBodyBlock: (AFMultipartFormData!) -> () = { formData in
             var error: NSError?
             formData.appendPartWithFileURL(url, name: "media_segment", fileName: "index.ts", mimeType: "video/mp2t", error: &error)
@@ -127,6 +115,8 @@ public class APIManager {
             constructingBodyWithBlock: multipartBodyBlock,
             error: &requestError
         )
+        
+        logger.info("Request body: \(request.HTTPBody)")
         
         var uploadTask = multipartManager.uploadTaskWithStreamedRequest(request, progress: nil, completionHandler: { response, data, error in
             if error != nil {

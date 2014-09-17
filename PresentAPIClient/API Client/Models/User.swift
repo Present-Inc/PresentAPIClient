@@ -120,6 +120,8 @@ public class User: Object {
             self.userDescription = description
         }
         
+        self.email = json["email"].string
+        self.phoneNumber = json["phoneNumber"].string
         self.location = json["profile"]["location"].string
         self.website = json["profile"]["website"].string
     }
@@ -135,6 +137,10 @@ public class User: Object {
         likeCount = aDecoder.decodeObjectForKey("likeCount") as Int
         viewCount = aDecoder.decodeObjectForKey("viewCount") as Int
         videoCount = aDecoder.decodeObjectForKey("videoCount") as Int
+        location = aDecoder.decodeObjectForKey("location") as? String
+        phoneNumber = aDecoder.decodeObjectForKey("phoneNumber") as? String
+        website = aDecoder.decodeObjectForKey("website") as? String
+        _isAdmin = aDecoder.decodeBoolForKey("admin")
         
         if let description = aDecoder.decodeObjectForKey("userDescription") as? String {
             userDescription = description
@@ -145,12 +151,24 @@ public class User: Object {
         }
     }
     
-    override public func encodeWithCoder(aCoder: NSCoder!) {
+    public override func encodeWithCoder(aCoder: NSCoder!) {
         aCoder.encodeObject(_username, forKey: "username")
         aCoder.encodeObject(fullName, forKey: "fullName")
         
         if email != nil {
             aCoder.encodeObject(email!, forKey: "email")
+        }
+        
+        if location != nil {
+            aCoder.encodeObject(location!, forKey: "location")
+        }
+        
+        if phoneNumber != nil {
+            aCoder.encodeObject(phoneNumber!, forKey: "phoneNumber")
+        }
+        
+        if website != nil {
+            aCoder.encodeObject(website!, forKey: "website")
         }
         
         aCoder.encodeObject(friendCount, forKey: "friendCount")
@@ -160,8 +178,45 @@ public class User: Object {
         aCoder.encodeObject(videoCount, forKey: "videoCount")
         aCoder.encodeObject(profileImageUrlString, forKey: "profileImageUrlString")
         aCoder.encodeObject(userDescription, forKey: "userDescription")
+        aCoder.encodeBool(_isAdmin, forKey: "admin")
         
         super.encodeWithCoder(aCoder)
+    }
+    
+    // MARK: Merge
+    
+    public override func mergeResultsFromObject(object: Object) {
+        let user = object as User
+        
+        if self.website != user.website && user.website != nil {
+            self.website = user.website
+        }
+        
+        if self.location != user.location {
+            self.location = user.location
+        }
+        
+        if self.fullName != user.fullName {
+            self.fullName = user.fullName
+        }
+        
+        if self.userDescription != user.userDescription {
+            self.userDescription = user.userDescription
+        }
+        
+        if self.profileImageUrlString != user.profileImageUrlString {
+            self.profileImageUrlString = user.profileImageUrlString
+        }
+        
+        if self.email != user.email && user.email != nil {
+            self.email = user.email
+        }
+        
+        if self.phoneNumber != user.phoneNumber {
+            self.phoneNumber = user.phoneNumber
+        }
+        
+        super.mergeResultsFromObject(object)
     }
 
     // MARK: Fetch Users
@@ -230,6 +285,13 @@ public class User: Object {
         )
     }
     
+    public func fetch(success: ((User) -> ())? = nil, failure: FailureBlock? = nil) {
+        User.getUserWithId(self.id, success: { user in
+            self.mergeResultsFromObject(user)
+            success?(user)
+        }, failure: failure)
+    }
+    
     public func create(success: ((User) -> ())?, failure: FailureBlock?) {
         if !self.id.isEmpty {
             failure?(nil)
@@ -263,8 +325,8 @@ public class User: Object {
     
     public func update(properties: [String: String], success: ((User) -> ())?, failure: FailureBlock?) {
         var successHandler: ResourceSuccessBlock = { jsonResponse in
-            self.logger.debug("Successfully updated user")
-            var user = User(json: jsonResponse)
+            self.logger.debug("Successfully updated user: \(jsonResponse)")
+            var user = User(json: jsonResponse["result"])
             self.mergeResultsFromObject(user)
             success?(self)
         }

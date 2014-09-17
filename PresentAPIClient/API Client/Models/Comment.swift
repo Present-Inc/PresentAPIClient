@@ -51,15 +51,6 @@ public class Comment: Object {
         
         super.init(json: json)
     }
-    
-    public override func mergeResultsFromObject(object: Object) {
-        let comment = object as Comment
-        if self.body != comment.body {
-            self._body = comment.body
-        }
-        
-        super.mergeResultsFromObject(object)
-    }
 }
 
 extension Comment {
