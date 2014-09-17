@@ -264,14 +264,14 @@ public class User: Object {
     // MARK: Search Users
     
     public class func search(queryString: String, cursor: Int? = 0, success: (([User], Int) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "query": queryString as NSString,
-            "cursor": cursor!
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
+        var successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
             var userResults = jsonArray.map { User(json: $0) }
             success?(userResults, nextCursor)
-        }
+        },
+        parameters = [
+            "cursor": cursor!,
+            "query": "username:*\(queryString)* OR profile.fullName:*\(queryString)*" as NSString
+        ]
         
         self._logger().debug("Searching for page \(cursor) of \"\(queryString)\" results")
         
