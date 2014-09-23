@@ -25,18 +25,21 @@ public class Error: NSObject, Printable {
         return _message
     }
     
+    public var result: String? {
+        return _result
+    }
+    
     private var _code: Int!
     private var _description: String!
     private var _stack: String!
     private var _message: String!
+    private var _result: String!
     
     public override var description: String {
-        return " {\n\tcode: \(self.code)\n\tdescription: \(self.errorDescription)\n\tmessage: \(self.message)\n}"
+        return " {\n\tcode: \(self.code)\n\tdescription: \(self.errorDescription)\n\tmessage: \(self.message)\n\tresult: \(self.result)}"
     }
     
     init(json: JSONValue) {
-        println("Error json: \(json)")
-        
         if let errorCode = json["errorCode"].integer {
             _code = errorCode
         }
@@ -51,6 +54,10 @@ public class Error: NSObject, Printable {
         
         if let errorMessage = json["errorInfo"]["message"].string {
             _message = errorMessage
+        }
+        
+        if let result = json["result"].string {
+            _result = result
         }
     }
 }
