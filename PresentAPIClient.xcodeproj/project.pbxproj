@@ -67,8 +67,6 @@
 		7CCFEB3F199C16CE00D87880 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */; };
 		7CCFEB41199C171D00D87880 /* PFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB40199C171D00D87880 /* PFileManager.swift */; };
 		7CCFEB55199C1FF600D87880 /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB54199C1FF600D87880 /* Activity.swift */; };
-		7CDCD25B19C5FEE4000DF4DA /* FacebookManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CDCD25A19C5FEE4000DF4DA /* FacebookManager.swift */; };
-		7CDCD26619C5FEEF000DF4DA /* TwitterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CDCD26519C5FEEF000DF4DA /* TwitterManager.swift */; };
 		7CDCD26A19C5FF7D000DF4DA /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CDCD26919C5FF7D000DF4DA /* Social.framework */; };
 		7CDCD26B19C5FF97000DF4DA /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CDCD26719C5FF79000DF4DA /* Accounts.framework */; };
 /* End PBXBuildFile section */
@@ -230,8 +228,6 @@
 		7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		7CCFEB40199C171D00D87880 /* PFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PFileManager.swift; sourceTree = "<group>"; };
 		7CCFEB54199C1FF600D87880 /* Activity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
-		7CDCD25A19C5FEE4000DF4DA /* FacebookManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FacebookManager.swift; sourceTree = "<group>"; };
-		7CDCD26519C5FEEF000DF4DA /* TwitterManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwitterManager.swift; sourceTree = "<group>"; };
 		7CDCD26719C5FF79000DF4DA /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		7CDCD26919C5FF7D000DF4DA /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -384,8 +380,6 @@
 			children = (
 				7CCFEB0C199C16AA00D87880 /* APIManager.swift */,
 				7C79D47819B9018C0015468E /* AlamofireExtensions.swift */,
-				7CDCD25A19C5FEE4000DF4DA /* FacebookManager.swift */,
-				7CDCD26519C5FEEF000DF4DA /* TwitterManager.swift */,
 			);
 			name = Controllers;
 			path = "API Client/Controllers";
@@ -696,8 +690,6 @@
 				7CCFEB27199C16AA00D87880 /* User.swift in Sources */,
 				7CCFEB25199C16AA00D87880 /* RelationStore.swift in Sources */,
 				7CCFEB3B199C16CE00D87880 /* LogLevel.swift in Sources */,
-				7CDCD26619C5FEEF000DF4DA /* TwitterManager.swift in Sources */,
-				7CDCD25B19C5FEE4000DF4DA /* FacebookManager.swift in Sources */,
 				7CCFEB3E199C16CE00D87880 /* Swell.swift in Sources */,
 				7CCFEB23199C16AA00D87880 /* ObjectSubclass.swift in Sources */,
 				7C15C00C19C5D1DF0047C266 /* AFURLRequestSerialization.m in Sources */,
@@ -840,6 +832,7 @@
 				INSTALL_PATH = Library/Frameworks;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "ce3d2c4e-c370-48eb-9dc2-ec65f1f07456";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -848,7 +841,7 @@
 		7CCFEAF5199C15BC00D87880 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CODE_SIGN_IDENTITY = "iPhone Developer: Justin Makaila (W9Z7HDDAGM)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Present Inc. (9L879LZKP7)";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -863,6 +856,7 @@
 				INSTALL_PATH = Library/Frameworks;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "D3BF3377-9CA0-452E-9A8B-E4381932EA1D";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
