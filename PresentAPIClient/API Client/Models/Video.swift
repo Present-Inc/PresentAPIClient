@@ -65,6 +65,14 @@ public class Video: Object {
         return _creator
     }
     
+    public var isViewed: Bool {
+        return subjectiveObjectMeta.view?.forward ?? false
+    }
+    
+    public var isLiked: Bool {
+        return subjectiveObjectMeta.like?.forward ?? false
+    }
+    
     private var _creator: User!
     
     private var _startDate: NSDate!
@@ -74,6 +82,8 @@ public class Video: Object {
     private var _replayUrl: NSURL!
     
     private var _coverUrl: NSURL!
+    
+    private var subjectiveObjectMeta: SubjectiveObjectMeta!
     
     private var commentsCollection: CursoredCollection<Comment> = CursoredCollection<Comment>()
     private var likesCollection: CursoredCollection<Like> = CursoredCollection<Like>()
@@ -100,8 +110,8 @@ public class Video: Object {
         
         self.initializeWithObject(json["object"])
 
-        var objectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
-        UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: self)
+        self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
+        //UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: self)
     }
     
     private func initializeWithObject(json: JSONValue) {

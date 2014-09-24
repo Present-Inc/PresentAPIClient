@@ -17,24 +17,24 @@ public class CursoredCollection<T: Equatable> {
     public var cursor: Int = 0
     public var count: Int = 0
     
-    init() { }
+    public init() { }
     
-    func reset() {
+    public func reset() {
         self._collection.removeAll(keepCapacity: false)
         self.cursor = 0
     }
     
-    func addObject(object: T) {
+    public func addObject(object: T) {
         self._collection.append(object)
     }
     
-    func addObjects(objects: [T]) {
+    public func addObjects(objects: [T]) {
         for i in objects {
             self.addObject(i)
         }
     }
     
-    func removeObject(index: Int) -> Bool {
+    public func removeObject(index: Int) -> Bool {
         if index >= 0 && index < self._collection.count {
             self._collection.removeAtIndex(index)
             return true
@@ -43,7 +43,7 @@ public class CursoredCollection<T: Equatable> {
         return false
     }
     
-    func removeObject(object: T) -> Bool {
+    public func removeObject(object: T) -> Bool {
         var index = find(self._collection, object)
         if index != nil {
             return self.removeObject(index!)
