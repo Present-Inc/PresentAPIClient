@@ -35,7 +35,7 @@ internal extension Alamofire.Request {
             }
             
             dispatch_async(dispatch_get_main_queue(), {
-                completionHandler(request, response, results, nextCursor, (requestError != nil) ? requestError! : error)
+                completionHandler(request, response, results, nextCursor, requestError ?? error)
             })
         }
         
@@ -61,7 +61,7 @@ internal extension Alamofire.Request {
             }
             
             dispatch_async(dispatch_get_main_queue(), {
-                completionHandler(request, response, jsonData, (requestError != nil) ? requestError! : error)
+                completionHandler(request, response, jsonData, requestError ?? error)
             })
         }
         
