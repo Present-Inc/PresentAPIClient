@@ -21,9 +21,12 @@ public typealias FailureBlock = (NSError?) -> ()
     let subDomain = "api"
 #endif
 
+let Version = "2014-09-09"
+
 // !!!: This will only post to the staging API!
 let baseURL = "https://api-staging.present.tv/\(apiVersion)/"
 
+let PresentVersionHeader = "Present-Version"
 let SessionTokenHeader = "Present-User-Context-Session-Token"
 let UserIdHeader = "Present-User-Context-User-Id"
 
@@ -47,9 +50,11 @@ public class APIManager {
     
     init() {
         self.multipartManager = AFHTTPSessionManager(baseURL: NSURL(string: baseURL))
+        self.multipartManager.securityPolicy.allowInvalidCertificates = true
         self.multipartManager.requestSerializer = AFHTTPRequestSerializer()
         self.multipartManager.responseSerializer = AFJSONResponseSerializer()
-        self.setValue("2014-09-09", forHeaderKey: "Present-Version")
+        
+        self.setValue(Version, forHeaderKey: PresentVersionHeader)
     }
     
     func setValue(value: String?, forHeaderKey key: String!) {
@@ -98,39 +103,26 @@ public class APIManager {
     func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
         var requestURL = baseURL + resource
         
-        var multipartBodyBlock: (AFMultipartFormData!) -> () = { formData in
-            var error: NSError?
-            formData.appendPartWithFileURL(url, name: "media_segment", fileName: "index.ts", mimeType: "video/mp2t", error: &error)
-            
-            if error != nil {
-                self.logger.error("Error appending form data! \(error)")
-            }
+        var fileData = NSData(contentsOfURL: url)
+        
+        var constructingBlock: (AFMultipartFormData!) -> Void = { formData in
+            formData.appendPartWithFileData(fileData, name: "media_segment", fileName: "index.ts", mimeType: "video/mp2t")
         }
         
-        var requestError: NSError?
-        var request = self.multipartManager.requestSerializer.multipartFormRequestWithMethod(
-            "POST",
-            URLString: requestURL,
+        multipartManager.POST(
+            resource,
             parameters: parameters,
-            constructingBodyWithBlock: multipartBodyBlock,
-            error: &requestError
-        )
-        
-        logger.info("Request body: \(request.HTTPBody)")
-        
-        var uploadTask = multipartManager.uploadTaskWithStreamedRequest(request, progress: nil, completionHandler: { response, data, error in
-            if error != nil {
-                self.logger.error("Multi-part POST \(requestURL) failed with error: \(error)")
-                failure?(error)
-            } else {
-                self.logger.debug("Multi-part POST \(requestURL) succeeded.")
+            constructingBodyWithBlock: constructingBlock,
+            success: { dataTask, response in
+                self.logger.debug("Multi-part POST \(dataTask.response?.URL) succeeded.")
                 success?(JSONValue("Something Else"))
-            }
-        })
+            },
+            failure: { dataTask, error in
+                self.logger.error("Multi-part POST \(dataTask.response?.URL) failed with error: \(error)")
+                failure?(error)
+            })
         
         logger.info("Multi-part POST \(requestURL) with \(url)")
-        
-        uploadTask.resume()
     }
 }
 
