@@ -8,6 +8,15 @@
 
 import UIKit
 
+public class UserSocialData: NSObject {
+    var accessGranted: Bool = false
+    
+    var sessionToken: String?
+    var expirationDate: NSDate?
+    
+    var userId: String?
+}
+
 public class User: Object {
     override class var apiResourcePath: String { return "users" }
     
@@ -36,6 +45,9 @@ public class User: Object {
     public var viewCount: Int = 0
     public var likeCount: Int = 0
     public var videoCount: Int = 0
+    
+    var facebookData: UserSocialData = UserSocialData()
+    var twitterData: UserSocialData = UserSocialData()
     
     private var _isAdmin: Bool = false
     public var isAdmin: Bool {
@@ -218,7 +230,9 @@ public class User: Object {
         
         super.mergeResultsFromObject(object)
     }
+}
 
+extension User {
     // MARK: Fetch Users
     
     public class func getTeam(success: (([User]) -> ())?, failure: FailureBlock?) {
@@ -285,12 +299,38 @@ public class User: Object {
         )
     }
     
+    // MARK: Password Reset
+    
+    public class func requestPasswordReset(email: String, success: (() -> ())?, failure: FailureBlock?) {
+        var parameters = [
+            "email": email
+        ],
+        successHandler: ResourceSuccessBlock = { _ in
+            if success != nil {
+                success!()
+            }
+        }
+        
+        APIManager
+            .sharedInstance()
+            .postResource(
+                self.pathForResource("request_password_reset"),
+                parameters: parameters,
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    // MARK: Fetch User
+    
     public func fetch(success: ((User) -> ())? = nil, failure: FailureBlock? = nil) {
         User.getUserWithId(self.id, success: { user in
             self.mergeResultsFromObject(user)
             success?(user)
-        }, failure: failure)
+            }, failure: failure)
     }
+    
+    // MARK: Create
     
     public func create(success: ((User) -> ())?, failure: FailureBlock?) {
         if !self.id.isEmpty {
@@ -322,6 +362,8 @@ public class User: Object {
                 failure: failure
         )
     }
+    
+    // MARK: Update
     
     public func update(properties: [String: String], success: ((User) -> ())?, failure: FailureBlock?) {
         var successHandler: ResourceSuccessBlock = { jsonResponse in
@@ -369,7 +411,7 @@ public class User: Object {
             }, failure: { error in
                 self.logger.error("Failed to get videos for user: \(self)")
                 failure?(error)
-            })
+        })
     }
 
 }
