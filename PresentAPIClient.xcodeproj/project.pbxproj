@@ -67,8 +67,6 @@
 		7CCFEB3F199C16CE00D87880 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */; };
 		7CCFEB41199C171D00D87880 /* PFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB40199C171D00D87880 /* PFileManager.swift */; };
 		7CCFEB55199C1FF600D87880 /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB54199C1FF600D87880 /* Activity.swift */; };
-		7CDCD26A19C5FF7D000DF4DA /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CDCD26919C5FF7D000DF4DA /* Social.framework */; };
-		7CDCD26B19C5FF97000DF4DA /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CDCD26719C5FF79000DF4DA /* Accounts.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -228,8 +226,6 @@
 		7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		7CCFEB40199C171D00D87880 /* PFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PFileManager.swift; sourceTree = "<group>"; };
 		7CCFEB54199C1FF600D87880 /* Activity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
-		7CDCD26719C5FF79000DF4DA /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
-		7CDCD26919C5FF7D000DF4DA /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -237,8 +233,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7CDCD26A19C5FF7D000DF4DA /* Social.framework in Frameworks */,
-				7CDCD26B19C5FF97000DF4DA /* Accounts.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -413,8 +407,6 @@
 		7CCFEB2B199C16B300D87880 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7CDCD26919C5FF7D000DF4DA /* Social.framework */,
-				7CDCD26719C5FF79000DF4DA /* Accounts.framework */,
 				7C15BFE119C5D1CD0047C266 /* AFNetworking */,
 				7C3DBCF119AE314600A657C4 /* Nimble.xcodeproj */,
 				7C3DBCDE19AE311500A657C4 /* Quick.xcodeproj */,
@@ -847,6 +839,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_SEARCH_PATHS = "$(BUILT_PRODUCTS_DIR)";
+				GCC_PREPROCESSOR_DEFINITIONS = "DEBUG=1";
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					"/Applications/Xcode6-Beta6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include",

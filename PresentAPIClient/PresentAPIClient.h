@@ -16,4 +16,4 @@ FOUNDATION_EXPORT const unsigned char PresentAPIClientVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <PresentAPIClient/PublicHeader.h>
 
-#import <PresentAPIClient/AFHTTPSessionManager.h>
+#import <PresentAPIClient/AFNetworking.h>

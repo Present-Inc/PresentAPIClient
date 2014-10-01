@@ -24,21 +24,25 @@ public typealias FailureBlock = (NSError?) -> ()
 let Version = "2014-09-09"
 
 // !!!: This will only post to the staging API!
-let baseURL = "https://api-staging.present.tv/\(apiVersion)/"
+let baseURL = NSURL(string: /*"http://192.168.0.11:8000/""http://test-server.apps.present.tv/"*/"http://api-staging.present.tv/\(apiVersion)/")
+let requestBinURL = NSURL(string: "http://requestb.in/")
+let requestBinPath = "1cqohmd1"
 
 let PresentVersionHeader = "Present-Version"
 let SessionTokenHeader = "Present-User-Context-Session-Token"
 let UserIdHeader = "Present-User-Context-User-Id"
 
+let CallbackQueueIdentifier = "tv.Present.Present.PresentAPIClient.serializationQueue"
+
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
     
-    private var _callbackQueue = dispatch_queue_create("tv.Present.Present.PresentAPIClient.serializationQueue", DISPATCH_QUEUE_CONCURRENT)
+    private var _callbackQueue = dispatch_queue_create(CallbackQueueIdentifier, DISPATCH_QUEUE_CONCURRENT)
     var callbackQueue: dispatch_queue_t {
         return _callbackQueue
     }
     
-    private var multipartManager: AFHTTPSessionManager
+    private var multipartManager: AFHTTPRequestOperationManager
     
     class func sharedInstance() -> APIManager {
         struct Static {
@@ -49,8 +53,8 @@ public class APIManager {
     }
     
     init() {
-        self.multipartManager = AFHTTPSessionManager(baseURL: NSURL(string: baseURL))
-        self.multipartManager.securityPolicy.allowInvalidCertificates = true
+        self.multipartManager = AFHTTPRequestOperationManager(baseURL: baseURL)
+        //self.multipartManager.securityPolicy.allowInvalidCertificates = true
         self.multipartManager.requestSerializer = AFHTTPRequestSerializer()
         self.multipartManager.responseSerializer = AFJSONResponseSerializer()
         
@@ -62,9 +66,17 @@ public class APIManager {
         multipartManager.requestSerializer.setValue(value, forHTTPHeaderField: key)
     }
     
+    // Complexity: O(n) where n = values.count
     func setValues(values: [String], forHeaderKeys keys: [String]) {
         for i in 0..<keys.count {
             self.setValue(values[i], forHeaderKey: keys[i])
+        }
+    }
+    
+    // Complexity: O(n) where n = headers.count
+    func setHeaders(headers: [String: String]) {
+        for (key, value) in headers {
+            self.setValue(value, forHeaderKey: key)
         }
     }
     
@@ -101,24 +113,22 @@ public class APIManager {
     // MARK: Multi-part POST
     
     func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        var requestURL = baseURL + resource
-        
-        var fileData = NSData(contentsOfURL: url)
-        
-        var constructingBlock: (AFMultipartFormData!) -> Void = { formData in
-            formData.appendPartWithFileData(fileData, name: "media_segment", fileName: "index.ts", mimeType: "video/mp2t")
-        }
+        var requestURL = baseURL.absoluteString! + resource,
+            fileData = NSData(contentsOfURL: url),
+            constructingBlock: (AFMultipartFormData!) -> Void = { formData in
+                formData.appendPartWithFileData(fileData, name: "media_segment", fileName: "index.ts", mimeType: "application/octet-stream")
+            }
         
         multipartManager.POST(
             resource,
             parameters: parameters,
             constructingBodyWithBlock: constructingBlock,
             success: { dataTask, response in
-                self.logger.debug("Multi-part POST \(dataTask.response?.URL) succeeded.")
+                self.logger.debug("Multi-part POST \(dataTask.response?.URL!) succeeded.")
                 success?(JSONValue("Something Else"))
             },
             failure: { dataTask, error in
-                self.logger.error("Multi-part POST \(dataTask.response?.URL) failed with error: \(error)")
+                self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(error)")
                 failure?(error)
             })
         
@@ -150,7 +160,7 @@ private extension APIManager {
     }
     
     private func requestURLWithResource(resource: String) -> String {
-        return baseURL + resource
+        return baseURL.absoluteString! + resource
     }
     
     private func resourceCompletionHandler(success: ResourceSuccessBlock?, failure: FailureBlock?) -> APIResourceResponseCompletionBlock {
