@@ -7,20 +7,11 @@
 //
 
 import UIKit
-
-public class UserSocialData: NSObject {
-    var accessGranted: Bool = false
-    
-    var sessionToken: String?
-    var expirationDate: NSDate?
-    
-    var userId: String?
-}
+import Accounts
 
 public class User: Object {
     override class var apiResourcePath: String { return "users" }
     
-    private var _username: String!
     public var username: String {
         return _username
     }
@@ -29,7 +20,6 @@ public class User: Object {
     public var fullName: String! = "No Name"
     public var email: String?
     
-    private var profileImageUrlString: String = "https://user-assets.present.tv/profile-pictures/default.png"
     public var profileImageUrl: NSURL {
         return NSURL(string: self.profileImageUrlString)
     }
@@ -46,10 +36,9 @@ public class User: Object {
     public var likeCount: Int = 0
     public var videoCount: Int = 0
     
-    var facebookData: UserSocialData = UserSocialData()
-    var twitterData: UserSocialData = UserSocialData()
+    public lazy var facebookData: SocialData = SocialData()
+    public lazy var twitterData: SocialData! = SocialData()
     
-    private var _isAdmin: Bool = false
     public var isAdmin: Bool {
         return _isAdmin
     }
@@ -67,6 +56,10 @@ public class User: Object {
     }
     
     private let logger = User._logger()
+    private var _isAdmin: Bool = false
+    private var _username: String!
+    private var profileImageUrlString: String = "https://user-assets.present.tv/profile-pictures/default.png"
+    
     private lazy var videosCollection = CursoredCollection<Video>()
     
     class func _logger() -> Logger {
@@ -232,6 +225,25 @@ public class User: Object {
     }
 }
 
+public extension User {
+    func updateFacebookAccount(account: ACAccount) {
+        self.facebookData = SocialData(account: account)
+    }
+    
+    func updateTwitterAccount(account: ACAccount) {
+        self.twitterData = SocialData(account: account)
+    }
+}
+
+public enum UserBatchSearchType: String {
+    case FacebookIDs = "facebook_ids"
+    case FacebookUsernames = "facebook_usernames"
+    case TwitterIDs = "twitter_ids"
+    case TwitterUsernames = "twitter_usernames"
+    case Emails = "emails"
+    case PhoneNumbers = "phone_numbers"
+}
+
 extension User {
     // MARK: Fetch Users
     
@@ -276,6 +288,55 @@ extension User {
     }
     
     // MARK: Search Users
+    
+    /**
+        Searches for users who are on Present.
+    
+        :param: parameters A dictionary containing subarrays to search. The keys for the dictionary must be valid UserBatchSearchType.
+        :param: cursor The cursor to use for the search.
+        :param: success The block to call on success.
+        :param: failure The block to call on failure.
+     */
+    public class func batchSearch(parameters: [UserBatchSearchType: [String]], cursor: Int? = 0, success: (([User], Int) -> ())?, failure: FailureBlock?) {
+        var successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
+            var users = jsonArray.map { User(json: $0) }
+            success?(users, nextCursor)
+        },
+        requestParameters: [String: AnyObject] = [
+            "cursor": cursor!
+        ]
+        
+        for (key, value) in parameters {
+            requestParameters[key.toRaw()] = value
+        }
+        
+        self._logger().debug("Batch searching for page \(cursor) of Users on Present.")
+        
+        // ???: This is for elasticsearch
+//        var queryString = ""
+//        for (key, value) in parameters {
+//            for i in 0..<value.count {
+//                var item = value[i]
+//                queryString += "\(key.toRaw()):" + item
+//                if i < value.count - 1 {
+//                    queryString += " OR "
+//                }
+//            }
+//        }
+        
+//        requestParameters["query"] = queryString
+        
+        println(requestParameters)
+        
+        APIManager
+            .sharedInstance()
+            .postCollection(
+                self.pathForResource("batch_search"),
+                parameters: requestParameters,
+                success: successHandler,
+                failure: failure
+            )
+    }
     
     public class func search(queryString: String, cursor: Int? = 0, success: (([User], Int) -> ())?, failure: FailureBlock?) {
         var successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in

@@ -24,9 +24,7 @@ public typealias FailureBlock = (NSError?) -> ()
 let Version = "2014-09-09"
 
 // !!!: This will only post to the staging API!
-let baseURL = NSURL(string: /*"http://192.168.0.11:8000/""http://test-server.apps.present.tv/"*/"http://api-staging.present.tv/\(apiVersion)/")
-let requestBinURL = NSURL(string: "http://requestb.in/")
-let requestBinPath = "1cqohmd1"
+let baseURL = NSURL(string:"http://api-staging.present.tv/\(apiVersion)/")
 
 let PresentVersionHeader = "Present-Version"
 let SessionTokenHeader = "Present-User-Context-Session-Token"
