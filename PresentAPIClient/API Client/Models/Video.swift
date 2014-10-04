@@ -33,7 +33,7 @@ public class Video: Object {
         }
     }
     
-    public var coverUrl: NSURL {
+    public var coverUrl: NSURL! {
         return _coverUrl
     }
     
