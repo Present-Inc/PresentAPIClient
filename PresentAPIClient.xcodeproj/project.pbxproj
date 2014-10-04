@@ -34,6 +34,7 @@
 		7C4733B719A5288C009124FA /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4733B619A5288C009124FA /* UserSession.swift */; };
 		7C4CDD6B19BE37A1009AF31B /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4CDD6A19BE37A1009AF31B /* View.swift */; };
 		7C79D47919B9018C0015468E /* AlamofireExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C79D47819B9018C0015468E /* AlamofireExtensions.swift */; };
+		7C81563219DCEBFD0046653D /* SocialData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C81563119DCEBFD0046653D /* SocialData.swift */; };
 		7CCFEAE6199C15BC00D87880 /* PresentAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7CCFEB02199C169A00D87880 /* APIManagerSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEAF9199C169A00D87880 /* APIManagerSpec.swift */; };
 		7CCFEB03199C169A00D87880 /* CommentSpec.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEAFA199C169A00D87880 /* CommentSpec.swift */; };
@@ -189,6 +190,7 @@
 		7C4733B619A5288C009124FA /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		7C4CDD6A19BE37A1009AF31B /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = View.swift; sourceTree = "<group>"; };
 		7C79D47819B9018C0015468E /* AlamofireExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtensions.swift; sourceTree = "<group>"; };
+		7C81563119DCEBFD0046653D /* SocialData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocialData.swift; sourceTree = "<group>"; };
 		7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PresentAPIClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CCFEAE4199C15BC00D87880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PresentAPIClient.h; sourceTree = "<group>"; };
@@ -394,6 +396,7 @@
 				7CCFEB16199C16AA00D87880 /* RelationStore.swift */,
 				7CCFEB17199C16AA00D87880 /* SubjectiveObjectMeta.swift */,
 				7CCFEB18199C16AA00D87880 /* User.swift */,
+				7C81563119DCEBFD0046653D /* SocialData.swift */,
 				7CCFEB19199C16AA00D87880 /* UserContext.swift */,
 				7CCFEB1B199C16AA00D87880 /* Video.swift */,
 				7C4733B619A5288C009124FA /* UserSession.swift */,
@@ -656,6 +659,7 @@
 				7CCFEB1C199C16AA00D87880 /* APIManager.swift in Sources */,
 				7C15C00619C5D1DF0047C266 /* AFNetworkReachabilityManager.m in Sources */,
 				7CCFEB24199C16AA00D87880 /* Relation.swift in Sources */,
+				7C81563219DCEBFD0046653D /* SocialData.swift in Sources */,
 				7CCFEB26199C16AA00D87880 /* SubjectiveObjectMeta.swift in Sources */,
 				7CCFEB2A199C16AA00D87880 /* Video.swift in Sources */,
 				7CCFEB55199C1FF600D87880 /* Activity.swift in Sources */,
@@ -824,7 +828,7 @@
 				INSTALL_PATH = Library/Frameworks;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "ce3d2c4e-c370-48eb-9dc2-ec65f1f07456";
+				PROVISIONING_PROFILE = "be74b3b1-75aa-4e1c-8418-b46cde71cd41";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
@@ -849,7 +853,7 @@
 				INSTALL_PATH = Library/Frameworks;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "D3BF3377-9CA0-452E-9A8B-E4381932EA1D";
+				PROVISIONING_PROFILE = "5773e667-13e7-41fd-8ad0-3f5077c33c9a";
 				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
