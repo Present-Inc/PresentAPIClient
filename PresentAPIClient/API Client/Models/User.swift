@@ -37,7 +37,7 @@ public class User: Object {
     public var videoCount: Int = 0
     
     public lazy var facebookData: SocialData = SocialData()
-    public lazy var twitterData: SocialData! = SocialData()
+    public lazy var twitterData: SocialData = SocialData()
     
     public var isAdmin: Bool {
         return _isAdmin
