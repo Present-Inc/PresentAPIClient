@@ -78,7 +78,7 @@ public class UserSession: NSObject, NSCoding {
             }, failure: failure)
     }
     
-    public class func logOut(completion: ((AnyObject?) -> ())? = nil) {
+    public class func logOut(completion: ((NSError?) -> ())? = nil) {
         self._logger().debug("Logging out the current user")
 
         UserContext.logOut { result in
