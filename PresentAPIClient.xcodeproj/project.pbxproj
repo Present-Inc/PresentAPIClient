@@ -65,7 +65,6 @@
 		7CCFEB3C199C16CE00D87880 /* LogLocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB33199C16CE00D87880 /* LogLocation.swift */; };
 		7CCFEB3D199C16CE00D87880 /* LogSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB34199C16CE00D87880 /* LogSelector.swift */; };
 		7CCFEB3E199C16CE00D87880 /* Swell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB35199C16CE00D87880 /* Swell.swift */; };
-		7CCFEB3F199C16CE00D87880 /* SwiftyJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */; };
 		7CCFEB41199C171D00D87880 /* PFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB40199C171D00D87880 /* PFileManager.swift */; };
 		7CCFEB55199C1FF600D87880 /* Activity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB54199C1FF600D87880 /* Activity.swift */; };
 /* End PBXBuildFile section */
@@ -225,7 +224,6 @@
 		7CCFEB33199C16CE00D87880 /* LogLocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogLocation.swift; sourceTree = "<group>"; };
 		7CCFEB34199C16CE00D87880 /* LogSelector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LogSelector.swift; sourceTree = "<group>"; };
 		7CCFEB35199C16CE00D87880 /* Swell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Swell.swift; sourceTree = "<group>"; };
-		7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftyJSON.swift; sourceTree = "<group>"; };
 		7CCFEB40199C171D00D87880 /* PFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PFileManager.swift; sourceTree = "<group>"; };
 		7CCFEB54199C1FF600D87880 /* Activity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Activity.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -416,7 +414,6 @@
 				7C2B176D19ACDF0700B7DFC6 /* Alamofire.xcodeproj */,
 				7CCFEB2E199C16CE00D87880 /* PFileManager */,
 				7CCFEB2F199C16CE00D87880 /* Swell */,
-				7CCFEB36199C16CE00D87880 /* SwiftyJSON */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -440,14 +437,6 @@
 				7CCFEB35199C16CE00D87880 /* Swell.swift */,
 			);
 			path = Swell;
-			sourceTree = "<group>";
-		};
-		7CCFEB36199C16CE00D87880 /* SwiftyJSON */ = {
-			isa = PBXGroup;
-			children = (
-				7CCFEB37199C16CE00D87880 /* SwiftyJSON.swift */,
-			);
-			path = SwiftyJSON;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -669,7 +658,6 @@
 				7C15C01019C5D1DF0047C266 /* AFURLSessionManager.m in Sources */,
 				7CCFEB1E199C16AA00D87880 /* CursoredCollection.swift in Sources */,
 				7CCFEB41199C171D00D87880 /* PFileManager.swift in Sources */,
-				7CCFEB3F199C16CE00D87880 /* SwiftyJSON.swift in Sources */,
 				7CCFEB28199C16AA00D87880 /* UserContext.swift in Sources */,
 				7C79D47919B9018C0015468E /* AlamofireExtensions.swift in Sources */,
 				7CCFEB22199C16AA00D87880 /* Object.swift in Sources */,
