@@ -8,6 +8,8 @@
 
 import UIKit
 
+let PushNotificationPlatform = "APNS_SANDBOX"
+
 public class UserContext: Object {
     override class var apiResourcePath: String { return "user_contexts" }
     
@@ -61,7 +63,8 @@ public class UserContext: Object {
         var authCredentials: [String: AnyObject] = [
             "username": username,
             "password": password,
-            "push_notification_platform": "APNS"
+            // This should be part of the DEBUG definition
+            "push_notification_platform": PushNotificationPlatform
         ],
         successHandler: ResourceSuccessBlock = { jsonResponse in
             let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
@@ -88,7 +91,7 @@ public class UserContext: Object {
         if UserSession.currentSession() != nil {
             var pushCredentials = [
                 "device_identifier": pushIdentifier,
-                "push_notification_platform": "APNS"
+                "push_notification_platform": PushNotificationPlatform
             ],
             successHandler: ResourceSuccessBlock = { jsonResponse in
                 let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
