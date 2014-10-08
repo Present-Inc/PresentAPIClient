@@ -86,7 +86,10 @@ public class UserContext: Object {
         self.setPushNotificationDeviceIdentifier(pushIdentifier)
         
         if UserSession.currentSession() != nil {
-            var pushCredentials = ["device_identifier": pushIdentifier],
+            var pushCredentials = [
+                "device_identifier": pushIdentifier,
+                "push_notification_platform": "APNS"
+            ],
             successHandler: ResourceSuccessBlock = { jsonResponse in
                 let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
                 success?(currentUserContext)
