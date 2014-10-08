@@ -10,3 +10,6 @@
 [submodule "PresentAPIClient/AFNetworking"]
 	path = PresentAPIClient/AFNetworking
 	url = https://github.com/AFNetworking/AFNetworking.git
+[submodule "PresentAPIClient/SwiftyJSON"]
+	path = PresentAPIClient/SwiftyJSON
+	url = https://github.com/SwiftyJSON/SwiftyJSON.git

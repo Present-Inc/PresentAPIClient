@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 public class Video: Object {
     override class var apiResourcePath: String { return "videos" }
@@ -105,7 +106,7 @@ public class Video: Object {
         super.init(id: id)
     }
     
-    public override init(json: JSONValue) {
+    public override init(json: JSON) {
         super.init(json: json["object"])
         
         self.initializeWithObject(json["object"])
@@ -114,7 +115,7 @@ public class Video: Object {
         //UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: self)
     }
     
-    private func initializeWithObject(json: JSONValue) {
+    private func initializeWithObject(json: JSON) {
         if let caption = json["title"].string {
             self.caption = caption
         }
@@ -145,7 +146,7 @@ public class Video: Object {
         _creator = User(json: json["creatorUser"])
         
         if let mostRecentLikes = json["likes"]["results"].array {
-            for jsonLike: JSONValue in mostRecentLikes {
+            for jsonLike: JSON in mostRecentLikes {
                 var like = Like(json: jsonLike["object"])
                 like._video = self
                 
@@ -153,12 +154,12 @@ public class Video: Object {
             }
         }
         
-        if let likeCount = json["likes"]["count"].integer {
+        if let likeCount = json["likes"]["count"].int {
             self.likesCollection.cursor = likeCount
         }
         
         if let mostRecentComments = json["comments"]["results"].array {
-            for jsonComment: JSONValue in mostRecentComments {
+            for jsonComment: JSON in mostRecentComments {
                 var comment = Comment(json: jsonComment["object"])
                 comment._video = self
                 
@@ -166,7 +167,7 @@ public class Video: Object {
             }
         }
         
-        if let commentCount = json["comments"]["count"].integer {
+        if let commentCount = json["comments"]["count"].int {
             self.commentsCollection.count = commentCount
         }
     }

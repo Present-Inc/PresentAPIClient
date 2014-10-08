@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 public enum ActivityType: String {
     case NewComment = "newComment"
@@ -58,7 +59,7 @@ public class Activity: Object {
         return Swell.getLogger("Activity")
     }
     
-    public override init(json: JSONValue) {
+    public override init(json: JSON) {
         if let isUnread = json["isUnread"].bool {
             _unread = isUnread
         }

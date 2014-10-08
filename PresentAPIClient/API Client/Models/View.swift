@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 public class View: Object {
     var user: User
@@ -19,7 +20,7 @@ public class View: Object {
         super.init()
     }
     
-    override init(json: JSONValue) {
+    override init(json: JSON) {
         self.user = User(json: json["sourceUser"])
         self.video = Video(json: json["targetVideo"])
         

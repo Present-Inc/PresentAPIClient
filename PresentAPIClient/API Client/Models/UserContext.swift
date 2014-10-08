@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 let PushNotificationPlatform = "APNS_SANDBOX"
 
@@ -31,7 +32,7 @@ public class UserContext: Object {
         super.init(id: "")
     }
     
-    public override init(json: JSONValue) {
+    public override init(json: JSON) {
         if let token = json["sessionToken"].string {
             sessionToken = token
         }

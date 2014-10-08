@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 public class Like: Object {
     override class var apiResourcePath: String { return "likes" }
@@ -31,7 +32,7 @@ public class Like: Object {
         super.init()
     }
     
-    public override init(json: JSONValue) {
+    public override init(json: JSON) {
         var userId: String? = json["sourceUser"].string
         if userId == nil {
             _user = User(json: json["sourceUser"])
@@ -94,7 +95,7 @@ public extension Like {
             self._logger().debug("JSON Array results: \(jsonArray)")
             
             var likeResults = [Like]()
-            for jsonLike: JSONValue in jsonArray {
+            for jsonLike: JSON in jsonArray {
                 var like = Like(json: jsonLike["object"])
                 like._user = user
                 likeResults.append(like)
