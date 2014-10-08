@@ -7,30 +7,31 @@
 //
 
 import Alamofire
+import SwiftyJSON
 
 // MARK: Alamofire Extensions
 
 typealias AlamofireResponseCompletionBlock = (NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void
 
-typealias APIResourceResponseCompletionBlock = (NSURLRequest, NSHTTPURLResponse?, JSONValue?, NSError?) -> Void
-typealias APICollectionResponseCompletionBlock = (NSURLRequest, NSHTTPURLResponse?, [JSONValue]?, Int?, NSError?) -> Void
+typealias APIResourceResponseCompletionBlock = (NSURLRequest, NSHTTPURLResponse?, JSON?, NSError?) -> Void
+typealias APICollectionResponseCompletionBlock = (NSURLRequest, NSHTTPURLResponse?, [JSON]?, Int?, NSError?) -> Void
 
 internal extension Alamofire.Request {
     func collectionResponseJSON(completionHandler: APICollectionResponseCompletionBlock) -> Self {
-        let completion: AlamofireResponseCompletionBlock = { request, response, JSON, error in
-            var jsonData: JSONValue!,
-                results: [JSONValue]?,
+        let completion: AlamofireResponseCompletionBlock = { request, response, json, error in
+            var jsonData: JSON!,
+                results: [JSON]?,
                 nextCursor: Int!,
                 requestError: NSError?
             
-            if let data: AnyObject = JSON {
-                jsonData = JSONValue(data)
+            if let data: AnyObject = json {
+                jsonData = JSON(data)
                 
                 if error != nil {
                     requestError = self.serializeRequestError(jsonData, error: error!)
                 } else {
                     results = jsonData["results"].array
-                    nextCursor = jsonData["nextCursor"].integer
+                    nextCursor = jsonData["nextCursor"].int
                 }
             }
             
@@ -48,12 +49,12 @@ internal extension Alamofire.Request {
     }
     
     func resourceResponseJSON(completionHandler: APIResourceResponseCompletionBlock) -> Self {
-        let completion: AlamofireResponseCompletionBlock = { request, response, JSON, error in
-            var jsonData: JSONValue!,
+        let completion: AlamofireResponseCompletionBlock = { request, response, json, error in
+            var jsonData: JSON!,
                 requestError: NSError?
             
-            if let data: AnyObject = JSON {
-                jsonData = JSONValue(data)
+            if let data: AnyObject = json {
+                jsonData = JSON(data)
                 
                 if error != nil || response?.statusCode >= 300 {
                     requestError = self.serializeRequestError(jsonData, error: error)
@@ -82,11 +83,11 @@ internal extension Alamofire.Request {
     *
     *  @return NSError with JSON error serialized in userInfo["APIError"]
     */
-    private func serializeRequestError(json: JSONValue?, error: NSError?) -> NSError? {
+    private func serializeRequestError(json: JSON?, error: NSError?) -> NSError? {
         var apiError: Error?,
             requestError: NSError? = error
         
-        if let jsonError: JSONValue = json {
+        if let jsonError: JSON = json {
             apiError = Error(json: jsonError)
         }
         

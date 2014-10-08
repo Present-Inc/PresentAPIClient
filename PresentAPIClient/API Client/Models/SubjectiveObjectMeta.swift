@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Present, Inc. All rights reserved.
 //
 
-import Foundation
+import SwiftyJSON
 
 public class SubjectiveObjectMeta: NSObject {
     public var like: Relation? {
@@ -35,7 +35,7 @@ public class SubjectiveObjectMeta: NSObject {
         super.init()
     }
     
-    public init(json: JSONValue) {
+    public init(json: JSON) {
         _friendship = Relation(json: json["friendship"])
         _like = Relation(json: json["like"])
         _view = Relation(json: json["view"])

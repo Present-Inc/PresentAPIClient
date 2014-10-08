@@ -8,9 +8,10 @@
 
 import UIKit
 import Alamofire
+import SwiftyJSON
 
-public typealias ResourceSuccessBlock = (JSONValue) -> ()
-public typealias CollectionSuccessBlock = ([JSONValue], Int) -> ()
+public typealias ResourceSuccessBlock = (JSON) -> ()
+public typealias CollectionSuccessBlock = ([JSON], Int) -> ()
 public typealias FailureBlock = (NSError?) -> ()
 
 #if DEBUG
@@ -123,7 +124,7 @@ public class APIManager {
             constructingBodyWithBlock: constructingBlock,
             success: { dataTask, response in
                 self.logger.debug("Multi-part POST \(dataTask.response?.URL!) succeeded.")
-                success?(JSONValue("Something Else"))
+                success?(JSON("Something Else"))
             },
             failure: { dataTask, error in
                 self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(error)")

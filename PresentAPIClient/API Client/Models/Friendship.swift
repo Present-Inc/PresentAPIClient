@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 public class Friendship: Object {
     override class var apiResourcePath: String { return "friendships" }
@@ -23,7 +24,7 @@ public class Friendship: Object {
         super.init()
     }
     
-    public override init(json: JSONValue) {
+    public override init(json: JSON) {
         if let sourceUserId = json["sourceUser"].string {
             if sourceUserId == UserSession.currentUser()?.id {
                 self.logger.debug("Setting the current user to the source user")
@@ -64,7 +65,7 @@ public extension Friendship {
             self._logger().debug("Retrieved page \(cursor) of forward friendships. Next cursor is \(nextCursor)")
             
             var forwardFriendships = [Friendship]()
-            for jsonFriendship: JSONValue in jsonArray {
+            for jsonFriendship: JSON in jsonArray {
                 var friendship = Friendship(json: jsonFriendship["object"])
                 friendship.sourceUser = user
                 forwardFriendships.append(friendship)
@@ -94,7 +95,7 @@ public extension Friendship {
             self._logger().debug("Retrieved page \(cursor) of backward friendships. Next cursor is \(nextCursor)")
             
             var backwardFriendships = [Friendship]()
-            for jsonFriendship: JSONValue in jsonArray {
+            for jsonFriendship: JSON in jsonArray {
                 var friendship = Friendship(json: jsonFriendship["object"])
                 friendship.targetUser = user
                 backwardFriendships.append(friendship)

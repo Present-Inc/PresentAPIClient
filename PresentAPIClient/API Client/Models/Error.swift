@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SwiftyJSON
 
 public class Error: NSObject, Printable {
     public var code: Int? {
@@ -39,8 +40,8 @@ public class Error: NSObject, Printable {
         return " {\n\tcode: \(self.code)\n\tdescription: \(self.errorDescription)\n\tmessage: \(self.message)\n\tresult: \(self.result)}"
     }
     
-    init(json: JSONValue) {
-        if let errorCode = json["errorCode"].integer {
+    init(json: JSON) {
+        if let errorCode = json["errorCode"].int {
             _code = errorCode
         }
         

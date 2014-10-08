@@ -8,6 +8,7 @@
 
 import UIKit
 import Accounts
+import SwiftyJSON
 
 public class User: Object {
     override class var apiResourcePath: String { return "users" }
@@ -75,7 +76,7 @@ public class User: Object {
         super.init(id: "")
     }
     
-    public override init(json: JSONValue) {
+    public override init(json: JSON) {
         super.init(json: json["object"])
         
         self.initializeWithObject(json["object"])
@@ -84,7 +85,7 @@ public class User: Object {
         UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: self)
     }
     
-    private func initializeWithObject(json: JSONValue) {
+    private func initializeWithObject(json: JSON) {
         if let admin = json["_isAdmin"].bool {
             self._isAdmin = admin
         }
@@ -97,23 +98,23 @@ public class User: Object {
             self.fullName = fullName
         }
         
-        if let numberOfFriends = json["friends"]["count"].integer {
+        if let numberOfFriends = json["friends"]["count"].int {
             self.friendCount = numberOfFriends
         }
         
-        if let numberOfFollowers = json["followers"]["count"].integer {
+        if let numberOfFollowers = json["followers"]["count"].int {
             self.followerCount = numberOfFollowers
         }
         
-        if let numberOfLikes = json["likes"]["count"].integer {
+        if let numberOfLikes = json["likes"]["count"].int {
             self.likeCount = numberOfLikes
         }
         
-        if let numberOfViews = json["views"]["count"].integer {
+        if let numberOfViews = json["views"]["count"].int {
             self.viewCount = numberOfViews
         }
         
-        if let numberOfVideos = json["videos"]["count"].integer {
+        if let numberOfVideos = json["videos"]["count"].int {
             self.videoCount = numberOfVideos
         }
         

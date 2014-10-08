@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 public class Relation: NSObject {
     public var forward: Bool = false
@@ -23,7 +24,7 @@ public class Relation: NSObject {
         super.init()
     }
     
-    public init(json: JSONValue) {
+    public init(json: JSON) {
         if let forwardJSON = json["forward"].bool {
             forward = forwardJSON
         }

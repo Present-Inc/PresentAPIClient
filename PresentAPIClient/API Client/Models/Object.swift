@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 public class Object: NSObject, ObjectSubclass {
     internal class var apiResourcePath: String { return "" }
@@ -72,7 +73,7 @@ public class Object: NSObject, ObjectSubclass {
         super.init()
     }
     
-    public init(json: JSONValue) {
+    public init(json: JSON) {
         if let createdAt = json["_creationDate"].string {
             _creationDate = NSDate.dateFromISOString(createdAt)
         }

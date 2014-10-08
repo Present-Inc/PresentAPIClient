@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftyJSON
 
 public class Comment: Object {
     override class var apiResourcePath: String { return "comments" }
@@ -41,7 +42,7 @@ public class Comment: Object {
         super.init()
     }
     
-    public override init(json: JSONValue) {
+    public override init(json: JSON) {
         if let bodyString = json["body"].string {
             _body = bodyString
         }
@@ -77,7 +78,7 @@ extension Comment {
             self._logger().debug("JSON Array results: \(jsonArray)")
             
             var commentResults = [Comment]()
-            for jsonComment: JSONValue in jsonArray {
+            for jsonComment: JSON in jsonArray {
                 var comment = Comment(json: jsonComment["object"])
                 comment._video = video
                 commentResults.append(comment)
