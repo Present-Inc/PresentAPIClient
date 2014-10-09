@@ -20,6 +20,7 @@ public class SocialData: NSObject, NSCoding {
     var accountIdentifier: String?
     
     var userId: String?
+    var username: String?
     
     override init() {
         super.init()
