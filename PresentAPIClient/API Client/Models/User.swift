@@ -44,6 +44,14 @@ public class User: Object {
         return _isAdmin
     }
     
+    public var linkedWithFacebook: Bool {
+        return facebookData.accountIdentifier != nil
+    }
+    
+    public var linkedWithTwitter: Bool {
+        return twitterData.accountIdentifier != nil
+    }
+    
     public var isCurrentUser: Bool {
         return self == UserSession.currentUser()
     }
@@ -130,6 +138,12 @@ public class User: Object {
         self.phoneNumber = json["phoneNumber"].string
         self.location = json["profile"]["location"].string
         self.website = json["profile"]["website"].string
+        
+        self.facebookData.userId = json["externalServices"]["facebook"]["userId"].string
+        self.facebookData.username = json["externalServices"]["facebook"]["username"].string
+        
+        self.twitterData.userId = json["externalServices"]["twitter"]["userId"].string
+        self.twitterData.username = json["externalServices"]["twitter"]["username"].string
     }
     
     public override init(coder aDecoder: NSCoder!) {
@@ -147,6 +161,8 @@ public class User: Object {
         phoneNumber = aDecoder.decodeObjectForKey("phoneNumber") as? String
         website = aDecoder.decodeObjectForKey("website") as? String
         _isAdmin = aDecoder.decodeBoolForKey("admin")
+        facebookData = aDecoder.decodeObjectForKey("facebookData") as SocialData
+        twitterData = aDecoder.decodeObjectForKey("twitterData") as SocialData
         
         if let description = aDecoder.decodeObjectForKey("userDescription") as? String {
             userDescription = description
@@ -185,6 +201,8 @@ public class User: Object {
         aCoder.encodeObject(profileImageUrlString, forKey: "profileImageUrlString")
         aCoder.encodeObject(userDescription, forKey: "userDescription")
         aCoder.encodeBool(_isAdmin, forKey: "admin")
+        aCoder.encodeObject(facebookData, forKey: "facebookData")
+        aCoder.encodeObject(twitterData, forKey: "twitterData")
         
         super.encodeWithCoder(aCoder)
     }
