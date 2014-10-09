@@ -44,10 +44,16 @@ public class User: Object {
         return _isAdmin
     }
     
+    /**
+        Indicates whether or not the current user (and only the current user!) is connected with Facebook.
+     */
     public var linkedWithFacebook: Bool {
         return facebookData.accountIdentifier != nil
     }
     
+    /**
+        Indicates whether or not the current user (and only the current user!) is connected with Twitter.
+     */
     public var linkedWithTwitter: Bool {
         return twitterData.accountIdentifier != nil
     }
@@ -139,8 +145,13 @@ public class User: Object {
         self.location = json["profile"]["location"].string
         self.website = json["profile"]["website"].string
         
-        self.facebookData.userId = json["externalServices"]["facebook"]["userId"].string
-        self.facebookData.username = json["externalServices"]["facebook"]["username"].string
+        if let facebookId = json["externalServices"]["facebook"]["userId"].string {
+            self.facebookData.userId = facebookId
+        }
+        
+        if let facebookUsername = json["externalServices"]["facebook"]["username"].string {
+            self.facebookData.username = facebookUsername
+        }
         
         self.twitterData.userId = json["externalServices"]["twitter"]["userId"].string
         self.twitterData.username = json["externalServices"]["twitter"]["username"].string
@@ -161,8 +172,14 @@ public class User: Object {
         phoneNumber = aDecoder.decodeObjectForKey("phoneNumber") as? String
         website = aDecoder.decodeObjectForKey("website") as? String
         _isAdmin = aDecoder.decodeBoolForKey("admin")
-        facebookData = aDecoder.decodeObjectForKey("facebookData") as SocialData
-        twitterData = aDecoder.decodeObjectForKey("twitterData") as SocialData
+        
+        if let facebookData = aDecoder.decodeObjectForKey("facebookData") as? SocialData {
+            self.facebookData = facebookData
+        }
+        
+        if let twitterData = aDecoder.decodeObjectForKey("twitterData") as? SocialData {
+            self.twitterData = twitterData
+        }
         
         if let description = aDecoder.decodeObjectForKey("userDescription") as? String {
             userDescription = description
@@ -201,8 +218,14 @@ public class User: Object {
         aCoder.encodeObject(profileImageUrlString, forKey: "profileImageUrlString")
         aCoder.encodeObject(userDescription, forKey: "userDescription")
         aCoder.encodeBool(_isAdmin, forKey: "admin")
-        aCoder.encodeObject(facebookData, forKey: "facebookData")
-        aCoder.encodeObject(twitterData, forKey: "twitterData")
+        
+        if !facebookData.isEmpty {
+            aCoder.encodeObject(facebookData, forKey: "facebookData")
+        }
+        
+        if !twitterData.isEmpty {
+            aCoder.encodeObject(twitterData, forKey: "twitterData")
+        }
         
         super.encodeWithCoder(aCoder)
     }
@@ -247,10 +270,22 @@ public class User: Object {
 public extension User {
     func updateFacebookAccount(account: ACAccount) {
         self.facebookData = SocialData(account: account)
+        UserSession.currentSession()?.save()
+    }
+    
+    func removeFacebookAccount() {
+        self.facebookData.clear()
+        UserSession.currentSession()?.save()
     }
     
     func updateTwitterAccount(account: ACAccount) {
         self.twitterData = SocialData(account: account)
+        UserSession.currentSession()?.save()
+    }
+    
+    func removeTwitterAccount() {
+        self.twitterData.clear()
+        UserSession.currentSession()?.save()
     }
 }
 
