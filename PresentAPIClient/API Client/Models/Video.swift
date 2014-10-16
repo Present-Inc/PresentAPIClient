@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftyJSON
+import Swell
 
 public class Video: Object {
     override class var apiResourcePath: String { return "videos" }

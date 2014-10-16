@@ -41,7 +41,6 @@ internal extension Alamofire.Request {
         }
         
         return response(
-            priority: 0,
             queue: APIManager.sharedInstance().callbackQueue,
             serializer: Request.JSONResponseSerializer(),
             completionHandler: completion
@@ -67,7 +66,6 @@ internal extension Alamofire.Request {
         }
         
         return response(
-            priority: 0,
             queue: APIManager.sharedInstance().callbackQueue,
             serializer: Request.JSONResponseSerializer(),
             completionHandler: completion

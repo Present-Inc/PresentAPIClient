@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftyJSON
+import Swell
 
 let PushNotificationPlatform = "APNS_SANDBOX"
 

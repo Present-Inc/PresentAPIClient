@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import Swell
 
 public class UserSession: NSObject, NSCoding {
     private let logger = UserSession._logger()

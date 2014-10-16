@@ -8,6 +8,7 @@
 
 import Foundation
 import SwiftyJSON
+import Swell
 
 public enum ActivityType: String {
     case NewComment = "newComment"

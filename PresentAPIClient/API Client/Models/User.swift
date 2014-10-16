@@ -9,6 +9,7 @@
 import UIKit
 import Accounts
 import SwiftyJSON
+import Swell
 
 public class User: Object {
     override class var apiResourcePath: String { return "users" }

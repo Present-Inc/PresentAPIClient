@@ -9,6 +9,7 @@
 import UIKit
 import Alamofire
 import SwiftyJSON
+import Swell
 
 public typealias ResourceSuccessBlock = (JSON) -> ()
 public typealias CollectionSuccessBlock = ([JSON], Int) -> ()
@@ -41,6 +42,7 @@ public class APIManager {
         return _callbackQueue
     }
     
+    private var networkManager: Alamofire.Manager!
     private var multipartManager: AFHTTPRequestOperationManager
     
     class func sharedInstance() -> APIManager {
@@ -61,7 +63,7 @@ public class APIManager {
     }
     
     func setValue(value: String?, forHeaderKey key: String!) {
-        Alamofire.Manager.sharedInstance.defaultHeaders[key] = value
+        //Alamofire.Manager.sharedInstance.defaultHeaders[key] = value
         multipartManager.requestSerializer.setValue(value, forHTTPHeaderField: key)
     }
     

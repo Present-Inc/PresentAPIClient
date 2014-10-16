@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftyJSON
+import Swell
 
 public class Like: Object {
     override class var apiResourcePath: String { return "likes" }
