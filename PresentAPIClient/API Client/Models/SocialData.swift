@@ -12,31 +12,40 @@ public class SocialData: NSObject, NSCoding {
     /**
         Will only be present on the current user
      */
-    var accessGranted: Bool = false
+    public var accessGranted: Bool = false
     
     /**
         Will only be present on the current user
      */
-    var accountIdentifier: String?
+    public var accountIdentifier: String?
     
-    var userId: String?
+    public var userId: String?
+    public var username: String?
     
-    override init() {
+    public var isEmpty: Bool {
+        return accountIdentifier == nil && userId == nil && username == nil
+    }
+    
+    public override var description: String {
+        return "<PresentAPIClient.SocialData> {\n\taccessGranted: \(accessGranted)\n\taccountIdentifier: \(accountIdentifier)\n\tuserId: \(userId)\n\tusername:\(username)\n}"
+    }
+    
+    public override init() {
         super.init()
     }
     
-    init(account: ACAccount) {
-        var accountStore = ACAccountStore()
-        var twitterType = accountStore.accountTypeWithAccountTypeIdentifier(ACAccountTypeIdentifierTwitter)
-        var facebookType = accountStore.accountTypeWithAccountTypeIdentifier(ACAccountTypeIdentifierFacebook)
+    public init(account: ACAccount) {
+        let accountProperties = account.valueForKey("properties") as NSDictionary
         
-        if account.accountType == twitterType {
-            self.userId = account.valueForKey("properties").valueForKey("user_id") as? String
-        } else if account.accountType == facebookType {
-            self.userId = account.valueForKey("properties").valueForKey("uid") as? String
+        if account.accountType.identifier == ACAccountTypeIdentifierTwitter {
+            self.userId = accountProperties["user_id"] as? String
+        } else if account.accountType.identifier == ACAccountTypeIdentifierFacebook {
+            self.userId = accountProperties["uid"] as? String
         }
         
+        self.username = account.username
         self.accountIdentifier = account.identifier
+        self.accessGranted = true
     }
     
     public required init(coder aDecoder: NSCoder) {
@@ -49,6 +58,18 @@ public class SocialData: NSObject, NSCoding {
         if let userId = aDecoder.decodeObjectForKey("userId") as? String {
             self.userId = userId
         }
+        
+        if let username = aDecoder.decodeObjectForKey("username") as? String {
+            self.username = username
+        }
+    }
+    
+    public func clear() {
+        self.userId = nil
+        self.username = nil
+        self.accountIdentifier = nil
+        
+        self.accessGranted = false
     }
     
     public func encodeWithCoder(aCoder: NSCoder) {
@@ -60,6 +81,10 @@ public class SocialData: NSObject, NSCoding {
         
         if self.userId != nil {
             aCoder.encodeObject(userId!, forKey: "userId")
+        }
+        
+        if self.username != nil {
+            aCoder.encodeObject(username!, forKey: "username")
         }
     }
 }

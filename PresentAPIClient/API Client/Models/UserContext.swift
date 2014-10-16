@@ -10,7 +10,11 @@ import UIKit
 import SwiftyJSON
 import Swell
 
+#if DEBUG
 let PushNotificationPlatform = "APNS_SANDBOX"
+#else
+let PushNotificationPlatform = "APNS"
+#endif
 
 public class UserContext: Object {
     override class var apiResourcePath: String { return "user_contexts" }
@@ -65,7 +69,6 @@ public class UserContext: Object {
         var authCredentials: [String: AnyObject] = [
             "username": username,
             "password": password,
-            // This should be part of the DEBUG definition
             "push_notification_platform": PushNotificationPlatform
         ],
         successHandler: ResourceSuccessBlock = { jsonResponse in
