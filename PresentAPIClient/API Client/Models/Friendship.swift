@@ -11,12 +11,9 @@ import SwiftyJSON
 import Swell
 import Alamofire
 
-public typealias FriendshipResourceSuccessBlock = (Friendship) -> ()
-public typealias FriendshipCollectionSuccessBlock = ([Friendship], Int) -> ()
-
 public class Friendship: Object {
-    public private(set) var sourceUser: User!
-    public private(set) var targetUser: User!
+    public private(set) var sourceUser: User
+    public private(set) var targetUser: User
     
     private class var logger: Logger {
         return self._logger("Friendship")
@@ -29,21 +26,15 @@ public class Friendship: Object {
         super.init()
     }
     
-    public init(json: JSON, targetUser: User? = nil, sourceUser: User? = nil) {
-        if let sourceUserId = json["sourceUser"].string {
-            if sourceUserId == UserSession.currentUser()?.id {
-                Friendship.logger.debug("Setting the current user to the source user")
-                self.sourceUser = UserSession.currentUser()
-            }
+    public init(json: JSON, sourceUser: User? = nil, targetUser: User? = nil) {
+        if let sourceUser = sourceUser {
+            self.sourceUser = sourceUser
         } else {
             self.sourceUser = User(json: json["sourceUser"])
         }
         
-        if let targetUserId = json["targetUser"].string {
-            if targetUserId == UserSession.currentUser()?.id {
-                Friendship.logger.debug("Setting the current user to the target user")
-                self.targetUser = UserSession.currentUser()
-            }
+        if let targetUser = targetUser {
+            self.targetUser = targetUser
         } else {
             self.targetUser = User(json: json["targetUser"])
         }
@@ -53,10 +44,14 @@ public class Friendship: Object {
 }
 
 public extension Friendship {
+    // MARK: - Class Resource Methods
+    
     // MARK: Create
     
-    public class func create(targetUserId: String, success: FriendshipResourceSuccessBlock?, failure: FailureBlock?) -> Request {
-        let successHandler: ResourceSuccessBlock = { jsonResponse in
+    class func create(targetUserId: String, success: FriendshipResourceSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship?.forward = true
+            
             let friendship = Friendship(json: jsonResponse["result"]["object"])
             success?(friendship)
         }
@@ -70,8 +65,12 @@ public extension Friendship {
         )
     }
     
-    public class func destroy(targetUserId: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
-        let successHandler: ResourceSuccessBlock = { jsonResponse in
+    // MARK: Destroy
+    
+    class func destroy(targetUserId: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship?.forward = false
+            
             if success != nil {
                 success!()
             }
@@ -88,8 +87,8 @@ public extension Friendship {
     
     // MARK: Forward Friendships
     
-    public class func getForwardFriendships(user: User, cursor: Int? = 0, success: (([Friendship], Int) -> ())?, failure: FailureBlock) -> Request {
-        let successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
+    class func getForwardFriendships(user: User, cursor: Int? = 0, success: FriendshipCollectionSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let forwardFriendships = jsonArray.map { Friendship(json: $0["object"], sourceUser: user) }
             success?(forwardFriendships, nextCursor)
         }
@@ -105,8 +104,8 @@ public extension Friendship {
     
     // MARK: Backward Friendships
     
-    public class func getBackwardFriendships(user: User, cursor: Int? = 0, success: (([Friendship], Int) -> ())?, failure: FailureBlock) -> Request {
-        let successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
+    class func getBackwardFriendships(user: User, cursor: Int? = 0, success: FriendshipCollectionSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let backwardFriendships = jsonArray.map { Friendship(json: $0["object"], targetUser: user) }
             success?(backwardFriendships, nextCursor)
         }
@@ -120,45 +119,24 @@ public extension Friendship {
         )
     }
     
-    // MARK: Instance Methods
+    // MARK: - Instance Resource Methods
     
     // MARK: Friendship Creation
     
-    public func create(success: ((Friendship) -> ())?, failure: FailureBlock) {
-        let successHandler: ResourceSuccessBlock = { jsonResponse in
-            let friendship = Friendship(json: jsonResponse["result"]["object"])
+    func create(success: FriendshipResourceSuccess?, failure: FailureBlock?) -> Request {
+        return Friendship.create(targetUser.id!, success: { friendship in
             self.mergeResultsFromObject(friendship)
             success?(self)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Friendship.createResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+        }, failure: failure)
     }
     
     // MARK: Friendship Destruction
     
-    public func destroy(success: ((Friendship) -> ())?, failure: FailureBlock) {
-        var parameters = [
-            "user_id": self.targetUser.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            self.logger.debug("Successfully destroyed friendship between \(self.sourceUser.username) and \(self.targetUser.username)")
-            success?(self)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Friendship.destroyResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+    func destroy(success: FriendshipResourceSuccess?, failure: FailureBlock?) -> Request {
+        return Friendship.destroy(targetUser.id!, success: {
+            if success != nil {
+                success!(self)
+            }
+        }, failure: failure)
     }
 }

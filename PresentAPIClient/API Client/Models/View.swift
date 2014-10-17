@@ -8,6 +8,7 @@
 
 import UIKit
 import SwiftyJSON
+import Alamofire
 
 public class View: Object {
     var user: User
@@ -29,84 +30,99 @@ public class View: Object {
 }
 
 public extension View {
-    class func listForwardViewsForUser(user: User, cursor: Int = 0, success: (([View], Int) -> ())?, failure: FailureBlock?) {
-        let parameters = [
-            "cursor": cursor,
-            "user_id": user.id as NSString
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            var views = jsonArray.map { View(json: $0["object"]) }
-            success?(views, nextCursor)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .getCollection(
-                View.pathForResource("list_user_forward_views"),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
-    }
+    // MARK: - Class Resource Methods
     
-    class func listBackwardViewsForVideo(video: Video, cursor: Int = 0, success: (([View], Int) -> ())?, failure: FailureBlock?) {
-        let parameters = [
-            "cursor": cursor,
-            "video_id": video.id as NSString
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            var views = jsonArray.map { View(json: $0["object"]) }
-            success?(views, nextCursor)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .getCollection(
-                View.pathForResource("list_video_backward_views"),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
-    }
+    // MARK: Create
     
-    func create(success: ((View) -> ())?, failure: FailureBlock?) {
-        let parameters = [
-            "video_id": video.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            var view = View(json: jsonResponse)
-            self.mergeResultsFromObject(view)
+    class func create(videoId: String, success: ViewResourceSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            UserSession.currentSession()?.getObjectMetaForKey(videoId).view?.forward = true
             
-            success?(self)
+            let view = View(json: jsonResponse)
+            success?(view)
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                View.createResource(),
-                parameters: parameters,
+            .requestResource(
+                ViewRouter.Create(videoId: videoId),
                 success: successHandler,
                 failure: failure
         )
     }
     
-    func destroy(success: ((View) -> ())?, failure: FailureBlock?) {
-        let parameters = [
-            "video_id": self.video.id as NSString
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+    // MARK: Destroy
+    
+    class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            UserSession.currentSession()?.getObjectMetaForKey(videoId).view?.forward = false
+            
             if success != nil {
-                success?(self)
+                success!()
             }
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                View.destroyResource(),
-                parameters: parameters,
+            .requestResource(
+                ViewRouter.Destroy(videoId: videoId),
                 success: successHandler,
                 failure: failure
         )
+    }
+    
+    // MARK: Forward Views For User
+    
+    class func listForwardViewsForUser(user: User, cursor: Int? = 0, success: ViewCollectionSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            let views = jsonArray.map { View(json: $0["object"]) }
+            success?(views, nextCursor)
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestCollection(
+                ViewRouter.ForwardViews(userId: user.id!, cursor: cursor!),
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    // MARK: Backward Views For Video
+    
+    class func listBackwardViewsForVideo(video: Video, cursor: Int? = 0, success: ViewCollectionSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            var views = jsonArray.map { View(json: $0["object"]) }
+            success?(views, nextCursor)
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestCollection(
+                ViewRouter.BackwardViews(videoId: video.id!, cursor: cursor!),
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    // MARK: - Instance Resource Methods
+    
+    // MARK: Create
+    
+    func create(success: ViewResourceSuccess?, failure: FailureBlock?) -> Request {
+        return View.create(video.id!, success: { view in
+            self.mergeResultsFromObject(view)
+            success?(self)
+        }, failure: failure)
+    }
+    
+    // MARK: Destroy
+    
+    func destroy(success: ViewResourceSuccess?, failure: FailureBlock?) -> Request {
+        return View.destroy(video.id!, success: {
+            if success != nil {
+                success!(self)
+            }
+        }, failure: failure)
     }
 }

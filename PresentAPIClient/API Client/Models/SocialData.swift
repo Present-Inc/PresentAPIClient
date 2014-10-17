@@ -8,22 +8,22 @@
 
 import Accounts
 
+/**
+    A class to represent a user's linked social accounts
+ */
 public class SocialData: NSObject, NSCoding {
-    /**
-        Will only be present on the current user
-     */
-    public var accessGranted: Bool = false
+    public private(set) var accessGranted: Bool = false
     
-    /**
-        Will only be present on the current user
-     */
-    public var accountIdentifier: String?
+    public private(set) var accountIdentifier: String?
     
-    public var userId: String?
-    public var username: String?
+    public private(set) var accessToken: String?
+    public private(set) var expirationDate: NSDate?
+    
+    public private(set) var userId: String?
+    public private(set) var username: String?
     
     public var isEmpty: Bool {
-        return accountIdentifier == nil && userId == nil && username == nil
+        return ((accountIdentifier == nil || accessToken == nil) && userId == nil && username == nil)
     }
     
     public override var description: String {
@@ -34,6 +34,9 @@ public class SocialData: NSObject, NSCoding {
         super.init()
     }
     
+    /**
+        Initializes `SocialData` with `account`
+     */
     public init(account: ACAccount) {
         let accountProperties = account.valueForKey("properties") as NSDictionary
         
@@ -48,11 +51,28 @@ public class SocialData: NSObject, NSCoding {
         self.accessGranted = true
     }
     
+    /**
+        Initializes `SocialData` with an username, user id, an oAuth access token, and and expiration date.
+     */
+    public init(username: String, userId: String, accessToken: String? = nil, expirationDate: NSDate? = nil) {
+        self.username = username
+        self.userId = userId
+        
+        self.accessToken = accessToken
+        self.expirationDate = expirationDate
+        
+        self.accessGranted = true
+    }
+    
     public required init(coder aDecoder: NSCoder) {
         accessGranted = aDecoder.decodeBoolForKey("accessGranted")
         
         if let identifier = aDecoder.decodeObjectForKey("accountIdentifier") as? String {
             self.accountIdentifier = identifier
+        }
+        
+        if let accessToken = aDecoder.decodeObjectForKey("accessToken") as? String {
+            self.accessToken = accessToken
         }
         
         if let userId = aDecoder.decodeObjectForKey("userId") as? String {
@@ -62,14 +82,6 @@ public class SocialData: NSObject, NSCoding {
         if let username = aDecoder.decodeObjectForKey("username") as? String {
             self.username = username
         }
-    }
-    
-    public func clear() {
-        self.userId = nil
-        self.username = nil
-        self.accountIdentifier = nil
-        
-        self.accessGranted = false
     }
     
     public func encodeWithCoder(aCoder: NSCoder) {
@@ -86,5 +98,16 @@ public class SocialData: NSObject, NSCoding {
         if self.username != nil {
             aCoder.encodeObject(username!, forKey: "username")
         }
+    }
+    
+    /**
+        Clears the social data from self.
+     */
+    public func clear() {
+        self.userId = nil
+        self.username = nil
+        self.accountIdentifier = nil
+        
+        self.accessGranted = false
     }
 }

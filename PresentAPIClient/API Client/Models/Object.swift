@@ -20,7 +20,7 @@ public class Object: NSObject, ObjectSubclass {
     }
     
     public private(set) var id: String?
-    public private(set) var creationDate: NSDate
+    public private(set) var creationDate: NSDate = NSDate()
     public private(set) var lastUpdatedDate: NSDate?
     
     class func _logger(var name: String?) -> Logger {
@@ -32,14 +32,11 @@ public class Object: NSObject, ObjectSubclass {
     }
     
     public override init() {
-        creationDate = NSDate()
         super.init()
     }
     
     public init(id: String) {
         self.id = id
-        creationDate = NSDate()
-        
         super.init()
     }
     

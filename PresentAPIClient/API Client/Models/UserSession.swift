@@ -22,7 +22,7 @@ public class UserSession: NSObject, NSCoding {
     }
     }
 
-    private struct Static {
+    private struct Singleton {
         static var instance: UserSession? = nil
     }
     
@@ -45,11 +45,11 @@ public class UserSession: NSObject, NSCoding {
     // MARK: Class Methods
 
     public class func currentSession() -> UserSession? {
-        if Static.instance == nil {
+        if Singleton.instance == nil {
             self.setCurrentSession(self.loadSession())
         }
 
-        return Static.instance
+        return Singleton.instance
     }
 
     public class func currentUser() -> User? {
@@ -73,11 +73,11 @@ public class UserSession: NSObject, NSCoding {
 
     public class func register(user: User, success: ((UserContext) -> ())?, failure: FailureBlock?) {
         user.create({ createdUser in
-            self.login(createdUser.username, password: createdUser.password, success: success, failure: failure)
+            self.login(createdUser.username, password: createdUser.password!, success: success, failure: failure)
             }, failure: failure)
     }
     
-    public class func logOut(completion: ((NSError?) -> ())? = nil) {
+    public class func logOut(completion: FailureBlock? = nil) {
         self._logger().debug("Logging out the current user")
 
         UserContext.logOut { result in
@@ -93,7 +93,7 @@ public class UserSession: NSObject, NSCoding {
             let logger = self._logger()
             logger.debug("Setting current session to: \(session!)")
 
-            Static.instance = session!
+            Singleton.instance = session!
 
             if self.currentSession()?.save() == true {
                 logger.debug("Successfully saved current session.")
@@ -106,7 +106,7 @@ public class UserSession: NSObject, NSCoding {
         }
     }
 
-    internal class func loadSession() -> UserSession? {
+    private class func loadSession() -> UserSession? {
         return PFileManager.loadObjectFromLocation("UserSession", inSearchPathDirectory: .DocumentDirectory) as? UserSession
     }
     
@@ -121,28 +121,39 @@ public class UserSession: NSObject, NSCoding {
             aCoder.encodeObject(context!, forKey: "userContext")
         }
     }
+}
 
-    public func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forObject object: Object) {
+// MARK: - Subjective Object Meta and Relations
+
+public extension UserSession {
+    
+    // MARK: Storing Object Meta
+    
+    func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forObject object: Object) {
         if let key = object.id {
             self.storeObjectMeta(objectMeta, forKey: key)
         }
     }
     
-    public func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forKey key: String) {
+    func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forKey key: String) {
         self.relationStore.store(objectMeta, forKey: key)
     }
-
-    public func getObjectMetaForObject(object: Object) -> SubjectiveObjectMeta? {
-        if let objectId = object.id {
-            let subjectiveObjectMeta = SubjectiveObjectMeta(
-                like: self.relationStore.getLike(objectId),
-                friendship: self.relationStore.getFriendship(objectId),
-                view: self.relationStore.getView(objectId)
-            )
-
-            return subjectiveObjectMeta
+    
+    // MARK: Retrieving Object Meta
+    
+    func getObjectMetaForObject(object: Object) -> SubjectiveObjectMeta? {
+        if !object.isNew {
+            return getObjectMetaForKey(object.id!)
         }
         
         return nil
+    }
+    
+    func getObjectMetaForKey(key: String) -> SubjectiveObjectMeta {
+        return SubjectiveObjectMeta(
+            like: self.relationStore.getLike(key),
+            friendship: self.relationStore.getFriendship(key),
+            view: self.relationStore.getView(key)
+        )
     }
 }

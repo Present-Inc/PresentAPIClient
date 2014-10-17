@@ -54,10 +54,8 @@ public class Comment: Object {
 extension Comment {
     // MARK: Class Methods
     
-    public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: (([Comment], Int) -> ())?, failure: FailureBlock) -> Request {
-        let successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            self.logger.debug("JSON Array results: \(jsonArray)")
-            
+    public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: CommentCollectionSuccess?, failure: FailureBlock) -> Request {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let commentResults = jsonArray.map { Comment(json: $0["object"], video: video) }
             success?(commentResults, nextCursor)
         }
@@ -71,7 +69,7 @@ extension Comment {
         )
     }
     
-    public class func getCommentWithId(id: String, success: ((Comment) -> ())?, failure: FailureBlock) -> Request {
+    public class func getCommentWithId(id: String, success: CommentResourceSuccess?, failure: FailureBlock) -> Request {
         return APIManager
             .sharedInstance()
             .requestResource(
@@ -83,29 +81,23 @@ extension Comment {
     
     // MARK: Instance Methods
     
-    public func create(success: ((Comment) -> ())?, failure: FailureBlock?) -> Request {
+    public func create(success: CommentResourceSuccess?, failure: FailureBlock?) -> Request {
         if body.isEmpty {
             let error = NSError(domain: "CommentErrorDomain", code: 100, userInfo: [NSLocalizedDescriptionKey: "Comment body is empty."])
             failure?(error)
-        }
-        
-        let successHandler: ResourceSuccessBlock = { jsonResponse in
-            let commentResponse = Comment(json: jsonResponse["object"])
-            self.mergeResultsFromObject(commentResponse)
-            success?(self)
         }
         
         return APIManager
             .sharedInstance()
             .requestResource(
                 CommentRouter.Create(videoId: video.id!, body: body),
-                success: successHandler,
+                success: instanceSuccessWithCompletion(success),
                 failure: failure
         )
     }
     
-    public func destroy(success: ((Comment) -> ())?, failure: FailureBlock?) -> Request {
-        let successHandler: ResourceSuccessBlock = { jsonResponse in
+    public func destroy(success: CommentResourceSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { jsonResponse in
             if success != nil {
                 success!(self)
             }
@@ -120,18 +112,12 @@ extension Comment {
         )
     }
     
-    public func updateBody(newBody: String, success:((Comment) -> ())?, failure: FailureBlock?) -> Request {
-        let successHandler: ResourceSuccessBlock = { jsonResponse in
-            let commentResponse = Comment(json: jsonResponse["object"])
-            self.mergeResultsFromObject(commentResponse)
-            success?(self)
-        }
-        
+    public func updateBody(newBody: String, success: CommentResourceSuccess?, failure: FailureBlock?) -> Request {
         return APIManager
             .sharedInstance()
             .requestResource(
                 CommentRouter.Update(commentId: self.id!, body: self.body),
-                success: successHandler,
+                success: instanceSuccessWithCompletion(success),
                 failure: failure
         )
     }
@@ -139,17 +125,31 @@ extension Comment {
 
 // MARK: Serialization
 private extension Comment {
-    class func resourceSuccessWithCompletion(completion: ((Comment) -> ())?) -> ResourceSuccessBlock {
+    
+    // MARK: Class Level
+    
+    class func resourceSuccessWithCompletion(completion: CommentResourceSuccess?) -> ResourceSuccess {
         return { jsonResponse in
             var comment = Comment(json: jsonResponse["object"])
             completion?(comment)
         }
     }
     
-    class func collectionSuccessWithCompletion(completion: (([Comment], Int) -> ())?) -> CollectionSuccessBlock {
+    class func collectionSuccessWithCompletion(completion: CommentCollectionSuccess?) -> CollectionSuccess {
         return { jsonArray, nextCursor in
             var commentResults = jsonArray.map { Comment(json: $0["object"]) }
             completion?(commentResults, nextCursor)
         }
     }
+    
+    // MARK: Instance Level
+    
+    func instanceSuccessWithCompletion(completion: CommentResourceSuccess?) -> ResourceSuccess {
+        return { jsonResponse in
+            let commentResponse = Comment(json: jsonResponse["object"])
+            self.mergeResultsFromObject(commentResponse)
+            completion?(self)
+        }
+    }
+    
 }

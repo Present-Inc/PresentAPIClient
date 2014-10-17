@@ -8,7 +8,7 @@
 
 import Foundation
 
-@objc protocol ObjectSubclass {
+protocol ObjectSubclass {
     /**
         Used to merge to Object's together.
      */

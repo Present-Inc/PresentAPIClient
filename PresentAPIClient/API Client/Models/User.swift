@@ -10,77 +10,59 @@ import UIKit
 import Accounts
 import SwiftyJSON
 import Swell
+import Alamofire
 
 public class User: Object {
-    public var username: String {
-        return _username
-    }
+    public private(set) var username: String!
+    public private(set) var password: String?
+    public private(set) var fullName: String = "No Name"
+    public private(set) var email: String?
+    public private(set) var userDescription: String = "No description yet."
     
-    public var password: String!
-    public var fullName: String! = "No Name"
-    public var email: String?
+    public private(set) var website: String?
+    public private(set) var location: String?
+    public private(set) var phoneNumber: String?
+    
+    public private(set) var friendCount: Int = 0
+    public private(set) var followerCount: Int = 0
+    public private(set) var viewCount: Int = 0
+    public private(set) var likeCount: Int = 0
+    public private(set) var videoCount: Int = 0
+    
+    public private(set) var isAdmin: Bool = false
+    
+    public private(set) var facebookData: SocialData = SocialData()
+    public private(set) var twitterData: SocialData = SocialData()
     
     public var profileImageUrl: NSURL {
         return NSURL(string: self.profileImageUrlString)
     }
     
-    public var userDescription: String = "No description yet."
-    
-    public var website: String?
-    public var location: String?
-    public var phoneNumber: String?
-    
-    public var friendCount: Int = 0
-    public var followerCount: Int = 0
-    public var viewCount: Int = 0
-    public var likeCount: Int = 0
-    public var videoCount: Int = 0
-    
-    public lazy var facebookData: SocialData = SocialData()
-    public lazy var twitterData: SocialData = SocialData()
-    
-    public var isAdmin: Bool {
-        return _isAdmin
-    }
-    
-    /**
-        Indicates whether or not the current user (and only the current user!) is connected with Facebook.
-     */
     public var linkedWithFacebook: Bool {
-        return facebookData.accountIdentifier != nil
+        return facebookData.accessGranted
     }
-    
-    /**
-        Indicates whether or not the current user (and only the current user!) is connected with Twitter.
-     */
+
     public var linkedWithTwitter: Bool {
-        return twitterData.accountIdentifier != nil
+        return twitterData.accessGranted
     }
     
     public var isCurrentUser: Bool {
         return self == UserSession.currentUser()
     }
     
-    public var videos: [Video] {
-        return videosCollection.collection
+    public var isFollowed: Bool {
+        return UserSession.currentSession()?.getObjectMetaForObject(self)?.friendship?.forward ?? false
     }
     
-    public var videosCursor: Int {
-        return videosCollection.cursor
-    }
+    private var profileImageUrlString: String = "https://user-assets.present.tv/profile-pictures/default.png"
+    private var subjectiveObjectMeta: SubjectiveObjectMeta!
     
     private class var logger: Logger {
         return User._logger("User")
     }
-    
-    private var _isAdmin: Bool = false
-    private var _username: String!
-    private var profileImageUrlString: String = "https://user-assets.present.tv/profile-pictures/default.png"
-    
-    private lazy var videosCollection = CursoredCollection<Video>()
 
     public init(username: String, password: String, fullName: String, email: String) {
-        self._username = username
+        self.username = username
         self.password = password
         self.fullName = fullName
         self.email = email
@@ -93,17 +75,17 @@ public class User: Object {
         
         self.initializeWithObject(json["object"])
         
-        let objectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
-        UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: self)
+        self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
+        UserSession.currentSession()?.storeObjectMeta(self.subjectiveObjectMeta, forKey: self.id!)
     }
     
     private func initializeWithObject(json: JSON) {
         if let admin = json["_isAdmin"].bool {
-            self._isAdmin = admin
+            self.isAdmin = admin
         }
         
         if let username = json["displayUsername"].string {
-            self._username = username
+            self.username = username
         }
         
         if let fullName = json["profile"]["fullName"].string {
@@ -143,23 +125,24 @@ public class User: Object {
         self.location = json["profile"]["location"].string
         self.website = json["profile"]["website"].string
         
-        if let facebookId = json["externalServices"]["facebook"]["userId"].string {
-            self.facebookData.userId = facebookId
+        let facebookId: String? = json["externalServices"]["facebook"]["userId"].string
+        let facebookUsername: String? = json["externalServices"]["facebook"]["username"].string
+        
+        if facebookId != nil && facebookUsername != nil {
+            self.facebookData = SocialData(username: facebookUsername!, userId: facebookId!)
         }
         
-        if let facebookUsername = json["externalServices"]["facebook"]["username"].string {
-            self.facebookData.username = facebookUsername
-        }
+        let twitterId: String? = json["externalServices"]["twitter"]["userId"].string
+        let twitterUsername: String? = json["externalServices"]["twitter"]["username"].string
         
-        self.twitterData.userId = json["externalServices"]["twitter"]["userId"].string
-        self.twitterData.username = json["externalServices"]["twitter"]["username"].string
+        if twitterId != nil && twitterUsername != nil {
+            self.twitterData = SocialData(username: twitterUsername!, userId: twitterId!)
+        }
     }
     
     public override init(coder aDecoder: NSCoder!) {
-        super.init(coder: aDecoder)
-        
-        _username = aDecoder.decodeObjectForKey("username") as? String
-        fullName = aDecoder.decodeObjectForKey("fullName") as? String
+        username = aDecoder.decodeObjectForKey("username") as String
+        fullName = aDecoder.decodeObjectForKey("fullName") as String
         email = aDecoder.decodeObjectForKey("email") as? String
         friendCount = aDecoder.decodeObjectForKey("friendCount") as Int
         followerCount = aDecoder.decodeObjectForKey("followerCount") as Int
@@ -169,14 +152,14 @@ public class User: Object {
         location = aDecoder.decodeObjectForKey("location") as? String
         phoneNumber = aDecoder.decodeObjectForKey("phoneNumber") as? String
         website = aDecoder.decodeObjectForKey("website") as? String
-        _isAdmin = aDecoder.decodeBoolForKey("admin")
+        isAdmin = aDecoder.decodeBoolForKey("admin")
         
-        if let facebookData = aDecoder.decodeObjectForKey("facebookData") as? SocialData {
-            self.facebookData = facebookData
+        if let facebook = aDecoder.decodeObjectForKey("facebookData") as? SocialData {
+            facebookData = facebook
         }
         
-        if let twitterData = aDecoder.decodeObjectForKey("twitterData") as? SocialData {
-            self.twitterData = twitterData
+        if let twitter = aDecoder.decodeObjectForKey("twitterData") as? SocialData {
+            twitterData = twitter
         }
         
         if let description = aDecoder.decodeObjectForKey("userDescription") as? String {
@@ -186,10 +169,12 @@ public class User: Object {
         if let urlString = aDecoder.decodeObjectForKey("profileImageUrlString") as? String {
             profileImageUrlString = urlString
         }
+        
+        super.init(coder: aDecoder)
     }
     
     public override func encodeWithCoder(aCoder: NSCoder!) {
-        aCoder.encodeObject(_username, forKey: "username")
+        aCoder.encodeObject(username, forKey: "username")
         aCoder.encodeObject(fullName, forKey: "fullName")
         
         if email != nil {
@@ -215,7 +200,7 @@ public class User: Object {
         aCoder.encodeObject(videoCount, forKey: "videoCount")
         aCoder.encodeObject(profileImageUrlString, forKey: "profileImageUrlString")
         aCoder.encodeObject(userDescription, forKey: "userDescription")
-        aCoder.encodeBool(_isAdmin, forKey: "admin")
+        aCoder.encodeBool(isAdmin, forKey: "admin")
         
         if !facebookData.isEmpty {
             aCoder.encodeObject(facebookData, forKey: "facebookData")
@@ -265,12 +250,6 @@ public class User: Object {
     }
 }
 
-private extension User {
-    class func _logger() {
-        super._logger("User")
-    }
-}
-
 public extension User {
     func updateFacebookAccount(account: ACAccount) {
         self.facebookData = SocialData(account: account)
@@ -302,73 +281,28 @@ public enum UserBatchSearchType: String {
     case PhoneNumbers = "phone_numbers"
 }
 
-extension User {
-    // MARK: Fetch Users
+public extension User {
     
-    public class func getTeam(success: (([User]) -> ())?, failure: FailureBlock?) {
-        var successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            var teamUsers = jsonArray.map { User(json: $0) }
-            success?(teamUsers)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .getCollection(
-                self.pathForResource("list_team_users"),
-                parameters: nil,
-                success: successHandler,
-                failure: failure
-        )
+    class func getUserWithUsername(username: String, success: UserResourceSuccess?, failure: FailureBlock?) -> Request {
+        return getUserWithParameters(username: username, success: success, failure: failure)
     }
     
-    public class func getUserWithUsername(username: String, success: ((User) -> ())?, failure: FailureBlock?) {
-        self.getUserWithParameters(["username": username], success: success, failure: failure)
-    }
-    
-    public class func getUserWithId(id: String, success: ((User) -> ())?, failure: FailureBlock?) {
-        self.getUserWithParameters(["user_id": id], success: success, failure: failure)
-    }
-    
-    private class func getUserWithParameters(parameters: [String: NSObject], success: ((User) -> ())?, failure: FailureBlock?) {
-        var successHandler: ResourceSuccessBlock = { jsonResponse in
-            var user = User(json: jsonResponse["result"])
-            success?(user)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .getResource(
-                self.showResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+    class func getUserWithId(id: String, success: ((User) -> ())?, failure: FailureBlock?) -> Request {
+        return getUserWithParameters(id: id, success: success, failure: failure)
     }
     
     // MARK: Search Users
-    
-    /**
-        Searches for users who are on Present.
-    
-        :param: parameters A dictionary containing subarrays to search. The keys for the dictionary must be valid UserBatchSearchType.
-        :param: cursor The cursor to use for the search.
-        :param: success The block to call on success.
-        :param: failure The block to call on failure.
-     */
-    public class func batchSearch(parameters: [UserBatchSearchType: [String]], cursor: Int? = 0, success: (([User], Int) -> ())?, failure: FailureBlock?) {
-        var successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
+
+    class func batchSearch(parameters: [UserBatchSearchType: [String]], cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             var users = jsonArray.map { User(json: $0) }
             success?(users, nextCursor)
-        },
-        requestParameters: [String: AnyObject] = [
-            "cursor": cursor!
-        ]
+        }
         
+        var requestParameters = [String: [String]]()
         for (key, value) in parameters {
             requestParameters[key.toRaw()] = value
         }
-        
-        self.logger.debug("Batch searching for page \(cursor) of Users on Present.")
         
         // ???: This is for elasticsearch
 //        var queryString = ""
@@ -384,35 +318,25 @@ extension User {
         
 //        requestParameters["query"] = queryString
         
-        println(requestParameters)
-        
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postCollection(
-                self.pathForResource("batch_search"),
-                parameters: requestParameters,
+            .requestCollection(
+                UserRouter.BatchSearch(parameters: requestParameters),
                 success: successHandler,
                 failure: failure
-            )
+        )
     }
     
-    public class func search(queryString: String, cursor: Int? = 0, success: (([User], Int) -> ())?, failure: FailureBlock?) {
-        var successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            var userResults = jsonArray.map { User(json: $0) }
+    class func search(queryString: String, cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            let userResults = jsonArray.map { User(json: $0) }
             success?(userResults, nextCursor)
-        },
-        parameters = [
-            "cursor": cursor!,
-            "query": "username:*\(queryString)* OR profile.fullName:*\(queryString)*" as NSString
-        ]
-        
-        self.logger.debug("Searching for page \(cursor) of \"\(queryString)\" results")
-        
-        APIManager
+        }
+
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                self.searchResource(),
-                parameters: parameters,
+            .requestCollection(
+                UserRouter.Search(query: queryString, cursor: cursor!),
                 success: successHandler,
                 failure: failure
         )
@@ -420,21 +344,17 @@ extension User {
     
     // MARK: Password Reset
     
-    public class func requestPasswordReset(email: String, success: (() -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "email": email
-        ],
-        successHandler: ResourceSuccessBlock = { _ in
+    class func requestPasswordReset(email: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { _ in
             if success != nil {
                 success!()
             }
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                self.pathForResource("request_password_reset"),
-                parameters: parameters,
+            .requestResource(
+                UserRouter.RequestPasswordReset(email: email),
                 success: successHandler,
                 failure: failure
         )
@@ -442,41 +362,26 @@ extension User {
     
     // MARK: Fetch User
     
-    public func fetch(success: ((User) -> ())? = nil, failure: FailureBlock? = nil) {
-        User.getUserWithId(self.id, success: { user in
+    func fetch(success: UserResourceSuccess? = nil, failure: FailureBlock? = nil) -> Request {
+        return User.getUserWithId(self.id!, success: { user in
             self.mergeResultsFromObject(user)
             success?(user)
-            }, failure: failure)
+        }, failure: failure)
     }
     
     // MARK: Create
     
-    public func create(success: ((User) -> ())?, failure: FailureBlock?) {
-        if !self.id.isEmpty {
-            failure?(nil)
-        }
-        
-        var parameters = [
-            "username": self.username as NSString,
-            "password": self.password as NSString,
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            self.logger.debug("Successfully created user")
-            
-            var user = User(json: jsonResponse)
+    func create(success: UserResourceSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            let user = User(json: jsonResponse)
             self.mergeResultsFromObject(user)
             success?(self)
         }
         
-        if let email = self.email {
-            parameters["email"] = email as NSString
-        }
-        
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                User.createResource(),
-                parameters: parameters,
+            .requestResource(
+                UserRouter.Create(username: username, password: password!, email: email!),
                 success: successHandler,
                 failure: failure
         )
@@ -484,53 +389,83 @@ extension User {
     
     // MARK: Update
     
-    public func update(properties: [String: String], success: ((User) -> ())?, failure: FailureBlock?) {
-        var successHandler: ResourceSuccessBlock = { jsonResponse in
-            self.logger.debug("Successfully updated user: \(jsonResponse)")
-            var user = User(json: jsonResponse["result"])
+    func update(properties: [String: String], success: UserResourceSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            let user = User(json: jsonResponse["result"])
             self.mergeResultsFromObject(user)
             success?(self)
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                User.updateResource(),
-                parameters: properties as [String: AnyObject],
+            .requestResource(
+                UserRouter.Update(properties: properties),
                 success: successHandler,
                 failure: failure
         )
     }
+}
+
+// MARK: Convenience Methods
+
+public extension User {
+    // MARK: Followers
     
-    // MARK: Friendships
-    
-    public func getFollowers(success: (([User], Int) -> ())?, failure: FailureBlock?) {
-        // TODO: Use the Friendships.getBackwardFriendships() method
+    func getFollowers(cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> Request {
+        return Friendship.getBackwardFriendships(self, cursor: cursor, success: { friendships, nextCursor in
+            let followers = friendships.map { $0.sourceUser }
+            success?(followers, nextCursor)
+        }, failure: failure)
     }
     
-    public func getFriends(success: (([User], Int) -> ())?, failure: FailureBlock?) {
-        // TODO: Use the Friendships.getForwardFriendships() method
+    // MARK: Friends
+    
+    func getFriends(cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> Request {
+        return Friendship.getForwardFriendships(self, cursor: cursor, success: { friendships, nextCursor in
+            let friends = friendships.map { $0.targetUser }
+            success?(friends, nextCursor)
+        }, failure: failure)
     }
     
     // MARK: Likes
     
-    public func getLikes(success: (([Like], Int) -> ())?, failure: FailureBlock?) {
-        // TODO: Use the Likes.getLikesForUser() method
-        //Like.getForwardLikes(self, cursor: self.likesCursor, success: <#(([Like], Int) -> ())?##([Like], Int) -> ()#>, failure: <#FailureBlock?##(NSError?) -> ()#>)
+    func getLikes(cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> Request {
+        return Like.getForwardLikes(self, cursor: cursor, success: { likes, nextCursor in
+            let likedVideos = likes.map { $0.video }
+            success?(likedVideos, nextCursor)
+        }, failure: failure)
     }
     
     // MARK: Videos
     
-    public func getVideos(success: (([Video], Int) -> ())?, failure: FailureBlock?) {
-        Video.getVideosForUser(self, cursor: self.videosCursor, success: { videos, nextCursor in
-            self.videosCollection.addObjects(videos)
-            self.videosCollection.cursor = nextCursor
-            
-            success?(videos, nextCursor)
-            }, failure: { error in
-                self.logger.error("Failed to get videos for user: \(self)")
-                failure?(error)
-        })
+    func getVideos(cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> Request {
+        return Video.getVideosForUser(self, cursor: cursor, success: success, failure: failure)
     }
+}
 
+// MARK: Private Convenience
+
+private extension User {
+    class func getUserWithParameters(username: String? = nil, id: String? = nil, success: UserResourceSuccess?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            let user = User(json: jsonResponse["result"])
+            success?(user)
+        }
+        
+        let requestConvertible: URLRequestConvertible = {
+            if username != nil {
+                return UserRouter.UserForUsername(username: username!)
+            } else {
+                return UserRouter.UserForId(id: id!)
+            }
+        }()
+        
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                requestConvertible,
+                success: successHandler,
+                failure: failure
+        )
+    }
 }

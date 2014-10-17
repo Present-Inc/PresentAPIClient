@@ -9,36 +9,26 @@
 import SwiftyJSON
 
 public class SubjectiveObjectMeta: NSObject {
-    public var like: Relation? {
-        return _like
-    }
-    public var friendship: Relation? {
-        return _friendship
-    }
-    public var view: Relation? {
-        return _view
-    }
-    
-    private var _like: Relation? = nil
-    private var _friendship: Relation? = nil
-    private var _view: Relation? = nil
+    public private(set) var like: Relation?
+    public private(set) var friendship: Relation?
+    public private(set) var view: Relation?
     
     public override init() {
         super.init()
     }
     
     public init(like: Relation? = nil, friendship: Relation? = nil, view: Relation? = nil) {
-        _like = like
-        _friendship = friendship
-        _view = view
+        self.like = like
+        self.friendship = friendship
+        self.view = view
         
         super.init()
     }
     
     public init(json: JSON) {
-        _friendship = Relation(json: json["friendship"])
-        _like = Relation(json: json["like"])
-        _view = Relation(json: json["view"])
+        self.friendship = Relation(json: json["friendship"])
+        self.like = Relation(json: json["like"])
+        self.view = Relation(json: json["view"])
         
         super.init()
     }
