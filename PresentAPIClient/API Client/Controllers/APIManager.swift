@@ -11,6 +11,7 @@ import Alamofire
 import SwiftyJSON
 import Swell
 
+public typealias VoidBlock = () -> ()
 public typealias ResourceSuccessBlock = (JSON) -> ()
 public typealias CollectionSuccessBlock = ([JSON], Int) -> ()
 public typealias FailureBlock = (NSError?) -> ()
@@ -26,7 +27,7 @@ public typealias FailureBlock = (NSError?) -> ()
 let Version = "2014-09-09"
 
 // !!!: This will only post to the staging API!
-let baseURL = NSURL(string:"http://api-staging.present.tv/\(apiVersion)/")
+//let baseURL = NSURL(string:"http://api-staging.present.tv/\(apiVersion)/")
 
 let PresentVersionHeader = "Present-Version"
 let SessionTokenHeader = "Present-User-Context-Session-Token"
@@ -42,7 +43,8 @@ public class APIManager {
         return _callbackQueue
     }
     
-    private var networkManager: Alamofire.Manager!
+    private var headers: [String: String] = [:]
+    private var manager: Alamofire.Manager!
     private var multipartManager: AFHTTPRequestOperationManager
     
     class func sharedInstance() -> APIManager {
@@ -60,9 +62,18 @@ public class APIManager {
         self.multipartManager.responseSerializer = AFJSONResponseSerializer()
         
         self.setValue(Version, forHeaderKey: PresentVersionHeader)
+        self.configureManager()
+    }
+    
+    func configureManager() {
+        let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
+        configuration.HTTPAdditionalHeaders = headers
+        
+        self.manager = Alamofire.Manager(configuration: configuration)
     }
     
     func setValue(value: String?, forHeaderKey key: String!) {
+        headers[key] = value
         //Alamofire.Manager.sharedInstance.defaultHeaders[key] = value
         multipartManager.requestSerializer.setValue(value, forHTTPHeaderField: key)
     }
@@ -84,31 +95,35 @@ public class APIManager {
     func setUserContextHeaders(userContext: UserContext) {
         self.setValue(userContext.sessionToken, forHeaderKey: SessionTokenHeader)
         self.setValue(userContext.user.id, forHeaderKey: UserIdHeader)
+        
+        self.configureManager()
     }
     
     func clearUserContextHeaders() {
         self.setValue(nil, forHeaderKey: SessionTokenHeader)
         self.setValue(nil, forHeaderKey: UserIdHeader)
+
+        self.configureManager()
     }
     
     // MARK: GET
     
-    func getResource(resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        self.requestResource(.GET, resource: resource, parameters: parameters, success: success, failure: failure)
+    func requestResource(request: URLRequestConvertible, success: ResourceSuccessBlock, failure: FailureBlock?) -> Alamofire.Request {
+        var request = manager.request(request).validate(statusCode: 200...299)
+        request.resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
+        
+        debugPrintln(request)
+        
+        return request
     }
     
-    func getCollection(resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
-        self.requestCollection(.GET, resource: resource, parameters: parameters, success: success, failure: failure)
-    }
-    
-    // MARK: POST
-    
-    func postResource(resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
-        self.requestResource(.POST, resource: resource, parameters: parameters, success: success, failure: failure)
-    }
-    
-    func postCollection(resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
-        self.requestCollection(.POST, resource: resource, parameters: parameters, success: success, failure: failure)
+    func requestCollection(request: URLRequestConvertible, success: CollectionSuccessBlock, failure: FailureBlock?) -> Alamofire.Request {
+        var request = manager.request(request)
+        request.collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
+        
+        debugPrintln(request)
+        
+        return request
     }
     
     // MARK: Multi-part POST
