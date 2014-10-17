@@ -68,6 +68,27 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		7C4129C719F1C65C007096A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7CF0836919F01BFB00BDF411 /* SwiftyJSON.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2E4FEFDA19575BE100351305;
+			remoteInfo = SwiftyJSON;
+		};
+		7C4129D719F1C660007096A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7CF0833A19F01A1A00BDF411 /* Swell.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = DF0A05531954EC4800E35A15;
+			remoteInfo = Swell;
+		};
+		7C4129D919F1C664007096A7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 7CF0833119F016C100BDF411 /* Alamofire.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = F8111E3219A95C8B0040E7D1;
+			remoteInfo = Alamofire;
+		};
 		7CF0833619F016C100BDF411 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 7CF0833119F016C100BDF411 /* Alamofire.xcodeproj */;
@@ -504,6 +525,9 @@
 			buildRules = (
 			);
 			dependencies = (
+				7C4129DA19F1C664007096A7 /* PBXTargetDependency */,
+				7C4129D819F1C660007096A7 /* PBXTargetDependency */,
+				7C4129C819F1C65C007096A7 /* PBXTargetDependency */,
 			);
 			name = PresentAPIClient;
 			productName = PresentAPIClient;
@@ -760,6 +784,24 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		7C4129C819F1C65C007096A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = SwiftyJSON;
+			targetProxy = 7C4129C719F1C65C007096A7 /* PBXContainerItemProxy */;
+		};
+		7C4129D819F1C660007096A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Swell;
+			targetProxy = 7C4129D719F1C660007096A7 /* PBXContainerItemProxy */;
+		};
+		7C4129DA19F1C664007096A7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Alamofire;
+			targetProxy = 7C4129D919F1C664007096A7 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		7CCFEAF1199C15BC00D87880 /* Debug */ = {
