@@ -95,6 +95,14 @@ public class Video: Object {
         super.init()
     }
     
+    public required override init(coder aDecoder: NSCoder!) {
+        caption = aDecoder.decodeObjectForKey("caption") as? String
+        _startDate = aDecoder.decodeObjectForKey("startDate") as? NSDate
+        _endDate = aDecoder.decodeObjectForKey("endDate") as? NSDate
+        
+        super.init(coder: aDecoder)
+    }
+    
     public init(creator: User, caption: String? = nil) {
         self._creator = creator
         self.caption = caption
@@ -169,6 +177,20 @@ public class Video: Object {
         
         if let commentCount = json["comments"]["count"].int {
             self.commentsCollection.count = commentCount
+        }
+    }
+    
+    public override func encodeWithCoder(aCoder: NSCoder!) {
+        if caption != nil {
+            aCoder.encodeObject(caption!, forKey: "caption")
+        }
+        
+        if _startDate != nil {
+            aCoder.encodeObject(_startDate, forKey: "startDate")
+        }
+        
+        if _endDate != nil {
+            aCoder.encodeObject(_endDate!, forKey: "endDate")
         }
     }
     
