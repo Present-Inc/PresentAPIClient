@@ -54,6 +54,47 @@ private extension Friendship {
 }
 
 public extension Friendship {
+    // MARK: Friendships
+    public class func create(targetUser: User, success: ((Friendship) -> ())?, failure: FailureBlock?) {
+        let parameters = [
+            "user_id": targetUser.id
+        ],
+        successHandler: ResourceSuccessBlock = { jsonResponse in
+            let friendship = Friendship(json: jsonResponse["result"]["object"])
+            success?(friendship)
+        }
+        
+        APIManager
+            .sharedInstance()
+            .postResource(
+                Friendship.createResource(),
+                parameters: parameters,
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    public class func destroy(targetUser: User, success: (() -> ())?, failure: FailureBlock?) {
+        let parameters = [
+            "user_id": self.targetUser.id
+        ],
+        successHandler: ResourceSuccessBlock = { jsonResponse in
+            if success != nil {
+                success!()
+            }
+        }
+        
+        APIManager
+            .sharedInstance()
+            .postResource(
+                Friendship.destroyResource(),
+                parameters: parameters,
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    
     // MARK: Forward Friendships
     
     public class func getForwardFriendships(user: User, cursor: Int? = 0, success: (([Friendship], Int) -> ())?, failure: FailureBlock) {
@@ -116,48 +157,18 @@ public extension Friendship {
     
     // MARK: Instance Methods
     
-    // MARK: Friendship Creation
-    
     public func create(success: ((Friendship) -> ())?, failure: FailureBlock) {
-        var parameters = [
-            "user_id": self.targetUser.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+        Friendship.create(targetUser, success: { friendship in
             self.logger.debug("Successfully created friendship between \(self.sourceUser.username) and \(self.targetUser.username)")
-            
-            var friendship = Friendship(json: jsonResponse["result"]["object"])
             self.mergeResultsFromObject(friendship)
             success?(self)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Friendship.createResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+        }, failure: failure)
     }
     
-    // MARK: Friendship Destruction
-    
     public func destroy(success: ((Friendship) -> ())?, failure: FailureBlock) {
-        var parameters = [
-            "user_id": self.targetUser.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+        Friendship.destroy(targetUser, success: {
             self.logger.debug("Successfully destroyed friendship between \(self.sourceUser.username) and \(self.targetUser.username)")
             success?(self)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Friendship.destroyResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+        }, failure: failure)
     }
 }
