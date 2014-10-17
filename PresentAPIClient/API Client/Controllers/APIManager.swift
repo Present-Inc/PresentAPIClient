@@ -11,30 +11,6 @@ import Alamofire
 import SwiftyJSON
 import Swell
 
-public typealias VoidBlock = () -> ()
-public typealias ResourceSuccessBlock = (JSON) -> ()
-public typealias CollectionSuccessBlock = ([JSON], Int) -> ()
-public typealias FailureBlock = (NSError?) -> ()
-
-#if DEBUG
-    let apiVersion = "v1"
-    let subDomain = "api-staging"
-#else
-    let apiVersion = "v1"
-    let subDomain = "api"
-#endif
-
-let Version = "2014-09-09"
-
-// !!!: This will only post to the staging API!
-//let baseURL = NSURL(string:"http://api-staging.present.tv/\(apiVersion)/")
-
-let PresentVersionHeader = "Present-Version"
-let SessionTokenHeader = "Present-User-Context-Session-Token"
-let UserIdHeader = "Present-User-Context-User-Id"
-
-let CallbackQueueIdentifier = "tv.Present.Present.PresentAPIClient.serializationQueue"
-
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
     
@@ -108,7 +84,7 @@ public class APIManager {
     
     // MARK: GET
     
-    func requestResource(request: URLRequestConvertible, success: ResourceSuccessBlock, failure: FailureBlock?) -> Alamofire.Request {
+    func requestResource(request: URLRequestConvertible, success: ResourceSuccess, failure: FailureBlock?) -> Alamofire.Request {
         var request = manager.request(request).validate(statusCode: 200...299)
         request.resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
         
@@ -117,7 +93,7 @@ public class APIManager {
         return request
     }
     
-    func requestCollection(request: URLRequestConvertible, success: CollectionSuccessBlock, failure: FailureBlock?) -> Alamofire.Request {
+    func requestCollection(request: URLRequestConvertible, success: CollectionSuccess, failure: FailureBlock?) -> Alamofire.Request {
         var request = manager.request(request)
         request.collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
         
@@ -128,7 +104,7 @@ public class APIManager {
     
     // MARK: Multi-part POST
     
-    func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
+    func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccess?, failure: FailureBlock?) {
         var requestURL = baseURL.absoluteString! + resource,
             fileData = NSData(contentsOfURL: url),
             constructingBlock: (AFMultipartFormData!) -> Void = { formData in
@@ -155,7 +131,7 @@ public class APIManager {
 private extension APIManager {
     // MARK: Request
     
-    private func requestResource(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccessBlock?, failure: FailureBlock?) {
+    private func requestResource(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccess?, failure: FailureBlock?) {
         let requestURL = requestURLWithResource(resource)
         
         logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
@@ -165,7 +141,7 @@ private extension APIManager {
             .resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
     }
     
-    private func requestCollection(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: CollectionSuccessBlock?, failure: FailureBlock?) {
+    private func requestCollection(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: CollectionSuccess?, failure: FailureBlock?) {
         let requestURL = requestURLWithResource(resource)
         
         logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
@@ -179,7 +155,7 @@ private extension APIManager {
         return baseURL.absoluteString! + resource
     }
     
-    private func resourceCompletionHandler(success: ResourceSuccessBlock?, failure: FailureBlock?) -> APIResourceResponseCompletionBlock {
+    private func resourceCompletionHandler(success: ResourceSuccess?, failure: FailureBlock?) -> APIResourceResponseCompletionBlock {
         return { request, response, object, error in
             if error != nil || response?.statusCode >= 300 {
                 self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
@@ -191,7 +167,7 @@ private extension APIManager {
         }
     }
     
-    private func collectionCompletionHandler(success: CollectionSuccessBlock?, failure: FailureBlock?) -> APICollectionResponseCompletionBlock {
+    private func collectionCompletionHandler(success: CollectionSuccess?, failure: FailureBlock?) -> APICollectionResponseCompletionBlock {
         return { request, response, results, nextCursor, error in
             if error != nil || response?.statusCode >= 300 {
                 self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
