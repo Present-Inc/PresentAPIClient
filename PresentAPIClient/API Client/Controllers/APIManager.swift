@@ -104,7 +104,7 @@ public class APIManager {
     
     // MARK: Multi-part POST
     
-    func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccess?, failure: FailureBlock?) {
+    func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: VoidBlock?, failure: FailureBlock?) {
         var requestURL = baseURL.absoluteString! + resource,
             fileData = NSData(contentsOfURL: url),
             constructingBlock: (AFMultipartFormData!) -> Void = { formData in
@@ -117,7 +117,7 @@ public class APIManager {
             constructingBodyWithBlock: constructingBlock,
             success: { dataTask, response in
                 self.logger.debug("Multi-part POST \(dataTask.response?.URL!) succeeded.")
-                success?(JSON("Something Else"))
+                success?()
             },
             failure: { dataTask, error in
                 self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(error)")
@@ -129,32 +129,6 @@ public class APIManager {
 }
 
 private extension APIManager {
-    // MARK: Request
-    
-    private func requestResource(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: ResourceSuccess?, failure: FailureBlock?) {
-        let requestURL = requestURLWithResource(resource)
-        
-        logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
-        
-        Alamofire
-            .request(httpMethod, requestURL, parameters: parameters, encoding: .URL)
-            .resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
-    }
-    
-    private func requestCollection(httpMethod: Alamofire.Method, resource: String, parameters: [String: AnyObject]?, success: CollectionSuccess?, failure: FailureBlock?) {
-        let requestURL = requestURLWithResource(resource)
-        
-        logger.info("\(httpMethod.toRaw()) \(requestURL) with parameters \(parameters)")
-        
-        Alamofire
-            .request(httpMethod, requestURL, parameters: parameters, encoding: .URL)
-            .collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
-    }
-    
-    private func requestURLWithResource(resource: String) -> String {
-        return baseURL.absoluteString! + resource
-    }
-    
     private func resourceCompletionHandler(success: ResourceSuccess?, failure: FailureBlock?) -> APIResourceResponseCompletionBlock {
         return { request, response, object, error in
             if error != nil || response?.statusCode >= 300 {
