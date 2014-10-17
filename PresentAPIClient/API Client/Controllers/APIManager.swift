@@ -85,7 +85,7 @@ public class APIManager {
     // MARK: GET
     
     func requestResource(request: URLRequestConvertible, success: ResourceSuccess, failure: FailureBlock?) -> Alamofire.Request {
-        var request = manager.request(request).validate(statusCode: 200...299)
+        var request = self.request(request)
         request.resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
         
         debugPrintln(request)
@@ -94,7 +94,7 @@ public class APIManager {
     }
     
     func requestCollection(request: URLRequestConvertible, success: CollectionSuccess, failure: FailureBlock?) -> Alamofire.Request {
-        var request = manager.request(request)
+        var request = self.request(request)
         request.collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
         
         debugPrintln(request)
@@ -102,14 +102,21 @@ public class APIManager {
         return request
     }
     
+    private func request(request: URLRequestConvertible) -> Request {
+        return manager.request(request).validate(statusCode: 200..<400)
+    }
+    
     // MARK: Multi-part POST
     
-    func multipartPost(url: NSURL, resource: String, parameters: [String: AnyObject]?, success: VoidBlock?, failure: FailureBlock?) {
-        var requestURL = baseURL.absoluteString! + resource,
-            fileData = NSData(contentsOfURL: url),
-            constructingBlock: (AFMultipartFormData!) -> Void = { formData in
-                formData.appendPartWithFileData(fileData, name: "media_segment", fileName: "index.ts", mimeType: "application/octet-stream")
-            }
+    func multipartPost(fileUrl: NSURL, name: String, fileName: String, mimeType: String, resource: String, parameters: [String: AnyObject]?, success: VoidBlock?, failure: FailureBlock?) {
+        let fileData = NSData(contentsOfURL: fileUrl)
+        self.multipartPost(resource, parameters: parameters, data: fileData, name: name, fileName: fileName, mimeType: mimeType, success: success, failure: failure)
+    }
+    
+    func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, success: VoidBlock?, failure: FailureBlock?) {
+        let constructingBlock: (AFMultipartFormData!) -> Void = { formData in
+            formData.appendPartWithFileData(data, name: name, fileName: fileName, mimeType: mimeType)
+        }
         
         multipartManager.POST(
             resource,
@@ -122,16 +129,14 @@ public class APIManager {
             failure: { dataTask, error in
                 self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(error)")
                 failure?(error)
-            })
-        
-        logger.info("Multi-part POST \(requestURL) with \(url)")
+        })
     }
 }
 
 private extension APIManager {
     private func resourceCompletionHandler(success: ResourceSuccess?, failure: FailureBlock?) -> APIResourceResponseCompletionBlock {
         return { request, response, object, error in
-            if error != nil || response?.statusCode >= 300 {
+            if error != nil {
                 self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
                 failure?(error)
             } else {
@@ -143,7 +148,7 @@ private extension APIManager {
     
     private func collectionCompletionHandler(success: CollectionSuccess?, failure: FailureBlock?) -> APICollectionResponseCompletionBlock {
         return { request, response, results, nextCursor, error in
-            if error != nil || response?.statusCode >= 300 {
+            if error != nil {
                 self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
                 failure?(error)
             } else {

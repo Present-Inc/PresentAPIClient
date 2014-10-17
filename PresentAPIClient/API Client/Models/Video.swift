@@ -246,6 +246,9 @@ public extension Video {
             .sharedInstance()
             .multipartPost(
                 segmentUrl,
+                name: "media_segment",
+                fileName: "index.ts",
+                mimeType: "application/octet-stream",
                 resource: "videos/append",
                 parameters: parameters,
                 success: success,

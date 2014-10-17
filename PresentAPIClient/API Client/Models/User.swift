@@ -404,6 +404,24 @@ public extension User {
                 failure: failure
         )
     }
+    
+    func updateProfilePicture(profilePicture: UIImage, success: VoidBlock?, failure: FailureBlock?) {
+        let imageData = UIImagePNGRepresentation(profilePicture)
+        
+        APIManager
+            .sharedInstance()
+            .multipartPost(
+                "users/update_profile_picture",
+                parameters: nil,
+                data: imageData,
+                name: "profile_picture",
+                fileName: "profile_picture_\(self.id!).png",
+                mimeType: "image/png",
+                success: success,
+                failure: failure
+        )
+    }
+    
 }
 
 // MARK: Convenience Methods
