@@ -76,7 +76,7 @@ public extension Friendship {
     
     public class func destroy(targetUser: User, success: (() -> ())?, failure: FailureBlock?) {
         let parameters = [
-            "user_id": self.targetUser.id
+            "user_id": targetUser.id
         ],
         successHandler: ResourceSuccessBlock = { jsonResponse in
             if success != nil {
