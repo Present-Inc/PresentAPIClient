@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		7C2BE55219B603FC00BDCB4A /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2BE55119B603FB00BDCB4A /* Error.swift */; };
 		7C3DBD1319AE326600A657C4 /* PresentAPIClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */; };
+		7C41299519F1AFD4007096A7 /* PresentAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */; };
 		7C4733B719A5288C009124FA /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4733B619A5288C009124FA /* UserSession.swift */; };
 		7C4CDD6B19BE37A1009AF31B /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4CDD6A19BE37A1009AF31B /* View.swift */; };
 		7C79D47919B9018C0015468E /* AlamofireExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C79D47819B9018C0015468E /* AlamofireExtensions.swift */; };
@@ -184,6 +185,7 @@
 
 /* Begin PBXFileReference section */
 		7C2BE55119B603FB00BDCB4A /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Error.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentAPIClient.swift; sourceTree = "<group>"; };
 		7C4733B619A5288C009124FA /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		7C4CDD6A19BE37A1009AF31B /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = View.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		7C79D47819B9018C0015468E /* AlamofireExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtensions.swift; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 			isa = PBXGroup;
 			children = (
 				7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */,
+				7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */,
 				7CCFEB0B199C16AA00D87880 /* Controllers */,
 				7CCFEB0D199C16AA00D87880 /* Models */,
 				7CCFEAE3199C15BC00D87880 /* Supporting Files */,
@@ -716,6 +719,7 @@
 				7CCFEB2A199C16AA00D87880 /* Video.swift in Sources */,
 				7CCFEB55199C1FF600D87880 /* Activity.swift in Sources */,
 				7CF0832819F016B300BDF411 /* AFSecurityPolicy.m in Sources */,
+				7C41299519F1AFD4007096A7 /* PresentAPIClient.swift in Sources */,
 				7CF0831F19F016B300BDF411 /* AFHTTPRequestOperation.m in Sources */,
 				7C4733B719A5288C009124FA /* UserSession.swift in Sources */,
 				7CCFEB1D199C16AA00D87880 /* Comment.swift in Sources */,
