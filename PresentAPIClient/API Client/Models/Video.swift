@@ -236,19 +236,19 @@ public extension Video {
     
     // MARK: Append
     // !!!: This doesn't return a request...
-    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: VideoResourceSuccess?, failure: FailureBlock?) {
-        var parameters = [
+    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: VoidBlock?, failure: FailureBlock?) {
+        let parameters = [
             "video_id": videoId as NSString,
             "media_sequence": mediaSequence
         ]
-
+        
         APIManager
             .sharedInstance()
             .multipartPost(
                 segmentUrl,
                 resource: "videos/append",
                 parameters: parameters,
-                success: resourceSuccessWithCompletion(success),
+                success: success,
                 failure: failure
             )
 
@@ -429,14 +429,14 @@ private extension Video {
 private extension Video {
     class func resourceSuccessWithCompletion(completion: VideoResourceSuccess?) -> ResourceSuccess {
         return { jsonResponse in
-            var video = Video(json: jsonResponse)
+            let video = Video(json: jsonResponse)
             completion?(video)
         }
     }
     
     class func collectionSuccessWithCompletion(completion: VideoCollectionSuccess?) -> CollectionSuccess {
         return { jsonArray, nextCursor in
-            var videos = jsonArray.map { Video(json: $0) }
+            let videos = jsonArray.map { Video(json: $0) }
             completion?(videos, nextCursor)
         }
     }
