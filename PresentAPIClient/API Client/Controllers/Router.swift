@@ -230,7 +230,7 @@ enum LikeRouter: URLRequestConvertible {
 }
 
 enum UserRouter: URLRequestConvertible {
-    case Create(properties: [String: AnyObject])
+    case Create(username: String, password: String, email: String)
     case Search(query: String, cursor: Int)
     case Update(properties: [String: AnyObject])
     case BatchSearch(parameters: [String: [String]])
@@ -259,8 +259,12 @@ enum UserRouter: URLRequestConvertible {
     var URLRequest: NSURLRequest {
         let (path: String, parameters: [String: AnyObject]?) = {
             switch self {
-            case .Create(let properties):
-                return ("users/create", properties)
+            case .Create(let username, let password, let email):
+                return ("users/create", [
+                    "username": username,
+                    "password": password,
+                    "email": email
+                ])
             case .Update(let properties):
                 return ("users/update", properties)
             case .Search(let query, let cursor):
@@ -294,7 +298,8 @@ enum UserRouter: URLRequestConvertible {
 
 enum UserContextRouter: URLRequestConvertible {
     case Authenticate(username: String, password: String)
-    case Update(pushNotificationIdentifier: String, platform: String)
+    case AuthenticateWithPushCredentials(username: String, password: String, deviceId: String, platform: String)
+    case Update(deviceIdentifier: String, platform: String)
     case Destroy()
     
     var method: Alamofire.Method {
@@ -313,9 +318,16 @@ enum UserContextRouter: URLRequestConvertible {
                     "username": username,
                     "password": password
                 ])
-            case .Update(let pushNotificationIdentifier, let platform):
+            case .AuthenticateWithPushCredentials(let username, let password, let deviceId, let platform):
+                return ("user_contexts/create", [
+                    "username": username,
+                    "password": password,
+                    "device_identifier": deviceId,
+                    "push_notification_platform": platform
+                ])
+            case .Update(let deviceId, let platform):
                 return ("user_contexts/update", [
-                    "device_identifier": pushNotificationIdentifier,
+                    "device_identifier": deviceId,
                     "push_notification_platform": platform
                 ])
             case .Destroy():
