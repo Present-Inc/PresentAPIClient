@@ -72,9 +72,9 @@ class UserSessionSpec: QuickSpec {
             pending("can process and store subjective object meta") {
                 let currentSession = UserSession.currentSession()!
                 
-                var someObject = Object(id: "666")
-                var objectMeta = SubjectiveObjectMeta()
-                objectMeta.friendship?.forward = true
+                let someObject = Object(id: "666")
+                let friendshipRelation = Relation(forward: true)
+                let objectMeta = SubjectiveObjectMeta(like: nil, friendship: friendshipRelation, view: nil)
                 
                 currentSession.storeObjectMeta(objectMeta, forObject: someObject)
                 
@@ -85,9 +85,9 @@ class UserSessionSpec: QuickSpec {
             pending("can retrieve subjective object meta about an object") {
                 let currentSession = UserSession.currentSession()!
                 
-                var someObject = Object(id: "666")
-                var friendshipRelation = Relation(forward: true, backward: false)
-                var objectMeta = SubjectiveObjectMeta(like: nil, friendship: friendshipRelation, view: nil)
+                let someObject = Object(id: "666")
+                let friendshipRelation = Relation(forward: true, backward: false)
+                let objectMeta = SubjectiveObjectMeta(like: nil, friendship: friendshipRelation, view: nil)
                 
                 currentSession.storeObjectMeta(objectMeta, forObject: someObject)
                 
