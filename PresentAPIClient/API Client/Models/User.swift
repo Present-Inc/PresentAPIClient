@@ -12,8 +12,6 @@ import SwiftyJSON
 import Swell
 
 public class User: Object {
-    override class var apiResourcePath: String { return "users" }
-    
     public var username: String {
         return _username
     }
@@ -71,16 +69,15 @@ public class User: Object {
         return videosCollection.cursor
     }
     
-    private let logger = User._logger()
+    private class var logger: Logger {
+        return User._logger("User")
+    }
+    
     private var _isAdmin: Bool = false
     private var _username: String!
     private var profileImageUrlString: String = "https://user-assets.present.tv/profile-pictures/default.png"
     
     private lazy var videosCollection = CursoredCollection<Video>()
-    
-    class func _logger() -> Logger {
-        return Swell.getLogger("User")
-    }
 
     public init(username: String, password: String, fullName: String, email: String) {
         self._username = username
@@ -96,7 +93,7 @@ public class User: Object {
         
         self.initializeWithObject(json["object"])
         
-        var objectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
+        let objectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
         UserSession.currentSession()?.storeObjectMeta(objectMeta, forObject: self)
     }
     
@@ -268,6 +265,12 @@ public class User: Object {
     }
 }
 
+private extension User {
+    class func _logger() {
+        super._logger("User")
+    }
+}
+
 public extension User {
     func updateFacebookAccount(account: ACAccount) {
         self.facebookData = SocialData(account: account)
@@ -365,7 +368,7 @@ extension User {
             requestParameters[key.toRaw()] = value
         }
         
-        self._logger().debug("Batch searching for page \(cursor) of Users on Present.")
+        self.logger.debug("Batch searching for page \(cursor) of Users on Present.")
         
         // ???: This is for elasticsearch
 //        var queryString = ""
@@ -403,7 +406,7 @@ extension User {
             "query": "username:*\(queryString)* OR profile.fullName:*\(queryString)*" as NSString
         ]
         
-        self._logger().debug("Searching for page \(cursor) of \"\(queryString)\" results")
+        self.logger.debug("Searching for page \(cursor) of \"\(queryString)\" results")
         
         APIManager
             .sharedInstance()

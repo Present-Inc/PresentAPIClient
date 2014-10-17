@@ -9,53 +9,136 @@
 import UIKit
 import SwiftyJSON
 import Swell
+import Alamofire
 
 public class Comment: Object {
-    override class var apiResourcePath: String { return "comments" }
+    public internal(set) var video: Video
+    public private(set) var author: User
+    public private(set) var body: String
     
-    public var video: Video {
-        return _video
-    }
-    
-    public var author: User {
-        return _author
-    }
-    
-    public var body: String {
-        return _body
-    }
-    
-    internal var _video: Video!
-    internal var _author: User!
-    internal var _body: String!
-    
-    private var logger = Comment._logger()
-
-    private class func _logger() -> Logger {
-        return Swell.getLogger("Comment")
+    private class var logger: Logger {
+        return Comment._logger("Comment")
     }
 
     public init(body: String, author: User, video: Video) {
-        _body = body
-        _author = author
-        _video = video
+        self.body = body
+        self.author = author
+        self.video = video
         
         super.init()
     }
     
-    public override init(json: JSON) {
+    public init(json: JSON, video: Video? = nil) {
         if let bodyString = json["body"].string {
-            _body = bodyString
+            self.body = bodyString
+        } else {
+            self.body = ""
         }
         
-        _author = User(json: json["sourceUser"])
-        _video = Video(json: json["targetVideo"])
+        self.author = User(json: json["sourceUser"])
+        
+        if let video = video {
+            self.video = video
+        } else {
+            self.video = Video(json: json["targetVideo"])
+        }
         
         super.init(json: json)
+    }
+    
+    internal func setVideo(video: Video) {
+        self.video = video
     }
 }
 
 extension Comment {
+    // MARK: Class Methods
+    
+    public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: (([Comment], Int) -> ())?, failure: FailureBlock) -> Request {
+        let successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
+            self.logger.debug("JSON Array results: \(jsonArray)")
+            
+            let commentResults = jsonArray.map { Comment(json: $0["object"], video: video) }
+            success?(commentResults, nextCursor)
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestCollection(
+                CommentRouter.CommentsForVideo(videoId: video.id!, cursor: cursor!),
+                success: collectionSuccessWithCompletion(success),
+                failure: failure
+        )
+    }
+    
+    public class func getCommentWithId(id: String, success: ((Comment) -> ())?, failure: FailureBlock) -> Request {
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                CommentRouter.CommentForId(commentId: id),
+                success: resourceSuccessWithCompletion(success),
+                failure: failure
+        )
+    }
+    
+    // MARK: Instance Methods
+    
+    public func create(success: ((Comment) -> ())?, failure: FailureBlock?) -> Request {
+        if body.isEmpty {
+            let error = NSError(domain: "CommentErrorDomain", code: 100, userInfo: [NSLocalizedDescriptionKey: "Comment body is empty."])
+            failure?(error)
+        }
+        
+        let successHandler: ResourceSuccessBlock = { jsonResponse in
+            let commentResponse = Comment(json: jsonResponse["object"])
+            self.mergeResultsFromObject(commentResponse)
+            success?(self)
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                CommentRouter.Create(videoId: video.id!, body: body),
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    public func destroy(success: ((Comment) -> ())?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccessBlock = { jsonResponse in
+            if success != nil {
+                success!(self)
+            }
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                CommentRouter.Destroy(commentId: self.id!),
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    public func updateBody(newBody: String, success:((Comment) -> ())?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccessBlock = { jsonResponse in
+            let commentResponse = Comment(json: jsonResponse["object"])
+            self.mergeResultsFromObject(commentResponse)
+            success?(self)
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                CommentRouter.Update(commentId: self.id!, body: self.body),
+                success: successHandler,
+                failure: failure
+        )
+    }
+}
+
+// MARK: Serialization
+private extension Comment {
     class func resourceSuccessWithCompletion(completion: ((Comment) -> ())?) -> ResourceSuccessBlock {
         return { jsonResponse in
             var comment = Comment(json: jsonResponse["object"])
@@ -68,113 +151,5 @@ extension Comment {
             var commentResults = jsonArray.map { Comment(json: $0["object"]) }
             completion?(commentResults, nextCursor)
         }
-    }
-    
-    public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: (([Comment], Int) -> ())?, failure: FailureBlock) {
-        var parameters: [String: AnyObject] = [
-            "video_id": video.id,
-            "cursor": cursor!
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            self._logger().debug("JSON Array results: \(jsonArray)")
-            
-            var commentResults = [Comment]()
-            for jsonComment: JSON in jsonArray {
-                var comment = Comment(json: jsonComment["object"])
-                comment._video = video
-                commentResults.append(comment)
-            }
-            
-            success?(commentResults, nextCursor)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .getCollection(
-                Comment.pathForResource("list_video_comments"),
-                parameters: parameters,
-                success: Comment.collectionSuccessWithCompletion(success),
-                failure: failure
-        )
-    }
-    
-    public class func getCommentWithId(id: String, success: ((Comment) -> ())?, failure: FailureBlock) {
-        var parameters: [String: AnyObject] = [
-            "comment_id": id
-        ]
-        
-        APIManager
-            .sharedInstance()
-            .getResource(
-                Comment.showResource(),
-                parameters: parameters,
-                success: Comment.resourceSuccessWithCompletion(success),
-                failure: failure
-        )
-    }
-    
-    public func create(success: ((Comment) -> ())?, failure: FailureBlock?) {
-        if body.isEmpty {
-            var error = NSError(domain: "CommentErrorDomain", code: 100, userInfo: [NSLocalizedDescriptionKey: "Comment body is empty."])
-            failure?(error)
-        }
-        
-        var parameters: [String: AnyObject] = [
-            "video_id": self.video.id,
-            "body": self.body
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            var commentResponse = Comment(json: jsonResponse["object"])
-            self.mergeResultsFromObject(commentResponse)
-            success?(self)
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Comment.createResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
-    }
-    
-    public func destroy(success: ((Comment) -> ())?, failure: FailureBlock?) {
-        var parameters: [String: AnyObject] = [
-            "comment_id": self.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            if success != nil {
-                success!(self)
-            }
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Comment.destroyResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
-    }
-    
-    public func updateBody(newBody: String, success:((Comment) -> ())?, failure: FailureBlock?) {
-        var parameters: [String: AnyObject] = [
-            "comment_id": self.id,
-            "body": newBody
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            var commentResponse = Comment(json: jsonResponse["object"])
-            self.mergeResultsFromObject(commentResponse)
-            success?(self)
-        }
-        
-        APIManager.sharedInstance().postResource(
-            Comment.updateResource(),
-            parameters: parameters,
-            success: successHandler,
-            failure: failure
-        )
     }
 }

@@ -9,6 +9,7 @@
 import UIKit
 import SwiftyJSON
 import Swell
+import Alamofire
 
 #if DEBUG
 let PushNotificationPlatform = "APNS_SANDBOX"
@@ -17,17 +18,15 @@ let PushNotificationPlatform = "APNS"
 #endif
 
 public class UserContext: Object {
-    override class var apiResourcePath: String { return "user_contexts" }
-    
     public var sessionToken: String!
     public var user: User!
     
     private struct Static {
         static var pushNotificationIdentifier: String? = nil
     }
-
-    class func _logger() -> Logger {
-        return Swell.getLogger("UserContext")
+    
+    private class var logger: Logger {
+        return self._logger("UserContext")
     }
     
     public init(sessionToken: String, user: User) {
@@ -114,8 +113,8 @@ public class UserContext: Object {
         }
     }
     
-    public class func logOut(completion: ((NSError?) -> ())? = nil) {
-        var successHandler: ResourceSuccessBlock = { _ in
+    public class func logOut(completion: ((NSError?) -> ())? = nil) -> Request {
+        let successHandler: ResourceSuccessBlock = { _ in
             if completion != nil {
                 completion!(nil)
             }
@@ -126,11 +125,10 @@ public class UserContext: Object {
             }
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                self.destroyResource(),
-                parameters: nil,
+            .requestResource(
+                UserContextRouter.Destroy(),
                 success: successHandler,
                 failure: errorHandler
         )

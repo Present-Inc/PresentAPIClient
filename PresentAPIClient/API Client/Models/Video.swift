@@ -9,10 +9,12 @@
 import UIKit
 import SwiftyJSON
 import Swell
+import Alamofire
+
+public typealias VideoResourceSuccessBlock = (Video) -> ()
+public typealias VideoCollectionSuccessBlock = ([Video], Int) -> ()
 
 public class Video: Object {
-    override class var apiResourcePath: String { return "videos" }
-    
     public var caption: String?
     
     public var startDate: NSDate {
@@ -137,10 +139,8 @@ public class Video: Object {
             _replayUrl = NSURL(string: replayString)
         }
         
-        // !!!: This is not a long-term solution, particularly with the new video resolution
+        // !!!: This is not a long-term solution. Prone to change.
         if let coverString = json["mediaUrls"]["images"]["480px"].string {
-            _coverUrl = NSURL(string: coverString)
-        } else if let coverString = json["mediaUrls"]["images"]["800px"].string {
             _coverUrl = NSURL(string: coverString)
         }
         
@@ -162,7 +162,7 @@ public class Video: Object {
         if let mostRecentComments = json["comments"]["results"].array {
             for jsonComment: JSON in mostRecentComments {
                 var comment = Comment(json: jsonComment["object"])
-                comment._video = self
+                comment.video = self
                 
                 self.commentsCollection.addObject(comment)
             }
@@ -213,11 +213,64 @@ private extension Video {
 }
 
 public extension Video {
-    // MARK: Class Resource Methods
+    // MARK: - Class Resource Methods
 
+    // MARK: Create
+    
+    public class func create(startDateISOString: String, success: VideoResourceSuccessBlock?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccessBlock = { jsonResponse in
+            let video = Video(json: jsonResponse["result"])
+            success?(video)
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                VideoRouter.Create(startDateISOString: startDateISOString),
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    // MARK: Destroy
+    
+    public class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccessBlock = { jsonResponse in
+            if success != nil {
+                success!()
+            }
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                VideoRouter.Destroy(id: videoId),
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    // MARK: Hide
+    
+    public class func hide(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+        let successHandler: ResourceSuccessBlock = { jsonResponse in
+            if success != nil {
+                success!()
+            }
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                VideoRouter.Hide(id: videoId),
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
     // MARK: Append Segments
     
-    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: ((Video) -> ())?, failure: FailureBlock?) {
+    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: VideoResourceSuccessBlock?, failure: FailureBlock?) {
         var parameters = [
             "video_id": videoId as NSString,
             "media_sequence": mediaSequence
@@ -227,9 +280,9 @@ public extension Video {
             .sharedInstance()
             .multipartPost(
                 segmentUrl,
-                resource: self.pathForResource("append"),
+                resource: "videos/append",
                 parameters: parameters,
-                success: self.resourceSuccessWithCompletion(success),
+                success: resourceSuccessWithCompletion(success),
                 failure: failure
             )
 
@@ -237,19 +290,11 @@ public extension Video {
     
     // MARK: Search Videos
 
-    public class func search(queryString: String, cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "query": queryString as NSString,
-            "cursor": cursor!
-        ]
-        
-        self._logger().debug("Searching for page \(cursor) of \"\(queryString)\" results")
-        
-        APIManager
+    public class func search(queryString: String, cursor: Int? = 0, success: VideoCollectionSuccessBlock?, failure: FailureBlock?) -> Request {
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                self.searchResource(),
-                parameters: parameters,
+            .requestCollection(
+                VideoRouter.Search(query: queryString, cursor: cursor!),
                 success: collectionSuccessWithCompletion(success),
                 failure: failure
         )
@@ -257,16 +302,11 @@ public extension Video {
     
     // MARK: Fetch Videos
     
-    public class func getVideoWithId(id: String, success: ((Video) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "video_id": id
-        ]
-        
-        APIManager
+    public class func getVideoWithId(id: String, success: VideoResourceSuccessBlock?, failure: FailureBlock?) -> Request {
+        return APIManager
             .sharedInstance()
-            .getResource(
-                self.showResource(),
-                parameters: parameters,
+            .requestResource(
+                VideoRouter.VideoForId(id: id),
                 success: resourceSuccessWithCompletion(success),
                 failure: failure
         )
@@ -274,62 +314,21 @@ public extension Video {
     
     // MARK: List Videos
     
-    public class func getBrandNewVideos(cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "cursor": cursor!
-        ]
-        
-        APIManager
+    public class func getVideosForUser(user: User, cursor: Int? = 0, success: VideoCollectionSuccessBlock?, failure: FailureBlock?) -> Request {
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                self.pathForResource("list_brand_new_videos"),
-                parameters: parameters,
+            .requestCollection(
+                VideoRouter.VideosForUser(userId: user.id!, cursor: cursor!),
                 success: collectionSuccessWithCompletion(success),
                 failure: failure
         )
     }
     
-    public class func getPopularVideos(cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "cursor": cursor!
-        ]
-        
-        APIManager
+    public class func getHomeVideos(cursor: Int? = 0, success: VideoCollectionSuccessBlock?, failure: FailureBlock?) -> Request {
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                self.pathForResource("list_popular_videos"),
-                parameters: parameters,
-                success: collectionSuccessWithCompletion(success),
-                failure: failure
-        )
-    }
-    
-    public class func getVideosForUser(user: User, cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "cursor": cursor!,
-            "user_id": user.id as NSString
-        ]
-        
-        APIManager
-            .sharedInstance()
-            .getCollection(
-                self.pathForResource("list_user_videos"),
-                parameters: parameters,
-                success: collectionSuccessWithCompletion(success),
-                failure: failure
-        )
-    }
-    
-    public class func getHomeVideos(cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "cursor": cursor!
-        ]
-        
-        APIManager
-            .sharedInstance()
-            .getCollection(
-                self.pathForResource("list_home_videos"),
-                parameters: parameters,
+            .requestCollection(
+                VideoRouter.HomeFeed(cursor: cursor!),
                 success: collectionSuccessWithCompletion(success),
                 failure: failure
         )
@@ -337,81 +336,35 @@ public extension Video {
     
     // MARK: Instance Resource Methods
     
-    public func create(success: ((Video) -> ())?, failure: FailureBlock?) {
-        var parameters: [String: NSObject] = [String: NSObject](),
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            var videoResponse = Video(json: jsonResponse["result"])
-            self.mergeResultsFromObject(videoResponse)
-            
+    public func create(success: VideoResourceSuccessBlock?, failure: FailureBlock?) -> Request {
+        return Video.create(NSDate.ISOStringFromDate(startDate), success: { video in
+            self.mergeResultsFromObject(video)
             self.logger.debug("Successfully created video \(self)")
             
             success?(self)
-        }
-        
-        parameters["creation_time_range_start_date"] = NSDate.ISOStringFromDate(self._startDate)
-        
-        if self.caption != nil {
-            parameters["title"] = self.caption!
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Video.createResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+        }, failure: failure)
     }
     
-    public func destroy(success: ((Video) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "video_id": id as NSString
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+    public func destroy(success: VideoResourceSuccessBlock?, failure: FailureBlock?) -> Request {
+        return Video.destroy(self.id!, success: {
             if success != nil {
                 success!(self)
             }
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Video.destroyResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+        }, failure: failure)
     }
     
-    public func hide(success: ((Video) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "video_id": id as NSString
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+    public func hide(success: VideoResourceSuccessBlock?, failure: FailureBlock?) -> Request {
+        return Video.hide(self.id!, success: {
             if success != nil {
                 success!(self)
             }
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Video.pathForResource("hide"),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+        }, failure: failure)
     }
     
-    public func updateCaption(caption: String, success: ((Video) -> ())?, failure: FailureBlock?) {
+    public func updateCaption(caption: String, success: VideoResourceSuccessBlock?, failure: FailureBlock?) -> Request {
         self.caption = caption
         
-        var parameters: [String: AnyObject] = [
-            "video_id": id,
-            "title": caption
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+        let successHandler: ResourceSuccessBlock = { jsonResponse in
             var videoResponse = Video(json: jsonResponse)
             self.mergeResultsFromObject(videoResponse)
             
@@ -419,12 +372,11 @@ public extension Video {
             
             success?(self)
         }
-        
-        APIManager
+
+        return APIManager
             .sharedInstance()
-            .postResource(
-                Video.updateResource(),
-                parameters: parameters,
+            .requestResource(
+                VideoRouter.Update(id: self.id!, caption: caption),
                 success: successHandler,
                 failure: failure
         )

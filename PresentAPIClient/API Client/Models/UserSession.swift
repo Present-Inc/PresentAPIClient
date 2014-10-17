@@ -15,8 +15,6 @@ public class UserSession: NSObject, NSCoding {
     public var context: UserContext?
 
     lazy var relationStore: RelationStore = RelationStore()
-    // TODO: Temporary solution to team caching for AboutViewController. This really doesn't belong in here.
-    lazy var presentTeam: [User] = [User]()
 
     public var isAuthenticated: Bool {
     get {
@@ -125,22 +123,26 @@ public class UserSession: NSObject, NSCoding {
     }
 
     public func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forObject object: Object) {
-        self.storeObjectMeta(objectMeta, forKey: object.id)
+        if let key = object.id {
+            self.storeObjectMeta(objectMeta, forKey: key)
+        }
     }
     
     public func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forKey key: String) {
         self.relationStore.store(objectMeta, forKey: key)
     }
 
-    public func getObjectMetaForObject(object: Object) -> SubjectiveObjectMeta {
-        let objectId = object.id
-    
-        var subjectiveObjectMeta = SubjectiveObjectMeta(
-            like: self.relationStore.getLike(objectId),
-            friendship: self.relationStore.getFriendship(objectId),
-            view: self.relationStore.getView(objectId)
-        )
+    public func getObjectMetaForObject(object: Object) -> SubjectiveObjectMeta? {
+        if let objectId = object.id {
+            let subjectiveObjectMeta = SubjectiveObjectMeta(
+                like: self.relationStore.getLike(objectId),
+                friendship: self.relationStore.getFriendship(objectId),
+                view: self.relationStore.getView(objectId)
+            )
 
-        return subjectiveObjectMeta
+            return subjectiveObjectMeta
+        }
+        
+        return nil
     }
 }

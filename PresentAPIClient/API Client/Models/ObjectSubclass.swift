@@ -9,7 +9,8 @@
 import Foundation
 
 @objc protocol ObjectSubclass {
-    optional class var apiResourcePath: String { get }
-    class func pathForResource(resource: String) -> String
+    /**
+        Used to merge to Object's together.
+     */
     func mergeResultsFromObject(object: Object)
 }
