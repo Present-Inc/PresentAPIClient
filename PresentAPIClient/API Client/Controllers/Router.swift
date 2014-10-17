@@ -333,15 +333,16 @@ enum UserContextRouter: URLRequestConvertible {
 enum VideoRouter: URLRequestConvertible {
     case Search(query: String, cursor: Int)
     case VideoForId(id: String)
+    case VideosForUser(userId: String, cursor: Int)
     case HomeFeed(cursor: Int)
-    case Create(startDate: String)
+    case Create(startDateISOString: String)
     case Destroy(id: String)
     case Hide(id: String)
     case Update(id: String, caption: String)
     
     var method: Alamofire.Method {
         switch self {
-        case .Search, .VideoForId, .HomeFeed:
+        case .Search, .VideoForId, .HomeFeed, .VideosForUser:
             return .GET
         case .Create, .Destroy, .Hide, .Update:
             return .POST
@@ -350,7 +351,7 @@ enum VideoRouter: URLRequestConvertible {
     
     var encoding: Alamofire.ParameterEncoding {
         switch self {
-        case .Search, .VideoForId, .HomeFeed:
+        case .Search, .VideoForId, .HomeFeed, .VideosForUser:
             return .URL
         case .Create, .Destroy, .Hide, .Update:
             return .JSON
@@ -389,6 +390,11 @@ enum VideoRouter: URLRequestConvertible {
                 return ("videos/update", [
                     "video_id": id,
                     "title": caption
+                ])
+            case .VideosForUser(let userId, let cursor):
+                return ("videos/list_user_videos", [
+                    "user_id": userId,
+                    "cursor": cursor
                 ])
             }
         }()
