@@ -9,8 +9,6 @@
 import UIKit
 import Alamofire
 
-let baseURL = NSURL(string: "https://api-staging.present.tv/v1/")
-
 private func urlWithPath(path: String) -> NSURL {
     return baseURL.URLByAppendingPathComponent(path)
 }
