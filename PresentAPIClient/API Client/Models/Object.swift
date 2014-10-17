@@ -90,7 +90,10 @@ public class Object: NSObject, ObjectSubclass {
     }
     
     public init(coder aDecoder: NSCoder!) {
-        _id = aDecoder.decodeObjectForKey("_id") as String
+        if let id = aDecoder.decodeObjectForKey("_id") as? String {
+            _id = id
+        }
+        
         _creationDate = aDecoder.decodeObjectForKey("creationDate") as? NSDate
         _lastUpdated = aDecoder.decodeObjectForKey("lastUpdated") as? NSDate
     }
