@@ -45,6 +45,18 @@ public typealias ViewCollectionSuccess = ([View], Int) -> ()
     let subDomain = "api"
 #endif
 
+let baseURL: NSURL = {
+    var apiVersion = "v1"
+    var subdomain = "api"
+    
+    if NSProcessInfo.processInfo().environment["DEBUG"] != nil {
+        apiVersion = "v1"
+        subdomain = "api-staging"
+    }
+    
+    return NSURL(string: "https://\(subdomain).present.tv/\(apiVersion)/")
+}()
+
 let Version = "2014-09-09"
 
 let PresentVersionHeader = "Present-Version"
