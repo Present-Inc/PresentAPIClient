@@ -84,19 +84,19 @@ public class APIManager {
     // MARK: GET
     
     func requestResource(request: URLRequestConvertible, success: ResourceSuccess, failure: FailureBlock?) -> Alamofire.Request {
-        let request = self.request(request).resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
+        return self.request(request).resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
         
-        debugPrintln(request)
+        //debugPrintln(request)
         
-        return request
+        //return request
     }
     
     func requestCollection(request: URLRequestConvertible, success: CollectionSuccess, failure: FailureBlock?) -> Alamofire.Request {
-        let request = self.request(request).collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
+        return self.request(request).collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
         
-        debugPrintln(request)
+        //debugPrintln(request)
         
-        return request
+        //return request
     }
     
     private func request(request: URLRequestConvertible) -> Request {
