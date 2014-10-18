@@ -62,8 +62,12 @@ public class UserSession: NSObject, NSCoding {
 
     public class func login(username: String, password: String, success: ((UserContext) -> ())?, failure: FailureBlock?) {
         var successBlock: ((UserContext) -> ()) = { userContext in
-            self._logger().debug("Current user context is \(userContext.user)")
             self.setCurrentSession(UserSession(userContext: userContext))
+            
+            UserSession.currentUser()?.fetch(success: { _ in
+                println("Successfully refreshed current user")
+                UserSession.currentSession()?.save()
+            }, failure: nil)
             
             success?(userContext)
         }
@@ -74,7 +78,7 @@ public class UserSession: NSObject, NSCoding {
     public class func register(user: User, success: ((UserContext) -> ())?, failure: FailureBlock?) {
         user.create({ createdUser in
             self.login(createdUser.username, password: createdUser.password!, success: success, failure: failure)
-            }, failure: failure)
+        }, failure: failure)
     }
     
     public class func logOut(completion: FailureBlock? = nil) {
