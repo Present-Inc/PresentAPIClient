@@ -85,10 +85,14 @@ public class Video: Object {
         super.init()
     }
     
-    public override init(json: JSON) {
+    public init(json: JSON, creator: User? = nil) {
         super.init(json: json["object"])
         
         self.initializeWithObject(json["object"])
+        
+        if let user = creator {
+            self.creator = user
+        }
 
         if let objectId = self.id {
             self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
@@ -285,12 +289,16 @@ public extension Video {
     
     // MARK: List
     
+    // !!!: This is a big old red flag for what I'm trying to avoid.
     public class func getVideosForUser(user: User, cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> Request {
         return APIManager
             .sharedInstance()
             .requestCollection(
                 VideoRouter.VideosForUser(userId: user.id!, cursor: cursor!),
-                success: collectionSuccessWithCompletion(success),
+                success: { jsonArray, nextCursor in
+                    let videos = jsonArray.map { Video(json: $0, creator: user) }
+                    success?(videos, nextCursor)
+                },
                 failure: failure
         )
     }
@@ -443,11 +451,9 @@ private extension Video {
         return { jsonArray, nextCursor in
             let videos = jsonArray.map { Video(json: $0) }
             
-            dispatch_async(dispatch_get_main_queue(), {
-                if completion != nil {
-                    completion!(videos, nextCursor)
-                }
-            })
+            if completion != nil {
+                completion!(videos, nextCursor)
+            }
         }
     }
 }
