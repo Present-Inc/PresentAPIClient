@@ -75,6 +75,10 @@ public class SocialData: NSObject, NSCoding {
             self.accessToken = accessToken
         }
         
+        if let expirationDate = aDecoder.decodeObjectForKey("expirationDate") as? NSDate {
+            self.expirationDate = expirationDate
+        }
+        
         if let userId = aDecoder.decodeObjectForKey("userId") as? String {
             self.userId = userId
         }
@@ -89,6 +93,14 @@ public class SocialData: NSObject, NSCoding {
         
         if self.accountIdentifier != nil {
             aCoder.encodeObject(accountIdentifier!, forKey: "accountIdentifier")
+        }
+        
+        if self.accessToken != nil {
+            aCoder.encodeObject(accessToken!, forKey: "accessToken")
+        }
+        
+        if self.expirationDate != nil {
+            aCoder.encodeObject(expirationDate!, forKey: "expirationDate")
         }
         
         if self.userId != nil {
