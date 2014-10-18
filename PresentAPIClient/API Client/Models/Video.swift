@@ -90,8 +90,10 @@ public class Video: Object {
         
         self.initializeWithObject(json["object"])
 
-        self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
-        UserSession.currentSession()?.storeObjectMeta(self.subjectiveObjectMeta, forKey: self.id!)
+        if let objectId = self.id {
+            self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
+            UserSession.currentSession()?.storeObjectMeta(self.subjectiveObjectMeta, forKey: self.id!)
+        }
     }
     
     private func initializeWithObject(json: JSON) {
@@ -440,7 +442,12 @@ private extension Video {
     class func collectionSuccessWithCompletion(completion: VideoCollectionSuccess?) -> CollectionSuccess {
         return { jsonArray, nextCursor in
             let videos = jsonArray.map { Video(json: $0) }
-            completion?(videos, nextCursor)
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                if completion != nil {
+                    completion!(videos, nextCursor)
+                }
+            })
         }
     }
 }

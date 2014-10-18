@@ -33,7 +33,7 @@ public class APIManager {
     
     init() {
         self.multipartManager = AFHTTPRequestOperationManager(baseURL: baseURL)
-        //self.multipartManager.securityPolicy.allowInvalidCertificates = true
+        self.multipartManager.securityPolicy.allowInvalidCertificates = true
         self.multipartManager.requestSerializer = AFHTTPRequestSerializer()
         self.multipartManager.responseSerializer = AFJSONResponseSerializer()
         
@@ -50,7 +50,6 @@ public class APIManager {
     
     func setValue(value: String?, forHeaderKey key: String!) {
         headers[key] = value
-        //Alamofire.Manager.sharedInstance.defaultHeaders[key] = value
         multipartManager.requestSerializer.setValue(value, forHTTPHeaderField: key)
     }
     
@@ -85,8 +84,7 @@ public class APIManager {
     // MARK: GET
     
     func requestResource(request: URLRequestConvertible, success: ResourceSuccess, failure: FailureBlock?) -> Alamofire.Request {
-        var request = self.request(request)
-        request.resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
+        let request = self.request(request).resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
         
         debugPrintln(request)
         
@@ -94,8 +92,7 @@ public class APIManager {
     }
     
     func requestCollection(request: URLRequestConvertible, success: CollectionSuccess, failure: FailureBlock?) -> Alamofire.Request {
-        var request = self.request(request)
-        request.collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
+        let request = self.request(request).collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
         
         debugPrintln(request)
         

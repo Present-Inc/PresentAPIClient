@@ -35,9 +35,7 @@ internal extension Alamofire.Request {
                 }
             }
             
-            dispatch_async(dispatch_get_main_queue(), {
-                completionHandler(request, response, results, nextCursor, requestError ?? error)
-            })
+            completionHandler(request, response, results, nextCursor, requestError ?? error)
         }
         
         return response(
@@ -55,14 +53,12 @@ internal extension Alamofire.Request {
             if let data: AnyObject = json {
                 jsonData = JSON(data)
                 
-                if error != nil || response?.statusCode >= 300 {
+                if error != nil {
                     requestError = self.serializeRequestError(jsonData, error: error)
                 }
             }
             
-            dispatch_async(dispatch_get_main_queue(), {
-                completionHandler(request, response, jsonData, requestError ?? error)
-            })
+            completionHandler(request, response, jsonData, requestError ?? error)
         }
         
         return response(
