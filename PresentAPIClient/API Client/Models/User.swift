@@ -75,8 +75,10 @@ public class User: Object {
         
         self.initializeWithObject(json["object"])
         
-        self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
-        UserSession.currentSession()?.storeObjectMeta(self.subjectiveObjectMeta, forKey: self.id!)
+        if let objectId = self.id {
+            self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
+            UserSession.currentSession()?.storeObjectMeta(self.subjectiveObjectMeta, forKey: objectId)
+        }
     }
     
     private func initializeWithObject(json: JSON) {

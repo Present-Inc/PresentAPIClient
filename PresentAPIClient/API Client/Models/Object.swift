@@ -12,11 +12,7 @@ import Swell
 
 public class Object: NSObject, ObjectSubclass {
     public var isNew: Bool {
-        if let id = self.id {
-            return id.isEmpty
-        } else {
-            return false
-        }
+        return id == nil
     }
     
     public private(set) var id: String?
@@ -97,4 +93,8 @@ public class Object: NSObject, ObjectSubclass {
         creationDate = object.creationDate
         lastUpdatedDate = object.lastUpdatedDate
     }
+}
+
+func ==(lhs: Object, rhs: Object) -> Bool {
+    return lhs.id == rhs.id
 }

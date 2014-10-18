@@ -37,25 +37,7 @@ public typealias VideoCollectionSuccess = ([Video], Int) -> ()
 public typealias ViewResourceSuccess = (View) -> ()
 public typealias ViewCollectionSuccess = ([View], Int) -> ()
 
-#if DEBUG
-    let apiVersion = "v1"
-    let subDomain = "api-staging"
-#else
-    let apiVersion = "v1"
-    let subDomain = "api"
-#endif
-
-let baseURL: NSURL = {
-    var apiVersion = "v1"
-    var subdomain = "api"
-    
-    if NSProcessInfo.processInfo().environment["DEBUG"] != nil {
-        apiVersion = "v1"
-        subdomain = "api-staging"
-    }
-    
-    return NSURL(string: "https://\(subdomain).present.tv/\(apiVersion)/")
-}()
+let baseURL: NSURL = NSURL(string: "https://api-staging.present.tv/v1/")
 
 let Version = "2014-09-09"
 
