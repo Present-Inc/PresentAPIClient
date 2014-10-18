@@ -73,7 +73,7 @@ public class User: Object {
     private let logger = User._logger()
     private var _isAdmin: Bool = false
     private var _username: String!
-    private var profileImageUrlString: String = "https://user-assets.present.tv/profile-pictures/default.png"
+    private var profileImageUrlString: String = "http://user-assets.present.tv/profile-pictures/default.png"
     
     private lazy var videosCollection = CursoredCollection<Video>()
     
