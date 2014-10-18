@@ -256,6 +256,11 @@ public extension User {
         UserSession.currentSession()?.save()
     }
     
+    func updateFacebookAccount(username: String, userId: String, accessToken: String, expirationDate: NSDate) {
+        self.facebookData = SocialData(username: username, userId: userId, accessToken: accessToken, expirationDate: expirationDate)
+        UserSession.currentSession()?.save()
+    }
+    
     func removeFacebookAccount() {
         self.facebookData.clear()
         UserSession.currentSession()?.save()
