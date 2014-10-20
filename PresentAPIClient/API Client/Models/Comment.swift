@@ -54,7 +54,7 @@ public class Comment: Object {
 extension Comment {
     // MARK: Class Methods
     
-    public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: CommentCollectionSuccess?, failure: FailureBlock) -> Request {
+    public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: CommentCollectionSuccess?, failure: FailureBlock) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let commentResults = jsonArray.map { Comment(json: $0["object"], video: video) }
             success?(commentResults, nextCursor)
@@ -69,7 +69,7 @@ extension Comment {
         )
     }
     
-    public class func getCommentWithId(id: String, success: CommentResourceSuccess?, failure: FailureBlock) -> Request {
+    public class func getCommentWithId(id: String, success: CommentResourceSuccess?, failure: FailureBlock) -> APIRequest {
         return APIManager
             .sharedInstance()
             .requestResource(
@@ -81,7 +81,7 @@ extension Comment {
     
     // MARK: Instance Methods
     
-    public func create(success: CommentResourceSuccess?, failure: FailureBlock?) -> Request {
+    public func create(success: CommentResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         if body.isEmpty {
             let error = NSError(domain: "CommentErrorDomain", code: 100, userInfo: [NSLocalizedDescriptionKey: "Comment body is empty."])
             failure?(error)
@@ -96,7 +96,7 @@ extension Comment {
         )
     }
     
-    public func destroy(success: CommentResourceSuccess?, failure: FailureBlock?) -> Request {
+    public func destroy(success: CommentResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             if success != nil {
                 success!(self)
@@ -112,7 +112,7 @@ extension Comment {
         )
     }
     
-    public func updateBody(newBody: String, success: CommentResourceSuccess?, failure: FailureBlock?) -> Request {
+    public func updateBody(newBody: String, success: CommentResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return APIManager
             .sharedInstance()
             .requestResource(

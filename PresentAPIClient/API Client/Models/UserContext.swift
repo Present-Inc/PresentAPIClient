@@ -74,7 +74,7 @@ public class UserContext: Object {
         super.encodeWithCoder(aCoder)
     }
     
-    public class func authenticate(username: String, password: String, success: UserContextResourceSuccess?, failure: FailureBlock?) -> Request {
+    public class func authenticate(username: String, password: String, success: UserContextResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
             success?(currentUserContext)
@@ -97,7 +97,7 @@ public class UserContext: Object {
         )
     }
     
-    public class func updatePushNotificationIdentifier(success: UserContextResourceSuccess? = nil, failure: FailureBlock? = nil) -> Request? {
+    public class func updatePushNotificationIdentifier(success: UserContextResourceSuccess? = nil, failure: FailureBlock? = nil) -> APIRequest? {
         if let deviceIdentifier = self.pushNotificationIdentifier {
             let successHandler: ResourceSuccess = { jsonResponse in
                 let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
@@ -116,7 +116,7 @@ public class UserContext: Object {
         }
     }
     
-    public class func logOut(completion: FailureBlock? = nil) -> Request {
+    public class func logOut(completion: FailureBlock? = nil) -> APIRequest {
         let successHandler: ResourceSuccess = { _ in
             if completion != nil {
                 completion!(nil)

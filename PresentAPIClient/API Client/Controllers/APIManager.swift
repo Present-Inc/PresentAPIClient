@@ -32,20 +32,20 @@ public class APIManager {
     }
     
     init() {
-        self.multipartManager = AFHTTPRequestOperationManager(baseURL: baseURL)
-        self.multipartManager.securityPolicy.allowInvalidCertificates = true
-        self.multipartManager.requestSerializer = AFHTTPRequestSerializer()
-        self.multipartManager.responseSerializer = AFJSONResponseSerializer()
+        multipartManager = AFHTTPRequestOperationManager(baseURL: baseURL)
+        //self.multipartManager.securityPolicy.allowInvalidCertificates = true
+        multipartManager.requestSerializer = AFHTTPRequestSerializer()
+        multipartManager.responseSerializer = AFJSONResponseSerializer()
         
-        self.setValue(Version, forHeaderKey: PresentVersionHeader)
-        self.configureManager()
+        setValue(Version, forHeaderKey: PresentVersionHeader)
+        configureManager()
     }
     
     func configureManager() {
         let configuration = NSURLSessionConfiguration.defaultSessionConfiguration()
         configuration.HTTPAdditionalHeaders = headers
         
-        self.manager = Alamofire.Manager(configuration: configuration)
+        manager = Alamofire.Manager(configuration: configuration)
     }
     
     func setValue(value: String?, forHeaderKey key: String!) {
@@ -56,47 +56,39 @@ public class APIManager {
     // Complexity: O(n) where n = values.count
     func setValues(values: [String], forHeaderKeys keys: [String]) {
         for i in 0..<keys.count {
-            self.setValue(values[i], forHeaderKey: keys[i])
+            setValue(values[i], forHeaderKey: keys[i])
         }
     }
     
     // Complexity: O(n) where n = headers.count
     func setHeaders(headers: [String: String]) {
         for (key, value) in headers {
-            self.setValue(value, forHeaderKey: key)
+            setValue(value, forHeaderKey: key)
         }
     }
     
     func setUserContextHeaders(userContext: UserContext) {
-        self.setValue(userContext.sessionToken, forHeaderKey: SessionTokenHeader)
-        self.setValue(userContext.user.id, forHeaderKey: UserIdHeader)
+        setValue(userContext.sessionToken, forHeaderKey: SessionTokenHeader)
+        setValue(userContext.user.id, forHeaderKey: UserIdHeader)
         
-        self.configureManager()
+        configureManager()
     }
     
     func clearUserContextHeaders() {
-        self.setValue(nil, forHeaderKey: SessionTokenHeader)
-        self.setValue(nil, forHeaderKey: UserIdHeader)
+        setValue(nil, forHeaderKey: SessionTokenHeader)
+        setValue(nil, forHeaderKey: UserIdHeader)
 
-        self.configureManager()
+        configureManager()
     }
     
     // MARK: GET
     
-    func requestResource(request: URLRequestConvertible, success: ResourceSuccess, failure: FailureBlock?) -> Alamofire.Request {
-        return self.request(request).resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
-        
-        //debugPrintln(request)
-        
-        //return request
+    func requestResource(request: URLRequestConvertible, success: ResourceSuccess, failure: FailureBlock?) -> APIRequest {
+        return APIRequest(request: self.request(request).resourceResponseJSON(resourceCompletionHandler(success, failure: failure)))
     }
     
-    func requestCollection(request: URLRequestConvertible, success: CollectionSuccess, failure: FailureBlock?) -> Alamofire.Request {
-        return self.request(request).collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
-        
-        //debugPrintln(request)
-        
-        //return request
+    func requestCollection(request: URLRequestConvertible, success: CollectionSuccess, failure: FailureBlock?) -> APIRequest {
+        return APIRequest(request: self.request(request).collectionResponseJSON(collectionCompletionHandler(success, failure: failure)))
     }
     
     private func request(request: URLRequestConvertible) -> Request {
@@ -106,8 +98,7 @@ public class APIManager {
     // MARK: Multi-part POST
     
     func multipartPost(fileUrl: NSURL, name: String, fileName: String, mimeType: String, resource: String, parameters: [String: AnyObject]?, success: VoidBlock?, failure: FailureBlock?) {
-        let fileData = NSData(contentsOfURL: fileUrl)
-        self.multipartPost(resource, parameters: parameters, data: fileData, name: name, fileName: fileName, mimeType: mimeType, success: success, failure: failure)
+        multipartPost(resource, parameters: parameters, data: NSData(contentsOfURL: fileUrl), name: name, fileName: fileName, mimeType: mimeType, success: success, failure: failure)
     }
     
     func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, success: VoidBlock?, failure: FailureBlock?) {
@@ -134,7 +125,7 @@ private extension APIManager {
     private func resourceCompletionHandler(success: ResourceSuccess?, failure: FailureBlock?) -> APIResourceResponseCompletionBlock {
         return { request, response, object, error in
             if error != nil {
-                self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
+                self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\(error)")
                 failure?(error)
             } else {
                 self.logger.debug("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) succeeded.")
@@ -146,7 +137,7 @@ private extension APIManager {
     private func collectionCompletionHandler(success: CollectionSuccess?, failure: FailureBlock?) -> APICollectionResponseCompletionBlock {
         return { request, response, results, nextCursor, error in
             if error != nil {
-                self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\t\(error)")
+                self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\(error)")
                 failure?(error)
             } else {
                 self.logger.debug("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) succeeded.")

@@ -290,17 +290,17 @@ public enum UserBatchSearchType: String {
 
 public extension User {
     
-    class func getUserWithUsername(username: String, success: UserResourceSuccess?, failure: FailureBlock?) -> Request {
+    class func getUserWithUsername(username: String, success: UserResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return getUserWithParameters(username: username, success: success, failure: failure)
     }
     
-    class func getUserWithId(id: String, success: ((User) -> ())?, failure: FailureBlock?) -> Request {
+    class func getUserWithId(id: String, success: ((User) -> ())?, failure: FailureBlock?) -> APIRequest {
         return getUserWithParameters(id: id, success: success, failure: failure)
     }
     
     // MARK: Search Users
 
-    class func batchSearch(parameters: [UserBatchSearchType: [String]], cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> Request {
+    class func batchSearch(parameters: [UserBatchSearchType: [String]], cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             var users = jsonArray.map { User(json: $0) }
             success?(users, nextCursor)
@@ -334,7 +334,7 @@ public extension User {
         )
     }
     
-    class func search(queryString: String, cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> Request {
+    class func search(queryString: String, cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let userResults = jsonArray.map { User(json: $0) }
             success?(userResults, nextCursor)
@@ -351,7 +351,7 @@ public extension User {
     
     // MARK: Password Reset
     
-    class func requestPasswordReset(email: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+    class func requestPasswordReset(email: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { _ in
             if success != nil {
                 success!()
@@ -369,7 +369,7 @@ public extension User {
     
     // MARK: Fetch User
     
-    func fetch(success: UserResourceSuccess? = nil, failure: FailureBlock? = nil) -> Request {
+    func fetch(success: UserResourceSuccess? = nil, failure: FailureBlock? = nil) -> APIRequest {
         return User.getUserWithId(self.id!, success: { user in
             self.mergeResultsFromObject(user)
             success?(user)
@@ -378,7 +378,7 @@ public extension User {
     
     // MARK: Create
     
-    func create(success: UserResourceSuccess?, failure: FailureBlock?) -> Request {
+    func create(success: UserResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             let user = User(json: jsonResponse)
             self.mergeResultsFromObject(user)
@@ -396,7 +396,7 @@ public extension User {
     
     // MARK: Update
     
-    func update(properties: [String: String], success: UserResourceSuccess?, failure: FailureBlock?) -> Request {
+    func update(properties: [String: String], success: UserResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             let user = User(json: jsonResponse["result"])
             self.mergeResultsFromObject(user)
@@ -436,7 +436,7 @@ public extension User {
 public extension User {
     // MARK: Followers
     
-    func getFollowers(cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> Request {
+    func getFollowers(cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         return Friendship.getBackwardFriendships(self, cursor: cursor, success: { friendships, nextCursor in
             let followers = friendships.map { $0.sourceUser }
             success?(followers, nextCursor)
@@ -445,7 +445,7 @@ public extension User {
     
     // MARK: Friends
     
-    func getFriends(cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> Request {
+    func getFriends(cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         return Friendship.getForwardFriendships(self, cursor: cursor, success: { friendships, nextCursor in
             let friends = friendships.map { $0.targetUser }
             success?(friends, nextCursor)
@@ -454,7 +454,7 @@ public extension User {
     
     // MARK: Likes
     
-    func getLikes(cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> Request {
+    func getLikes(cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         return Like.getForwardLikes(self, cursor: cursor, success: { likes, nextCursor in
             let likedVideos = likes.map { $0.video }
             success?(likedVideos, nextCursor)
@@ -463,7 +463,7 @@ public extension User {
     
     // MARK: Videos
     
-    func getVideos(cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> Request {
+    func getVideos(cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         return Video.getVideosForUser(self, cursor: cursor, success: success, failure: failure)
     }
 }
@@ -471,7 +471,7 @@ public extension User {
 // MARK: Private Convenience
 
 private extension User {
-    class func getUserWithParameters(username: String? = nil, id: String? = nil, success: UserResourceSuccess?, failure: FailureBlock?) -> Request {
+    class func getUserWithParameters(username: String? = nil, id: String? = nil, success: UserResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             let user = User(json: jsonResponse["result"])
             success?(user)

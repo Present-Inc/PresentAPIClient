@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Present, Inc. All rights reserved.
 //
 
-import Foundation
-
 protocol ObjectSubclass {
     /**
         Used to merge to Object's together.

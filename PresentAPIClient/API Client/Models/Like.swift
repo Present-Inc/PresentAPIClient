@@ -44,7 +44,7 @@ public extension Like {
     
     // MARK: Create
     
-    class func create(videoId: String, success: LikeResourceSuccess?, failure: FailureBlock?) -> Request {
+    class func create(videoId: String, success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             UserSession.currentSession()?.getObjectMetaForKey(videoId).like?.forward = true
             
@@ -63,7 +63,7 @@ public extension Like {
     
     // MARK: Destroy
     
-    class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+    class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             UserSession.currentSession()?.getObjectMetaForKey(videoId).like?.forward = false
             
@@ -83,7 +83,7 @@ public extension Like {
     
     // MARK: Forward Likes For User
     
-    class func getForwardLikes(user: User, cursor: Int? = 0, success: LikeCollectionSuccess?, failure: FailureBlock?) -> Request {
+    class func getForwardLikes(user: User, cursor: Int? = 0, success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let likeResults = jsonArray.map { Like(json: $0["object"], user: user) }
             success?(likeResults, nextCursor)
@@ -100,7 +100,7 @@ public extension Like {
     
     // MARK: Backward Likes For User
     
-    class func getBackwardLikes(video: Video, cursor: Int? = 0, success: LikeCollectionSuccess?, failure: FailureBlock?) -> Request {
+    class func getBackwardLikes(video: Video, cursor: Int? = 0, success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let likeResults = jsonArray.map { Like(json: $0["object"], video: video) }
             success?(likeResults, nextCursor)
@@ -119,7 +119,7 @@ public extension Like {
     
     // MARK: Create
     
-    func create(success: LikeResourceSuccess?, failure: FailureBlock?) -> Request {
+    func create(success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return Like.create(video.id!, success: { like in
             self.mergeResultsFromObject(like)
             success?(self)
@@ -129,7 +129,7 @@ public extension Like {
     
     // MARK: Destroy
     
-    func destroy(success: LikeResourceSuccess?, failure: FailureBlock?) -> Request {
+    func destroy(success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return Like.destroy(video.id!, success: {
             if success != nil {
                 success!(self)

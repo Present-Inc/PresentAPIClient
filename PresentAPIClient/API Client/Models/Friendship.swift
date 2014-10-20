@@ -48,7 +48,7 @@ public extension Friendship {
     
     // MARK: Create
     
-    class func create(targetUserId: String, success: FriendshipResourceSuccess?, failure: FailureBlock?) -> Request {
+    class func create(targetUserId: String, success: FriendshipResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship?.forward = true
             
@@ -67,7 +67,7 @@ public extension Friendship {
     
     // MARK: Destroy
     
-    class func destroy(targetUserId: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+    class func destroy(targetUserId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship?.forward = false
             
@@ -87,7 +87,7 @@ public extension Friendship {
     
     // MARK: Forward Friendships
     
-    class func getForwardFriendships(user: User, cursor: Int? = 0, success: FriendshipCollectionSuccess?, failure: FailureBlock?) -> Request {
+    class func getForwardFriendships(user: User, cursor: Int? = 0, success: FriendshipCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let forwardFriendships = jsonArray.map { Friendship(json: $0["object"], sourceUser: user) }
             success?(forwardFriendships, nextCursor)
@@ -104,7 +104,7 @@ public extension Friendship {
     
     // MARK: Backward Friendships
     
-    class func getBackwardFriendships(user: User, cursor: Int? = 0, success: FriendshipCollectionSuccess?, failure: FailureBlock?) -> Request {
+    class func getBackwardFriendships(user: User, cursor: Int? = 0, success: FriendshipCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let backwardFriendships = jsonArray.map { Friendship(json: $0["object"], targetUser: user) }
             success?(backwardFriendships, nextCursor)
@@ -123,7 +123,7 @@ public extension Friendship {
     
     // MARK: Friendship Creation
     
-    func create(success: FriendshipResourceSuccess?, failure: FailureBlock?) -> Request {
+    func create(success: FriendshipResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return Friendship.create(targetUser.id!, success: { friendship in
             self.mergeResultsFromObject(friendship)
             success?(self)
@@ -132,7 +132,7 @@ public extension Friendship {
     
     // MARK: Friendship Destruction
     
-    func destroy(success: FriendshipResourceSuccess?, failure: FailureBlock?) -> Request {
+    func destroy(success: FriendshipResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return Friendship.destroy(targetUser.id!, success: {
             if success != nil {
                 success!(self)
