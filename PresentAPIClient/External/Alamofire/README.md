@@ -18,9 +18,7 @@ Alamofire is an HTTP networking library written in Swift, from the [creator](htt
 ## Requirements
 
 - iOS 7.0+ / Mac OS X 10.9+
-- Xcode 6.0
-
-> For Xcode 6.1, use [the `xcode-6.1` branch](https://github.com/Alamofire/Alamofire/tree/xcode-6.1).
+- Xcode 6.1
 
 ## Communication
 
@@ -31,6 +29,8 @@ Alamofire is an HTTP networking library written in Swift, from the [creator](htt
 - If you **want to contribute**, submit a pull request.
 
 ## Installation
+
+> For application targets that do not support embedded frameworks, such as iOS 7, Alamofire can be integrated by including the `Alamofire.swift` source file directly, wrapping the top-level types in `struct Alamofire` to simulate a namespace. Yes, this sucks.
 
 _Due to the current lack of [proper infrastructure](http://cocoapods.org) for Swift dependency management, using Alamofire in your project requires the following steps:_
 
@@ -687,8 +687,8 @@ enum Router: URLRequestConvertible {
 
     var URLRequest: NSURLRequest {
         let URL = NSURL(string: Router.baseURLString)
-        let mutableURLRequest = NSMutableURLRequest(URL: URL.URLByAppendingPathComponent(path))
-        mutableURLRequest.HTTPMethod = method.toRaw()
+        let mutableURLRequest = NSMutableURLRequest(URL: URL!.URLByAppendingPathComponent(path))
+        mutableURLRequest.HTTPMethod = method.rawValue
 
         if let token = Router.OAuthToken {
             mutableURLRequest.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")

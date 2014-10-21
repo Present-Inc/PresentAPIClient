@@ -53,7 +53,7 @@ enum ActivityRouter: URLRequestConvertible {
         }()
             
         let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.toRaw()
+        URLRequest.HTTPMethod = method.rawValue
             
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
@@ -116,7 +116,7 @@ enum CommentRouter: URLRequestConvertible {
         }()
             
         let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.toRaw()
+        URLRequest.HTTPMethod = method.rawValue
             
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
@@ -173,7 +173,7 @@ enum FriendshipRouter: URLRequestConvertible {
         }()
             
         let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.toRaw()
+        URLRequest.HTTPMethod = method.rawValue
         
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
@@ -230,7 +230,7 @@ enum LikeRouter: URLRequestConvertible {
         }()
             
         let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.toRaw()
+        URLRequest.HTTPMethod = method.rawValue
         
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
@@ -299,7 +299,7 @@ enum UserRouter: URLRequestConvertible {
         }()
             
         let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.toRaw()
+        URLRequest.HTTPMethod = method.rawValue
             
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
@@ -347,7 +347,7 @@ enum UserContextRouter: URLRequestConvertible {
         }()
             
         let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.toRaw()
+        URLRequest.HTTPMethod = method.rawValue
             
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
@@ -425,7 +425,7 @@ enum VideoRouter: URLRequestConvertible {
         }()
             
         let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.toRaw()
+        URLRequest.HTTPMethod = method.rawValue
         
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
@@ -482,7 +482,7 @@ enum ViewRouter: URLRequestConvertible {
         }()
             
         let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.toRaw()
+        URLRequest.HTTPMethod = method.rawValue
             
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }

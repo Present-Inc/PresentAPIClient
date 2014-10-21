@@ -37,7 +37,7 @@ public typealias VideoCollectionSuccess = ([Video], Int) -> ()
 public typealias ViewResourceSuccess = (View) -> ()
 public typealias ViewCollectionSuccess = ([View], Int) -> ()
 
-let baseURL: NSURL = NSURL(string: "https://api-staging.present.tv/v1/")
+let baseURL = NSURL(string: "https://api-staging.present.tv/v1/")!
 
 let Version = "2014-09-09"
 

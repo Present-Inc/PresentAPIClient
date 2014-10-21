@@ -12,13 +12,13 @@
 
 QuickSharedExampleGroupsBegin(FunctionalTestsObjCSharedExampleGroups)
 
-qck_sharedExamples(@"a truthy value", ^(QCKDSLSharedExampleContext context) {
+sharedExamples(@"a truthy value", ^(QCKDSLSharedExampleContext sharedExampleContext) {
     __block NSNumber *value = nil;
-    qck_beforeEach(^{
-        value = context()[@"value"];
+    beforeEach(^{
+        value = sharedExampleContext()[@"value"];
     });
 
-    qck_it(@"is true", ^{
+    it(@"is true", ^{
         expect(value).to(beTruthy());
     });
 });
@@ -31,25 +31,41 @@ static BOOL beforeSuiteExecuted_afterSuiteNotYetExecuted = NO;
 
 QuickSpecBegin(FunctionalTestsObjC)
 
-qck_beforeSuite(^{
+beforeSuite(^{
     beforeSuiteExecuted_afterSuiteNotYetExecuted = YES;
 });
 
-qck_afterSuite(^{
+afterSuite(^{
     beforeSuiteExecuted_afterSuiteNotYetExecuted = NO;
 });
 
-qck_describe(@"a describe block", ^{
-    qck_it(@"contains an it block", ^{
+describe(@"a describe block", ^{
+    it(@"contains an it block", ^{
         expect(@(beforeSuiteExecuted_afterSuiteNotYetExecuted)).to(beTruthy());
     });
 
-    qck_itBehavesLike(@"a truthy value", ^{ return @{ @"value": @YES }; });
+    itBehavesLike(@"a truthy value", ^{ return @{ @"value": @YES }; });
 
-    qck_pending(@"a pending block", ^{
-        qck_it(@"contains a failing it block", ^{
+    pending(@"a pending block", ^{
+        it(@"contains a failing it block", ^{
             expect(@NO).to(beTruthy());
         });
+    });
+    
+    xdescribe(@"a pending (shorthand) describe block", ^{
+        it(@"contains a failing it block", ^{
+            expect(@NO).to(beTruthy());
+        });
+    });
+    
+    xcontext(@"a pending (shorthand) context block", ^{
+        it(@"contains a failing it block", ^{
+            expect(@NO).to(beTruthy());
+        });
+    });
+    
+    xit(@"contains a pending (shorthand) it block", ^{
+        expect(@NO).to(beTruthy());
     });
 });
 
