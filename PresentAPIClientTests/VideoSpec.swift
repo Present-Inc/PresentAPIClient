@@ -29,6 +29,23 @@ class VideoSpec: QuickSpec {
                 expect { searchCursor }.toEventually(beLessThanOrEqualTo(30), timeout: defaultTimeoutLength)
                 expect { searchError }.toEventually(beNil(), timeout: defaultTimeoutLength)
             }
+            
+            it("can retrieve a user's home feed") {
+                var feedResults: [Video]?,
+                    nextCursor: Int?,
+                    feedError: NSError?
+                
+                Video.getHomeVideos(cursor: 0, success: { videos, cursor in
+                    feedResults = videos
+                    nextCursor = cursor
+                }, failure: { error in
+                    feedError = error
+                })
+                
+                expect { feedResults }.toEventuallyNot(beNil(), timeout: defaultTimeoutLength)
+                expect { nextCursor }.toEventually(beGreaterThan(0), timeout: defaultTimeoutLength)
+                expect { feedError }.toEventually(beNil(), timeout: defaultTimeoutLength)
+            }
         }
         
         pending ("a video") {

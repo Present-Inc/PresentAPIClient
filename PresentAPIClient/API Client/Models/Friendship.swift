@@ -8,14 +8,16 @@
 
 import UIKit
 import SwiftyJSON
+import Swell
+import Alamofire
 
 public class Friendship: Object {
-    override class var apiResourcePath: String { return "friendships" }
+    public private(set) var sourceUser: User
+    public private(set) var targetUser: User
     
-    private(set) var sourceUser: User!
-    private(set) var targetUser: User!
-    
-    internal let logger = Friendship._logger()
+    private class var logger: Logger {
+        return self._logger("Friendship")
+    }
     
     public init(sourceUser: User, targetUser: User) {
         self.sourceUser = sourceUser
@@ -24,21 +26,15 @@ public class Friendship: Object {
         super.init()
     }
     
-    public override init(json: JSON) {
-        if let sourceUserId = json["sourceUser"].string {
-            if sourceUserId == UserSession.currentUser()?.id {
-                self.logger.debug("Setting the current user to the source user")
-                self.sourceUser = UserSession.currentUser()
-            }
+    public init(json: JSON, sourceUser: User? = nil, targetUser: User? = nil) {
+        if let sourceUser = sourceUser {
+            self.sourceUser = sourceUser
         } else {
             self.sourceUser = User(json: json["sourceUser"])
         }
         
-        if let targetUserId = json["targetUser"].string {
-            if targetUserId == UserSession.currentUser()?.id {
-                self.logger.debug("Setting the current user to the target user")
-                self.targetUser = UserSession.currentUser()
-            }
+        if let targetUser = targetUser {
+            self.targetUser = targetUser
         } else {
             self.targetUser = User(json: json["targetUser"])
         }
@@ -47,79 +43,60 @@ public class Friendship: Object {
     }
 }
 
-private extension Friendship {
-    class func _logger() -> Logger {
-        return Swell.getLogger("Friendship")
-    }
-}
-
 public extension Friendship {
-    // MARK: Friendships
-    public class func create(targetUser: User, success: ((Friendship) -> ())?, failure: FailureBlock?) {
-        let parameters = [
-            "user_id": targetUser.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+    // MARK: - Class Resource Methods
+    
+    // MARK: Create
+    
+    class func create(targetUserId: String, success: FriendshipResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship?.forward = true
+            
             let friendship = Friendship(json: jsonResponse["result"]["object"])
             success?(friendship)
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                Friendship.createResource(),
-                parameters: parameters,
+            .requestResource(
+                FriendshipRouter.Create(userId: targetUserId),
                 success: successHandler,
                 failure: failure
         )
     }
     
-    public class func destroy(targetUser: User, success: (() -> ())?, failure: FailureBlock?) {
-        let parameters = [
-            "user_id": targetUser.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+    // MARK: Destroy
+    
+    class func destroy(targetUserId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship?.forward = false
+            
             if success != nil {
                 success!()
             }
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                Friendship.destroyResource(),
-                parameters: parameters,
+            .requestResource(
+                FriendshipRouter.Destroy(userId: targetUserId),
                 success: successHandler,
                 failure: failure
         )
     }
     
-    
     // MARK: Forward Friendships
     
-    public class func getForwardFriendships(user: User, cursor: Int? = 0, success: (([Friendship], Int) -> ())?, failure: FailureBlock) {
-        var parameters = [
-            "username": user.username as NSString,
-            "cursor": cursor!
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            self._logger().debug("Retrieved page \(cursor) of forward friendships. Next cursor is \(nextCursor)")
-            
-            var forwardFriendships = [Friendship]()
-            for jsonFriendship: JSON in jsonArray {
-                var friendship = Friendship(json: jsonFriendship["object"])
-                friendship.sourceUser = user
-                forwardFriendships.append(friendship)
-            }
-            
+    class func getForwardFriendships(user: User, cursor: Int? = 0, success: FriendshipCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            let forwardFriendships = jsonArray.map { Friendship(json: $0["object"], sourceUser: user) }
             success?(forwardFriendships, nextCursor)
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                Friendship.pathForResource("list_user_forward_friendships"),
-                parameters: parameters,
+            .requestCollection(
+                FriendshipRouter.ForwardFriendships(userId: user.id!, cursor: cursor!),
                 success: successHandler,
                 failure: failure
         )
@@ -127,48 +104,39 @@ public extension Friendship {
     
     // MARK: Backward Friendships
     
-    public class func getBackwardFriendships(user: User, cursor: Int? = 0, success: (([Friendship], Int) -> ())?, failure: FailureBlock) {
-        var parameters = [
-            "username": user.username as NSString,
-            "cursor": cursor!
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            self._logger().debug("Retrieved page \(cursor) of backward friendships. Next cursor is \(nextCursor)")
-            
-            var backwardFriendships = [Friendship]()
-            for jsonFriendship: JSON in jsonArray {
-                var friendship = Friendship(json: jsonFriendship["object"])
-                friendship.targetUser = user
-                backwardFriendships.append(friendship)
-            }
-            
+    class func getBackwardFriendships(user: User, cursor: Int? = 0, success: FriendshipCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            let backwardFriendships = jsonArray.map { Friendship(json: $0["object"], targetUser: user) }
             success?(backwardFriendships, nextCursor)
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                Friendship.pathForResource("list_user_backward_friendships"),
-                parameters: parameters,
+            .requestCollection(
+                FriendshipRouter.BackwardFriendships(userId: user.id!, cursor: cursor!),
                 success: successHandler,
                 failure: failure
         )
     }
     
-    // MARK: Instance Methods
+    // MARK: - Instance Resource Methods
     
-    public func create(success: ((Friendship) -> ())?, failure: FailureBlock) {
-        Friendship.create(targetUser, success: { friendship in
-            self.logger.debug("Successfully created friendship between \(self.sourceUser.username) and \(self.targetUser.username)")
+    // MARK: Friendship Creation
+    
+    func create(success: FriendshipResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+        return Friendship.create(targetUser.id!, success: { friendship in
             self.mergeResultsFromObject(friendship)
             success?(self)
         }, failure: failure)
     }
     
-    public func destroy(success: ((Friendship) -> ())?, failure: FailureBlock) {
-        Friendship.destroy(targetUser, success: {
-            self.logger.debug("Successfully destroyed friendship between \(self.sourceUser.username) and \(self.targetUser.username)")
-            success?(self)
+    // MARK: Friendship Destruction
+    
+    func destroy(success: FriendshipResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+        return Friendship.destroy(targetUser.id!, success: {
+            if success != nil {
+                success!(self)
+            }
         }, failure: failure)
     }
 }

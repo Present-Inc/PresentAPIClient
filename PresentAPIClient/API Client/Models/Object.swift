@@ -8,105 +8,66 @@
 
 import UIKit
 import SwiftyJSON
+import Swell
 
 public class Object: NSObject, ObjectSubclass {
-    internal class var apiResourcePath: String { return "" }
-    
     public var isNew: Bool {
-        return _id.isEmpty
+        return id == nil
     }
     
-    public var id: String {
-        return _id
-    }
+    public private(set) var id: String?
+    public private(set) var creationDate: NSDate = NSDate()
+    public private(set) var lastUpdatedDate: NSDate?
     
-    public var creationDate: NSDate? {
-        return _creationDate
-    }
-    
-    public var lastUpdated: NSDate? {
-        return _lastUpdated
-    }
-    
-    private var _id: String = ""
-    private var _creationDate: NSDate? = nil
-    private var _lastUpdated: NSDate? = nil
-    
-    // !!!: These need to remain here until variables can be overridden from extensions
-    internal class func createResource() -> String {
-        return self.pathForResource("create")
-    }
-    
-    internal class func destroyResource() -> String {
-        return self.pathForResource("destroy")
-    }
-    
-    internal class func showResource() -> String {
-        return self.pathForResource("show")
-    }
-    
-    internal class func listResource() -> String {
-        return self.pathForResource("list")
-    }
-    
-    internal class func updateResource() -> String {
-        return self.pathForResource("update")
-    }
-    
-    internal class func searchResource() -> String {
-        return self.pathForResource("search")
-    }
-    
-    internal class func pathForResource(resource: String) -> String {
-        return "\(self.apiResourcePath)/\(resource)"
+    class func _logger(var name: String?) -> Logger {
+        if name == nil {
+            name = "Default"
+        }
+        
+        return Swell.getLogger(name!)
     }
     
     public override init() {
-        _creationDate = NSDate()
         super.init()
     }
     
     public init(id: String) {
-        _id = id
-        _creationDate = NSDate()
-        
+        self.id = id
         super.init()
     }
     
+    // TODO: This could potentially benefit from being moved to a class method that can fail.
     public init(json: JSON) {
         if let createdAt = json["_creationDate"].string {
-            _creationDate = NSDate.dateFromISOString(createdAt)
+            creationDate = NSDate.dateFromISOString(createdAt)
         }
         
         if let updatedAt = json["_lastUpdateDate"].string {
-            _lastUpdated = NSDate.dateFromISOString(updatedAt)
+            lastUpdatedDate = NSDate.dateFromISOString(updatedAt)
         }
         
         if let objectId = json["_id"].string {
-            _id = objectId
+            id = objectId
         }
         
         super.init()
     }
     
     public init(coder aDecoder: NSCoder!) {
-        if let id = aDecoder.decodeObjectForKey("_id") as? String {
-            _id = id
-        }
-        
-        _creationDate = aDecoder.decodeObjectForKey("creationDate") as? NSDate
-        _lastUpdated = aDecoder.decodeObjectForKey("lastUpdated") as? NSDate
+        id = aDecoder.decodeObjectForKey("id") as? String
+        creationDate = aDecoder.decodeObjectForKey("creationDate") as NSDate
+        lastUpdatedDate = aDecoder.decodeObjectForKey("lastUpdatedDate") as? NSDate
     }
     
     public func encodeWithCoder(aCoder: NSCoder!) {
-        aCoder.encodeObject(_id, forKey: "_id")
+        aCoder.encodeObject(creationDate, forKey: "creationDate")
         
-        if _creationDate != nil {
-            aCoder.encodeObject(_creationDate!, forKey: "creationDate")
+        if id != nil {
+            aCoder.encodeObject(id!, forKey: "id")
         }
         
-        if _lastUpdated != nil {
-            aCoder.encodeObject(_lastUpdated!, forKey: "lastUpdated")
+        if lastUpdatedDate != nil {
+            aCoder.encodeObject(lastUpdatedDate!, forKey: "lastUpdatedDate")
         }
     }
     
@@ -124,19 +85,16 @@ public class Object: NSObject, ObjectSubclass {
         return false
     }
     
+    /**
+        If this method is overridden, subclasses must invoke super.mergeResultsFromObject
+     */
     public func mergeResultsFromObject(object: Object) {
-        if _id == "" || _id.isEmpty {
-            _id = object._id
-        }
-        
-        if _creationDate == nil {
-            _creationDate = object._creationDate
-        }
-        
-        _lastUpdated = object._lastUpdated
+        id = object.id
+        creationDate = object.creationDate
+        lastUpdatedDate = object.lastUpdatedDate
     }
 }
 
 func ==(lhs: Object, rhs: Object) -> Bool {
-    return lhs._id == rhs._id
+    return lhs.id == rhs.id
 }

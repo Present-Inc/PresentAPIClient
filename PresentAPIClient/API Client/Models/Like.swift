@@ -8,166 +8,129 @@
 
 import UIKit
 import SwiftyJSON
+import Swell
+import Alamofire
 
 public class Like: Object {
-    override class var apiResourcePath: String { return "likes" }
-    
-    public var user: User {
-        return _user
-    }
-    
-    public var video: Video {
-        return _video
-    }
-    
-    internal var _user: User!
-    internal var _video: Video!
-    
-    private let logger = Like._logger()
+    public private(set) var user: User
+    public private(set) var video: Video
     
     public init(user: User, video: Video) {
-        _user = user
-        _video = video
+        self.user = user
+        self.video = video
         
         super.init()
     }
     
-    public override init(json: JSON) {
-        var userId: String? = json["sourceUser"].string
-        if userId == nil {
-            _user = User(json: json["sourceUser"])
+    public init(json: JSON, user: User? = nil, video: Video? = nil) {
+        if let user = user {
+            self.user = user
+        } else {
+            self.user = User(json: json["sourceUser"])
         }
-        
-        var videoId: String? = json["targetVideo"].string
-        if videoId == nil {
-            _video = Video(json: json["targetVideo"])
+
+        if let video = video {
+            self.video = video
+        } else {
+            self.video = Video(json: json["targetVideo"])
         }
         
         super.init(json: json)
     }
 }
 
-private extension Like {
-    class func _logger() -> Logger {
-        return Swell.getLogger("Like")
-    }
-}
-
 public extension Like {
-    // MARK: Class Resource Methods
+    // MARK: - Class Resource Methods
     
-    class func destroyLikeForVideo(video: Video, success: (() -> ())?, failure: FailureBlock?) {
-        var parameters: [String: AnyObject] = [
-            "video_id": video.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            UserSession.currentSession()?
-                .storeObjectMeta(
-                    SubjectiveObjectMeta(
-                        like: Relation(forward: false),
-                        friendship: nil,
-                        view: nil
-                    ),
-                    forObject: video
-            )
+    // MARK: Create
+    
+    class func create(videoId: String, success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            UserSession.currentSession()?.getObjectMetaForKey(videoId).like?.forward = true
+            
+            let like = Like(json: jsonResponse["object"])
+            success?(like)
+        }
+        
+        return APIManager
+            .sharedInstance()
+            .requestResource(
+                LikeRouter.Create(videoId: videoId),
+                success: successHandler,
+                failure: failure
+        )
+    }
+    
+    // MARK: Destroy
+    
+    class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: ResourceSuccess = { jsonResponse in
+            UserSession.currentSession()?.getObjectMetaForKey(videoId).like?.forward = false
             
             if success != nil {
                 success?()
             }
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                Like.destroyResource(),
-                parameters: parameters,
+            .requestResource(
+                LikeRouter.Destroy(videoId: videoId),
                 success: successHandler,
                 failure: failure
         )
     }
     
-    class func getForwardLikes(user: User, cursor: Int? = 0, success: (([Like], Int) -> ())?, failure: FailureBlock?) {
-        var parameters: [String: AnyObject] = [
-            "cursor": cursor!,
-            "user_id": user.id
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            self._logger().debug("JSON Array results: \(jsonArray)")
-            
-            var likeResults = [Like]()
-            for jsonLike: JSON in jsonArray {
-                var like = Like(json: jsonLike["object"])
-                like._user = user
-                likeResults.append(like)
-            }
-            
+    // MARK: Forward Likes For User
+    
+    class func getForwardLikes(user: User, cursor: Int? = 0, success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            let likeResults = jsonArray.map { Like(json: $0["object"], user: user) }
             success?(likeResults, nextCursor)
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                Like.pathForResource("list_user_forward_likes"),
-                parameters: parameters,
+            .requestCollection(
+                LikeRouter.ForwardLikes(userId: user.id!, cursor: cursor!),
                 success: successHandler,
                 failure: failure
         )
     }
     
-    class func getBackwardLikes(video: Video, cursor: Int? = 0, success: (([Like], Int) -> ())?, failure: FailureBlock?) {
-        var parameters: [String: AnyObject] = [
-            "cursor": cursor!,
-            "video_id": video.id
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            self._logger().debug("JSON Array results: \(jsonArray)")
-            
-            var likeResults = jsonArray.map { jsonLike -> Like in
-                var like = Like(json: jsonLike["object"])
-                like._video = video
-                
-                return like
-            }
-            
+    // MARK: Backward Likes For User
+    
+    class func getBackwardLikes(video: Video, cursor: Int? = 0, success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            let likeResults = jsonArray.map { Like(json: $0["object"], video: video) }
             success?(likeResults, nextCursor)
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                Like.pathForResource("list_video_backward_likes"),
-                parameters: parameters,
+            .requestCollection(
+                LikeRouter.BackwardLikes(videoId: video.id!, cursor: cursor!),
                 success: successHandler,
                 failure: failure
         )
     }
     
-    // MARK: Instance Resource methods
+    // MARK: - Instance Resource Methods
     
-    func create(success: ((Like) -> ())?, failure: FailureBlock?) {
-        var parameters: [String: AnyObject] = [
-            "video_id": self.video.id
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
-            if success != nil {
-                var like = Like(json: jsonResponse["object"])
-                self.mergeResultsFromObject(like)
-                success?(self)
-            }
-        }
-        
-        APIManager
-            .sharedInstance()
-            .postResource(
-                Like.createResource(),
-                parameters: parameters,
-                success: successHandler,
-                failure: failure
-        )
+    // MARK: Create
+    
+    func create(success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+        return Like.create(video.id!, success: { like in
+            self.mergeResultsFromObject(like)
+            success?(self)
+        }, failure: failure)
+
     }
     
-    func destroy(success: ((Like) -> ())?, failure: FailureBlock?) {
-        Like.destroyLikeForVideo(self.video, success: {
+    // MARK: Destroy
+    
+    func destroy(success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+        return Like.destroy(video.id!, success: {
             if success != nil {
                 success!(self)
             }

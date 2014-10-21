@@ -8,6 +8,8 @@
 
 import UIKit
 import SwiftyJSON
+import Swell
+import Alamofire
 
 #if DEBUG
 let PushNotificationPlatform = "APNS_SANDBOX"
@@ -16,17 +18,29 @@ let PushNotificationPlatform = "APNS"
 #endif
 
 public class UserContext: Object {
-    override class var apiResourcePath: String { return "user_contexts" }
-    
     public var sessionToken: String!
     public var user: User!
     
-    private struct Static {
+    private struct PushNotificationCredentials {
         static var pushNotificationIdentifier: String? = nil
     }
-
-    class func _logger() -> Logger {
-        return Swell.getLogger("UserContext")
+    
+    public class var pushNotificationIdentifier: String? {
+        set {
+            PushNotificationCredentials.pushNotificationIdentifier = newValue
+        
+            // If the user is logged in and the push notification identifier is not nil, update the current user context
+            if newValue != nil && UserSession.currentSession() != nil {
+                UserContext.updatePushNotificationIdentifier()
+            }
+        }
+        get {
+            return PushNotificationCredentials.pushNotificationIdentifier
+        }
+    }
+    
+    private class var logger: Logger {
+        return self._logger("UserContext")
     }
     
     public init(sessionToken: String, user: User) {
@@ -60,61 +74,50 @@ public class UserContext: Object {
         super.encodeWithCoder(aCoder)
     }
     
-    public class func setPushNotificationDeviceIdentifier(deviceIdentifier: String) {
-        Static.pushNotificationIdentifier = deviceIdentifier
-    }
-    
-    public class func authenticate(username: String, password: String, success: ((UserContext) -> ())?, failure: FailureBlock?) {
-        var authCredentials: [String: AnyObject] = [
-            "username": username,
-            "password": password,
-            "push_notification_platform": PushNotificationPlatform
-        ],
-        successHandler: ResourceSuccessBlock = { jsonResponse in
+    public class func authenticate(username: String, password: String, success: UserContextResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: ResourceSuccess = { jsonResponse in
             let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
             success?(currentUserContext)
         }
         
-        if let deviceIdentifier = Static.pushNotificationIdentifier {
-            authCredentials["device_identifier"] = deviceIdentifier
-        }
+        let requestConvertible: URLRequestConvertible = {
+            if let pushNotificationIdentifier = PushNotificationCredentials.pushNotificationIdentifier {
+                return UserContextRouter.AuthenticateWithPushCredentials(username: username, password: password, deviceId: pushNotificationIdentifier, platform: PushNotificationPlatform)
+            } else {
+                return UserContextRouter.Authenticate(username: username, password: password)
+            }
+        }()
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                self.createResource(),
-                parameters: authCredentials,
+            .requestResource(
+                requestConvertible,
                 success: successHandler,
                 failure: failure
         )
     }
     
-    public class func updatePushNotificationIdentifier(pushIdentifier: String, success: ((UserContext) -> ())? = nil, failure: FailureBlock? = nil) {
-        self.setPushNotificationDeviceIdentifier(pushIdentifier)
-        
-        if UserSession.currentSession() != nil {
-            var pushCredentials = [
-                "device_identifier": pushIdentifier,
-                "push_notification_platform": PushNotificationPlatform
-            ],
-            successHandler: ResourceSuccessBlock = { jsonResponse in
+    public class func updatePushNotificationIdentifier(success: UserContextResourceSuccess? = nil, failure: FailureBlock? = nil) -> APIRequest? {
+        if let deviceIdentifier = self.pushNotificationIdentifier {
+            let successHandler: ResourceSuccess = { jsonResponse in
                 let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
                 success?(currentUserContext)
             }
             
-            APIManager
+            return APIManager
                 .sharedInstance()
-                .postResource(
-                    self.updateResource(),
-                    parameters: pushCredentials,
+                .requestResource(
+                    UserContextRouter.Update(deviceIdentifier: deviceIdentifier, platform: PushNotificationPlatform),
                     success: successHandler,
                     failure: failure
             )
+        } else {
+            return nil
         }
     }
     
-    public class func logOut(completion: ((NSError?) -> ())? = nil) {
-        var successHandler: ResourceSuccessBlock = { _ in
+    public class func logOut(completion: FailureBlock? = nil) -> APIRequest {
+        let successHandler: ResourceSuccess = { _ in
             if completion != nil {
                 completion!(nil)
             }
@@ -125,11 +128,10 @@ public class UserContext: Object {
             }
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postResource(
-                self.destroyResource(),
-                parameters: nil,
+            .requestResource(
+                UserContextRouter.Destroy(),
                 success: successHandler,
                 failure: errorHandler
         )

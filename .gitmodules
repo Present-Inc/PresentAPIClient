@@ -1,15 +1,23 @@
-[submodule "PresentAPIClient/Alamofire"]
-	path = PresentAPIClient/Alamofire
+[submodule "PresentAPIClient/External/Alamofire"]
+	path = PresentAPIClient/External/Alamofire
 	url = https://github.com/Alamofire/Alamofire.git
-[submodule "PresentAPIClient/Quick"]
-	path = PresentAPIClient/Quick
+
+[submodule "PresentAPIClient/External/Quick"]
+	path = PresentAPIClient/External/Quick
 	url = https://github.com/Quick/Quick.git
-[submodule "PresentAPIClient/Nimble"]
-	path = PresentAPIClient/Nimble
+
+[submodule "PresentAPIClient/External/Nimble"]
+	path = PresentAPIClient/External/Nimble
 	url = https://github.com/Quick/Nimble.git
-[submodule "PresentAPIClient/AFNetworking"]
-	path = PresentAPIClient/AFNetworking
+
+[submodule "PresentAPIClient/External/AFNetworking"]
+	path = PresentAPIClient/External/AFNetworking
 	url = https://github.com/AFNetworking/AFNetworking.git
-[submodule "PresentAPIClient/SwiftyJSON"]
-	path = PresentAPIClient/SwiftyJSON
+
+[submodule "PresentAPIClient/External/SwiftyJSON"]
+	path = PresentAPIClient/External/SwiftyJSON
 	url = https://github.com/SwiftyJSON/SwiftyJSON.git
+
+[submodule "PresentAPIClient/External/Swell"]
+	path = PresentAPIClient/External/Swell
+	url = https://github.com/hubertr/Swell.git

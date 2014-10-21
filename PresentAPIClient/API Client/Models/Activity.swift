@@ -8,6 +8,8 @@
 
 import Foundation
 import SwiftyJSON
+import Swell
+import Alamofire
 
 public enum ActivityType: String {
     case NewComment = "newComment"
@@ -18,6 +20,7 @@ public enum ActivityType: String {
     case NewVideoMention = "newVideoMention"
     case NewViewer = "newViewer"
     case NewDemand = "newDemand"
+    case Invalid = "invalid"
 
     public func isVideoType() -> Bool {
         return (self == .NewComment || self == .NewCommentMention || self == .NewVideoByFriend || self == NewVideoMention)
@@ -25,99 +28,67 @@ public enum ActivityType: String {
 }
 
 public class Activity: Object {
-    override class var apiResourcePath: String { return "activities" }
+    public private(set) var subject: String = ""
+    public private(set) var fromUser: User
+    public private(set) var comment: Comment?
+    public private(set) var video: Video?
+    public private(set) var unread: Bool = false
+    public private(set) var type: ActivityType = .Invalid
     
-    public var subject: String {
-        return _subject
-    }
-    public var fromUser: User {
-        return _fromUser
-    }
-    public var comment: Comment {
-        return _comment
-    }
-    public var video: Video {
-        return _video
-    }
-    public var unread: Bool {
-        return _unread
-    }
-    public var type: ActivityType {
-        return _type
-    }
-    
-    private var _subject: String!
-    private var _fromUser: User!
-    private var _comment: Comment!
-    private var _video: Video!
-    private var _unread: Bool!
-    private var _type: ActivityType!
-    
-    private let logger = Activity._logger()
-
-    private class func _logger() -> Logger {
-        return Swell.getLogger("Activity")
+    private class var logger: Logger {
+        return self._logger("Activity")
     }
     
     public override init(json: JSON) {
         if let isUnread = json["isUnread"].bool {
-            _unread = isUnread
+            self.unread = isUnread
         }
         
         if let subjectString = json["subject"].string {
-            _subject = subjectString
+            self.subject = subjectString
         }
         
         if let activityType = json["type"].string {
-            _type = ActivityType.fromRaw(activityType)
+            self.type = ActivityType(rawValue: activityType) ?? .Invalid
         }
         
-        _fromUser = User(json: json["sourceUser"])
-        _video = Video(json: json["video"])
+        self.fromUser = User(json: json["sourceUser"])
+        self.video = Video(json: json["video"])
         
         super.init(json: json)
     }
+}
+
+public extension Activity {
+    // MARK: - Class Resource Methods
     
-    // MARK: Class Resource Methods
-    
-    public class func getActivities(cursor: Int? = 0, success: (([Activity], Int) -> ())?, failure: FailureBlock?) {
-        var parameters = [
-            "cursor": cursor!
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            var activities = jsonArray.map({ Activity(json: $0["object"]) })
+    public class func getActivities(cursor: Int? = 0, success: ActivityCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            let activities = jsonArray.map { Activity(json: $0["object"]) }.filter { $0.type != .Invalid }
             success?(activities, nextCursor)
         }
         
-        APIManager
+        return APIManager
             .sharedInstance()
-            .getCollection(
-                self.pathForResource("list_my_activities"),
-                parameters: parameters,
+            .requestCollection(
+                ActivityRouter.Activities(cursor: cursor!),
                 success: successHandler,
                 failure: failure
         )
     }
     
-    public class func markAsRead(activities: [Activity], success: ((AnyObject) -> ())?, failure: FailureBlock?) {
-        var markAsRead = [String]()
-        for activity in activities {
-            markAsRead.append(activity.id)
+    public class func markAsRead(activities: [Activity], success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
+        let markAsRead = activities.filter { !$0.isNew }.map { $0.id! }
+        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+            if success != nil {
+                success!()
+            }
         }
         
-        var parameters = [
-            "activity_ids": markAsRead
-        ],
-        successHandler: CollectionSuccessBlock = { jsonArray, nextCursor in
-            println("Successfully updated activities")
-            success?(1)
-        }
-        
-        APIManager
+        return APIManager
             .sharedInstance()
-            .postCollection(
-                self.pathForResource("batch_update"),
-                parameters: parameters,
+            .requestCollection(
+                ActivityRouter.MarkAsRead(activityIds: markAsRead),
                 success: successHandler,
                 failure: failure
         )
