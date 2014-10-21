@@ -49,7 +49,7 @@ public class Activity: Object {
         }
         
         if let activityType = json["type"].string {
-            self.type = ActivityType.fromRaw(activityType) ?? .Invalid
+            self.type = ActivityType(rawValue: activityType) ?? .Invalid
         }
         
         self.fromUser = User(json: json["sourceUser"])

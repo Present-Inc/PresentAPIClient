@@ -14,10 +14,7 @@ import Swell
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
     
-    private var _callbackQueue = dispatch_queue_create(CallbackQueueIdentifier, DISPATCH_QUEUE_CONCURRENT)
-    var callbackQueue: dispatch_queue_t {
-        return _callbackQueue
-    }
+    public let callbackQueue = dispatch_queue_create(CallbackQueueIdentifier, DISPATCH_QUEUE_CONCURRENT)
     
     private var headers: [String: String] = [:]
     private var manager: Alamofire.Manager!
@@ -98,7 +95,24 @@ public class APIManager {
     // MARK: Multi-part POST
     
     func multipartPost(fileUrl: NSURL, name: String, fileName: String, mimeType: String, resource: String, parameters: [String: AnyObject]?, success: VoidBlock?, failure: FailureBlock?) {
-        multipartPost(resource, parameters: parameters, data: NSData(contentsOfURL: fileUrl), name: name, fileName: fileName, mimeType: mimeType, success: success, failure: failure)
+        if let data = NSData(contentsOfURL: fileUrl) {
+            multipartPost(
+                resource,
+                parameters: parameters,
+                data: data,
+                name: name,
+                fileName: fileName,
+                mimeType: mimeType,
+                success: success,
+                failure: failure
+            )
+        } else {
+            let error = NSError(domain: "APIManagerErrorDomain", code: 1000, userInfo: [
+                NSLocalizedDescriptionKey: "Failed to retrieve data from \(fileUrl)"
+            ])
+            
+            failure?(error)
+        }
     }
     
     func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, success: VoidBlock?, failure: FailureBlock?) {
