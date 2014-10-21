@@ -30,16 +30,35 @@
     @end \
 
 
-#define qck_beforeSuite(block) [QCKDSL beforeSuite:block]
-#define qck_afterSuite(block) [QCKDSL afterSuite:block]
-#define qck_sharedExamples(name, block) [QCKDSL sharedExamples:name closure:block]
-#define qck_describe(description, block) [QCKDSL describe:description closure:block]
-#define qck_context(description, block) [QCKDSL context:description closure:block]
-#define qck_beforeEach(block) [QCKDSL beforeEach:block]
-#define qck_afterEach(block) [QCKDSL afterEach:block]
-#define qck_it(description, block) [QCKDSL it:description file:@(__FILE__) line:__LINE__ closure:block]
-#define qck_itBehavesLike(name, block) [QCKDSL itBehavesLike:name context:block file:@(__FILE__) line:__LINE__]
-#define qck_pending(description, block) [QCKDSL pending:description closure:block]
+#define qck_beforeSuite(...) [QCKDSL beforeSuite:__VA_ARGS__]
+#define qck_afterSuite(...) [QCKDSL afterSuite:__VA_ARGS__]
+#define qck_sharedExamples(name, ...) [QCKDSL sharedExamples:name closure:__VA_ARGS__]
+#define qck_describe(description, ...) [QCKDSL describe:description closure:__VA_ARGS__]
+#define qck_context(description, ...) [QCKDSL context:description closure:__VA_ARGS__]
+#define qck_beforeEach(...) [QCKDSL beforeEach:__VA_ARGS__]
+#define qck_afterEach(...) [QCKDSL afterEach:__VA_ARGS__]
+#define qck_it(description, ...) [QCKDSL it:description file:@(__FILE__) line:__LINE__ closure:__VA_ARGS__]
+#define qck_itBehavesLike(name, ...) [QCKDSL itBehavesLike:name context:__VA_ARGS__ file:@(__FILE__) line:__LINE__]
+#define qck_pending(description, ...) [QCKDSL pending:description closure:__VA_ARGS__]
+#define qck_xdescribe(description, ...) [QCKDSL xdescribe:description closure:__VA_ARGS__]
+#define qck_xcontext(description, ...) [QCKDSL xcontext:description closure:__VA_ARGS__]
+#define qck_xit(description, ...) [QCKDSL xit:description closure:__VA_ARGS__]
+
+#ifndef QUICK_DISABLE_SHORT_SYNTAX
+#define beforeSuite(...) qck_beforeSuite(__VA_ARGS__)
+#define afterSuite(...) qck_afterSuite(__VA_ARGS__)
+#define sharedExamples(name, ...) qck_sharedExamples(name, __VA_ARGS__)
+#define describe(description, ...) qck_describe(description, __VA_ARGS__)
+#define context(description, ...) qck_context(description, __VA_ARGS__)
+#define beforeEach(...) qck_beforeEach(__VA_ARGS__)
+#define afterEach(...) qck_afterEach(__VA_ARGS__)
+#define it(description, ...) qck_it(description, __VA_ARGS__)
+#define itBehavesLike(name, ...) qck_itBehavesLike(name, __VA_ARGS__)
+#define pending(description, ...) qck_pending(description, __VA_ARGS__)
+#define xdescribe(description, ...) qck_xdescribe(description, __VA_ARGS__)
+#define xcontext(description, ...) qck_xcontext(description, __VA_ARGS__)
+#define xit(description, ...) qck_xit(description, __VA_ARGS__)
+#endif
 
 typedef NSDictionary *(^QCKDSLSharedExampleContext)(void);
 typedef void (^QCKDSLSharedExampleBlock)(QCKDSLSharedExampleContext);
@@ -56,5 +75,8 @@ typedef void (^QCKDSLSharedExampleBlock)(QCKDSLSharedExampleContext);
 + (void)it:(NSString *)description file:(NSString *)file line:(NSUInteger)line closure:(void(^)(void))closure;
 + (void)itBehavesLike:(NSString *)name context:(QCKDSLSharedExampleContext)context file:(NSString *)file line:(NSUInteger)line;
 + (void)pending:(NSString *)description closure:(void(^)(void)) __unused closure;
++ (void)xdescribe:(NSString *)description closure:(void(^)(void)) __unused closure;
++ (void)xcontext:(NSString *)description closure:(void(^)(void)) __unused closure;
++ (void)xit:(NSString *)description closure:(void(^)(void)) __unused closure;
 
 @end

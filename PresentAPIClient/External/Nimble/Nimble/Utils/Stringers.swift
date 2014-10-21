@@ -1,11 +1,11 @@
 import Foundation
 
 
-func _identityAsString(value: NSObject?) -> String {
+func _identityAsString(value: AnyObject?) -> String {
     if value == nil {
         return "nil"
     }
-    return NSString(format: "<%p>", value!)
+    return NSString(format: "<%p>", unsafeBitCast(value!, Int.self))
 }
 
 func _arrayAsString<T>(items: [T], joiner: String = ", ") -> String {
@@ -40,19 +40,16 @@ extension NSArray : NMBStringer {
     }
 }
 
-func stringify<T>(value: T?) -> String {
+func stringify<T>(value: T) -> String {
     if value is Double {
         return NSString(format: "%.4f", (value as Double))
     }
     return toString(value)
 }
 
-extension Optional: Printable {
-    public var description: String {
-        switch self {
-        case let .Some(value):
-            return toString(value)
-        default: return "nil"
-        }
+func stringify<T>(value: T?) -> String {
+    if let unboxed = value {
+       return stringify(unboxed)
     }
+    return "nil"
 }
