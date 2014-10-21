@@ -10,55 +10,40 @@ import Foundation
 import SwiftyJSON
 
 public class Error: NSObject, Printable {
-    public var code: Int? {
-        return _code
-    }
-    
-    public var errorDescription: String? {
-        return _description
-    }
-    
-    public var stack: String? {
-        return _stack
-    }
-    
-    public var message: String? {
-        return _message
-    }
-    
-    public var result: String? {
-        return _result
-    }
-    
-    private var _code: Int!
-    private var _description: String!
-    private var _stack: String!
-    private var _message: String!
-    private var _result: String!
-    
+    public private(set) var code: Int?
+    public private(set) var errorDescription: String?
+    public private(set) var stack: String?
+    public private(set) var message: String?
+    public private(set) var result: String?
+    public private(set) var data: [String: AnyObject]?
+
     public override var description: String {
-        return " {\n\tcode: \(self.code)\n\tdescription: \(self.errorDescription)\n\tmessage: \(self.message)\n\tresult: \(self.result)}"
+        return " {\n\tcode: \(self.code)\n\tdescription: \(self.errorDescription)\n\tmessage: \(self.message)\n\tresult: \(self.result)\ndata: \(self.data)\n}"
     }
     
     init(json: JSON) {
         if let errorCode = json["errorCode"].int {
-            _code = errorCode
+            code = errorCode
         }
         
-        if let errorDescription = json["errorInfo"]["description"].string {
-            _description = errorDescription
+        if let description = json["errorInfo"]["description"].string {
+            errorDescription = description
         }
         
         if let stacktrace = json["errorInfo"]["stack"].string {
-            _stack = stacktrace
+            stack = stacktrace
         }
         
         if let errorMessage = json["errorInfo"]["message"].string {
-            _message = errorMessage
+            message = errorMessage
         }
         
-        if let result = json["result"].string {
-            _result = result
+        if let errorResult = json["result"].string {
+            result = errorResult
+        }
+        
+        if let errorData = json["errorInfo"]["data"].dictionaryObject {
+            data = errorData
         }
     }
 }

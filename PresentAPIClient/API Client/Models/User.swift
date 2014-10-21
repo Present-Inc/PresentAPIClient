@@ -294,57 +294,33 @@ public extension User {
         return getUserWithParameters(username: username, success: success, failure: failure)
     }
     
-    class func getUserWithId(id: String, success: ((User) -> ())?, failure: FailureBlock?) -> APIRequest {
+    class func getUserWithId(id: String, success: UserResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return getUserWithParameters(id: id, success: success, failure: failure)
     }
     
     // MARK: Search Users
 
     class func batchSearch(parameters: [UserBatchSearchType: [String]], cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
-            var users = jsonArray.map { User(json: $0) }
-            success?(users, nextCursor)
-        }
-        
         var requestParameters = [String: [String]]()
         for (key, value) in parameters {
             requestParameters[key.toRaw()] = value
         }
         
-        // ???: This is for elasticsearch
-//        var queryString = ""
-//        for (key, value) in parameters {
-//            for i in 0..<value.count {
-//                var item = value[i]
-//                queryString += "\(key.toRaw()):" + item
-//                if i < value.count - 1 {
-//                    queryString += " OR "
-//                }
-//            }
-//        }
-        
-//        requestParameters["query"] = queryString
-        
         return APIManager
             .sharedInstance()
             .requestCollection(
                 UserRouter.BatchSearch(parameters: requestParameters),
-                success: successHandler,
+                success: collectionSuccessWithCompletion(success),
                 failure: failure
         )
     }
     
     class func search(queryString: String, cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
-            let userResults = jsonArray.map { User(json: $0) }
-            success?(userResults, nextCursor)
-        }
-
         return APIManager
             .sharedInstance()
             .requestCollection(
                 UserRouter.Search(query: queryString, cursor: cursor!),
-                success: successHandler,
+                success: collectionSuccessWithCompletion(success),
                 failure: failure
         )
     }
@@ -352,17 +328,11 @@ public extension User {
     // MARK: Password Reset
     
     class func requestPasswordReset(email: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { _ in
-            if success != nil {
-                success!()
-            }
-        }
-        
         return APIManager
             .sharedInstance()
             .requestResource(
                 UserRouter.RequestPasswordReset(email: email),
-                success: successHandler,
+                success: voidSuccessWithCompletion(success),
                 failure: failure
         )
     }
@@ -370,26 +340,30 @@ public extension User {
     // MARK: Fetch User
     
     func fetch(success: UserResourceSuccess? = nil, failure: FailureBlock? = nil) -> APIRequest {
-        return User.getUserWithId(self.id!, success: { user in
-            self.mergeResultsFromObject(user)
-            success?(user)
-        }, failure: failure)
+        return User.getUserWithId(
+            self.id!,
+            // !!!: 100% pure horse shit
+            success: { user in
+                self.mergeResultsFromObject(user)
+                
+                dispatch_async(dispatch_get_main_queue(), {
+                    if success != nil {
+                        success!(self)
+                    }
+                })
+            },
+            failure: failure
+        )
     }
     
     // MARK: Create
     
     func create(success: UserResourceSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
-            let user = User(json: jsonResponse)
-            self.mergeResultsFromObject(user)
-            success?(self)
-        }
-        
         return APIManager
             .sharedInstance()
             .requestResource(
                 UserRouter.Create(username: username, password: password!, email: email!),
-                success: successHandler,
+                success: mergeResourceSuccessWithCompletion(success),
                 failure: failure
         )
     }
@@ -397,17 +371,11 @@ public extension User {
     // MARK: Update
     
     func update(properties: [String: String], success: UserResourceSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
-            let user = User(json: jsonResponse["result"])
-            self.mergeResultsFromObject(user)
-            success?(self)
-        }
-        
         return APIManager
             .sharedInstance()
             .requestResource(
                 UserRouter.Update(properties: properties),
-                success: successHandler,
+                success: mergeResourceSuccessWithCompletion(success),
                 failure: failure
         )
     }
@@ -439,7 +407,12 @@ public extension User {
     func getFollowers(cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         return Friendship.getBackwardFriendships(self, cursor: cursor, success: { friendships, nextCursor in
             let followers = friendships.map { $0.sourceUser }
-            success?(followers, nextCursor)
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                if success != nil {
+                    success!(followers, nextCursor)
+                }
+            })
         }, failure: failure)
     }
     
@@ -448,7 +421,12 @@ public extension User {
     func getFriends(cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         return Friendship.getForwardFriendships(self, cursor: cursor, success: { friendships, nextCursor in
             let friends = friendships.map { $0.targetUser }
-            success?(friends, nextCursor)
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                if success != nil {
+                    success!(friends, nextCursor)
+                }
+            })
         }, failure: failure)
     }
     
@@ -457,7 +435,12 @@ public extension User {
     func getLikes(cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         return Like.getForwardLikes(self, cursor: cursor, success: { likes, nextCursor in
             let likedVideos = likes.map { $0.video }
-            success?(likedVideos, nextCursor)
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                if success != nil {
+                    success!(likedVideos, nextCursor)
+                }
+            })
         }, failure: failure)
     }
     
@@ -472,11 +455,6 @@ public extension User {
 
 private extension User {
     class func getUserWithParameters(username: String? = nil, id: String? = nil, success: UserResourceSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
-            let user = User(json: jsonResponse["result"])
-            success?(user)
-        }
-        
         let requestConvertible: URLRequestConvertible = {
             if username != nil {
                 return UserRouter.UserForUsername(username: username!)
@@ -489,8 +467,60 @@ private extension User {
             .sharedInstance()
             .requestResource(
                 requestConvertible,
-                success: successHandler,
+                success: resourceSuccessWithCompletion(success),
                 failure: failure
         )
+    }
+}
+
+// MARK: - Response Handlers
+
+private extension User {
+    class func resourceSuccessWithCompletion(completion: UserResourceSuccess?) -> ResourceSuccess {
+        return { jsonResponse in
+            let user = User(json: jsonResponse["result"])
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                if completion != nil {
+                    completion!(user)
+                }
+            })
+        }
+    }
+    
+    class func collectionSuccessWithCompletion(completion: UserCollectionSuccess?) -> CollectionSuccess {
+        return { jsonArray, nextCursor in
+            let users = jsonArray.map { User(json: $0) }
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                if completion != nil {
+                    completion!(users, nextCursor)
+                }
+            })
+        }
+    }
+    
+    class func voidSuccessWithCompletion(completion: VoidBlock?) -> ResourceSuccess {
+        return { _ in
+            dispatch_async(dispatch_get_main_queue(), {
+                if completion != nil {
+                    completion!()
+                }
+            })
+        }
+    }
+    
+    func mergeResourceSuccessWithCompletion(completion: UserResourceSuccess?) -> ResourceSuccess {
+        let completionHandler: UserResourceSuccess = { user in
+            self.mergeResultsFromObject(user)
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                if completion != nil {
+                    completion!(self)
+                }
+            })
+        }
+        
+        return User.resourceSuccessWithCompletion(completionHandler)
     }
 }

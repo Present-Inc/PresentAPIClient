@@ -442,9 +442,9 @@ private extension Video {
             self.commentsCollection.cursor = nextCursor
             
             success?(comments, nextCursor)
-            }, failure: { error in
-                Video.logger.error("Failed to load more coments.\n\(error)")
-                failure?(error)
+        }, failure: { error in
+            Video.logger.error("Failed to load more coments.\n\(error)")
+            failure?(error)
         })
     }
     
