@@ -16,14 +16,14 @@ public class APIRequest {
     }
     
     public func resume() {
-        self.request.resume()
+        request.resume()
     }
     
     public func suspend() {
-        self.request.suspend()
+        request.suspend()
     }
     
     public func cancel() {
-        self.request.cancel()
+        request.cancel()
     }
 }
