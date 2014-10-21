@@ -62,7 +62,7 @@ public class Activity: Object {
 public extension Activity {
     // MARK: - Class Resource Methods
     
-    public class func getActivities(cursor: Int? = 0, success: ActivityCollectionSuccess?, failure: FailureBlock?) -> Request {
+    public class func getActivities(cursor: Int? = 0, success: ActivityCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let activities = jsonArray.map { Activity(json: $0["object"]) }.filter { $0.type != .Invalid }
             success?(activities, nextCursor)
@@ -77,7 +77,7 @@ public extension Activity {
         )
     }
     
-    public class func markAsRead(activities: [Activity], success: VoidBlock?, failure: FailureBlock?) -> Request {
+    public class func markAsRead(activities: [Activity], success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
         let markAsRead = activities.filter { !$0.isNew }.map { $0.id! }
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             if success != nil {

@@ -40,7 +40,8 @@ enum ActivityRouter: URLRequestConvertible {
             switch self {
             case .Activities(let cursor):
                 return ("activities/list_my_activities", [
-                    "cursor": cursor
+                    "cursor": cursor,
+                    "limit": 100
                 ])
             case .MarkAsRead(let activities):
                 return ("activities/batch_update", [

@@ -34,7 +34,7 @@ public extension View {
     
     // MARK: Create
     
-    class func create(videoId: String, success: ViewResourceSuccess?, failure: FailureBlock?) -> Request {
+    class func create(videoId: String, success: ViewResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             UserSession.currentSession()?.getObjectMetaForKey(videoId).view?.forward = true
             
@@ -53,7 +53,7 @@ public extension View {
     
     // MARK: Destroy
     
-    class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> Request {
+    class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
         let successHandler: ResourceSuccess = { jsonResponse in
             UserSession.currentSession()?.getObjectMetaForKey(videoId).view?.forward = false
             
@@ -73,7 +73,7 @@ public extension View {
     
     // MARK: Forward Views For User
     
-    class func listForwardViewsForUser(user: User, cursor: Int? = 0, success: ViewCollectionSuccess?, failure: FailureBlock?) -> Request {
+    class func listForwardViewsForUser(user: User, cursor: Int? = 0, success: ViewCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             let views = jsonArray.map { View(json: $0["object"]) }
             success?(views, nextCursor)
@@ -90,7 +90,7 @@ public extension View {
     
     // MARK: Backward Views For Video
     
-    class func listBackwardViewsForVideo(video: Video, cursor: Int? = 0, success: ViewCollectionSuccess?, failure: FailureBlock?) -> Request {
+    class func listBackwardViewsForVideo(video: Video, cursor: Int? = 0, success: ViewCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         let successHandler: CollectionSuccess = { jsonArray, nextCursor in
             var views = jsonArray.map { View(json: $0["object"]) }
             success?(views, nextCursor)
@@ -109,7 +109,7 @@ public extension View {
     
     // MARK: Create
     
-    func create(success: ViewResourceSuccess?, failure: FailureBlock?) -> Request {
+    func create(success: ViewResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return View.create(video.id!, success: { view in
             self.mergeResultsFromObject(view)
             success?(self)
@@ -118,7 +118,7 @@ public extension View {
     
     // MARK: Destroy
     
-    func destroy(success: ViewResourceSuccess?, failure: FailureBlock?) -> Request {
+    func destroy(success: ViewResourceSuccess?, failure: FailureBlock?) -> APIRequest {
         return View.destroy(video.id!, success: {
             if success != nil {
                 success!(self)
