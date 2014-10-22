@@ -39,7 +39,7 @@ public class Activity: Object {
         return self._logger("Activity")
     }
     
-    public override init(json: JSON) {
+    public required init(json: JSON) {
         if let isUnread = json["isUnread"].bool {
             self.unread = isUnread
         }
@@ -62,33 +62,28 @@ public class Activity: Object {
 public extension Activity {
     // MARK: - Class Resource Methods
     
-    public class func getActivities(cursor: Int? = 0, success: ActivityCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
-            let activities = jsonArray.map { Activity(json: $0["object"]) }.filter { $0.type != .Invalid }
-            success?(activities, nextCursor)
-        }
-        
+    public class func getActivities(cursor: Int? = 0, success: (([Activity], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 ActivityRouter.Activities(cursor: cursor!),
-                success: successHandler,
+                type: Activity.self,
+                success: success,
                 failure: failure
         )
     }
     
-    public class func markAsRead(activities: [Activity], success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
+    public class func markAsRead(activities: [Activity], success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let markAsRead = activities.filter { !$0.isNew }.map { $0.id! }
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
+        let successHandler: ([Activity], Int) -> () = { jsonArray, nextCursor in
             if success != nil {
                 success!()
             }
         }
         
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 ActivityRouter.MarkAsRead(activityIds: markAsRead),
+                type: Activity.self,
                 success: successHandler,
                 failure: failure
         )

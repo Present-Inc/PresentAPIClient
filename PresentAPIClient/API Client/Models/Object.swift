@@ -10,7 +10,7 @@ import UIKit
 import SwiftyJSON
 import Swell
 
-public class Object: NSObject, ObjectSubclass {
+public class Object: NSObject, ObjectSubclass, JSONSerializable {
     public var isNew: Bool {
         return id == nil
     }
@@ -36,8 +36,7 @@ public class Object: NSObject, ObjectSubclass {
         super.init()
     }
     
-    // TODO: This could potentially benefit from being moved to a class method that can fail.
-    public init(json: JSON) {
+    public required init(json: JSON) {
         if let createdAt = json["_creationDate"].string {
             creationDate = NSDate.dateFromISOString(createdAt)
         }

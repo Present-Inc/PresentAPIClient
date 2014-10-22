@@ -32,7 +32,7 @@ public class APIManager {
         multipartManager = AFHTTPRequestOperationManager(baseURL: baseURL)
         //self.multipartManager.securityPolicy.allowInvalidCertificates = true
         multipartManager.requestSerializer = AFHTTPRequestSerializer()
-        multipartManager.responseSerializer = AFJSONResponseSerializer()
+        multipartManager.responseSerializer = AFJSONResponseSerializer(readingOptions: NSJSONReadingOptions.MutableContainers)
         
         setValue(Version, forHeaderKey: PresentVersionHeader)
         configureManager()
@@ -80,12 +80,22 @@ public class APIManager {
     
     // MARK: GET
     
-    func requestResource(request: URLRequestConvertible, success: ResourceSuccess, failure: FailureBlock?) -> APIRequest {
-        return APIRequest(request: self.request(request).resourceResponseJSON(resourceCompletionHandler(success, failure: failure)))
+    class func requestResource<T: JSONSerializable>(request: URLRequestConvertible, type: T.Type, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        return self.sharedInstance().requestResource(request, type: type, success: success, failure: failure)
     }
     
-    func requestCollection(request: URLRequestConvertible, success: CollectionSuccess, failure: FailureBlock?) -> APIRequest {
-        return APIRequest(request: self.request(request).collectionResponseJSON(collectionCompletionHandler(success, failure: failure)))
+    class func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, type: T.Type, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        return self.sharedInstance().requestCollection(request, type: type, success: success, failure: failure)
+    }
+    
+    func requestResource<T: JSONSerializable>(request: URLRequestConvertible, type: T.Type, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let networkRequest = self.request(request).resourceResponseJSON(type, resourceCompletionHandler(success, failure: failure))
+        return APIRequest(request: networkRequest)
+    }
+    
+    func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, type: T.Type, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let networkRequest = self.request(request).collectionResponseJSON(type, completionHandler: collectionCompletionHandler(success, failure: failure))
+        return APIRequest(request: networkRequest)
     }
     
     private func request(request: URLRequestConvertible) -> Request {
@@ -94,7 +104,7 @@ public class APIManager {
     
     // MARK: Multi-part POST
     
-    func multipartPost(fileUrl: NSURL, name: String, fileName: String, mimeType: String, resource: String, parameters: [String: AnyObject]?, success: VoidBlock?, failure: FailureBlock?) {
+    func multipartPost(fileUrl: NSURL, name: String, fileName: String, mimeType: String, resource: String, parameters: [String: AnyObject]?, success: (() -> ())?, failure: ((NSError?) -> ())?) {
         if let data = NSData(contentsOfURL: fileUrl) {
             multipartPost(
                 resource,
@@ -115,7 +125,7 @@ public class APIManager {
         }
     }
     
-    func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, success: VoidBlock?, failure: FailureBlock?) {
+    func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, success: (() -> ())?, failure: ((NSError?) -> ())?) {
         let constructingBlock: (AFMultipartFormData!) -> Void = { formData in
             formData.appendPartWithFileData(data, name: name, fileName: fileName, mimeType: mimeType)
         }
@@ -136,7 +146,7 @@ public class APIManager {
 }
 
 private extension APIManager {
-    private func resourceCompletionHandler(success: ResourceSuccess?, failure: FailureBlock?) -> APIResourceResponseCompletionBlock {
+    func resourceCompletionHandler<T: JSONSerializable>(success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> ((NSURLRequest, NSHTTPURLResponse?, T?, NSError?) -> Void) {
         return { request, response, object, error in
             if error != nil {
                 self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\(error)")
@@ -148,7 +158,7 @@ private extension APIManager {
         }
     }
     
-    private func collectionCompletionHandler(success: CollectionSuccess?, failure: FailureBlock?) -> APICollectionResponseCompletionBlock {
+    func collectionCompletionHandler<T: JSONSerializable>(success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> ((NSURLRequest, NSHTTPURLResponse?, [T]?, Int?, NSError?) -> Void) {
         return { request, response, results, nextCursor, error in
             if error != nil {
                 self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\(error)")

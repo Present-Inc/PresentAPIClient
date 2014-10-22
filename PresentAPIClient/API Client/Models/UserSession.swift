@@ -60,7 +60,7 @@ public class UserSession: NSObject, NSCoding {
         return self.currentSession()? != nil
     }
 
-    public class func login(username: String, password: String, success: ((UserContext) -> ())?, failure: FailureBlock?) {
+    public class func login(username: String, password: String, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) {
         var successBlock: ((UserContext) -> ()) = { userContext in
             self.setCurrentSession(UserSession(userContext: userContext))
             
@@ -75,13 +75,13 @@ public class UserSession: NSObject, NSCoding {
         UserContext.authenticate(username, password: password, success: successBlock, failure: failure)
     }
 
-    public class func register(user: User, success: ((UserContext) -> ())?, failure: FailureBlock?) {
+    public class func register(user: User, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) {
         user.create({ createdUser in
             self.login(createdUser.username, password: createdUser.password!, success: success, failure: failure)
         }, failure: failure)
     }
     
-    public class func logOut(completion: FailureBlock? = nil) {
+    public class func logOut(completion: ((NSError?) -> ())? = nil) {
         self._logger().debug("Logging out the current user")
 
         UserContext.logOut { result in

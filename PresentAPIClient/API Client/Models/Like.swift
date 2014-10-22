@@ -12,8 +12,8 @@ import Swell
 import Alamofire
 
 public class Like: Object {
-    public private(set) var user: User
-    public private(set) var video: Video
+    public internal(set) var user: User
+    public internal(set) var video: Video
     
     public init(user: User, video: Video) {
         self.user = user
@@ -22,19 +22,23 @@ public class Like: Object {
         super.init()
     }
     
-    public init(json: JSON, user: User? = nil, video: Video? = nil) {
+    
+    public convenience init(json: JSON, user: User?, video: Video?) {
+        self.init(json: json)
+
         if let user = user {
             self.user = user
-        } else {
-            self.user = User(json: json["sourceUser"])
         }
 
         if let video = video {
             self.video = video
-        } else {
-            self.video = Video(json: json["targetVideo"])
         }
-        
+    }
+    
+    public required init(json: JSON) {
+        self.user = User(json: json["sourceUser"])
+        self.video = Video(json: json["targetVideo"])
+
         super.init(json: json)
     }
 }
@@ -44,18 +48,16 @@ public extension Like {
     
     // MARK: Create
     
-    class func create(videoId: String, success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
+    class func create(videoId: String, success: ((Like) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: (Like) -> () = { like in
             UserSession.currentSession()?.getObjectMetaForKey(videoId).like?.forward = true
-            
-            let like = Like(json: jsonResponse["object"])
             success?(like)
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 LikeRouter.Create(videoId: videoId),
+                type: Like.self,
                 success: successHandler,
                 failure: failure
         )
@@ -63,19 +65,16 @@ public extension Like {
     
     // MARK: Destroy
     
-    class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
+    class func destroy(videoId: String, success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: (Like) -> () = { like in
             UserSession.currentSession()?.getObjectMetaForKey(videoId).like?.forward = false
-            
-            if success != nil {
-                success?()
-            }
+            success?()
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 LikeRouter.Destroy(videoId: videoId),
+                type: Like.self,
                 success: successHandler,
                 failure: failure
         )
@@ -83,16 +82,19 @@ public extension Like {
     
     // MARK: Forward Likes For User
     
-    class func getForwardLikes(user: User, cursor: Int? = 0, success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
-            let likeResults = jsonArray.map { Like(json: $0["object"], user: user) }
-            success?(likeResults, nextCursor)
+    class func getForwardLikes(user: User, cursor: Int? = 0, success: (([Like], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: ([Like], Int) -> () = { likes, nextCursor in
+            for like in likes {
+                like.user = user
+            }
+
+            success?(likes, nextCursor)
         }
         
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 LikeRouter.ForwardLikes(userId: user.id!, cursor: cursor!),
+                type: Like.self,
                 success: successHandler,
                 failure: failure
         )
@@ -100,16 +102,19 @@ public extension Like {
     
     // MARK: Backward Likes For User
     
-    class func getBackwardLikes(video: Video, cursor: Int? = 0, success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
-            let likeResults = jsonArray.map { Like(json: $0["object"], video: video) }
-            success?(likeResults, nextCursor)
+    class func getBackwardLikes(video: Video, cursor: Int? = 0, success: (([Like], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: ([Like], Int) -> () = { likes, nextCursor in
+            for like in likes {
+                like.video = video
+            }
+
+            success?(likes, nextCursor)
         }
         
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 LikeRouter.BackwardLikes(videoId: video.id!, cursor: cursor!),
+                type: Like.self,
                 success: successHandler,
                 failure: failure
         )
@@ -119,7 +124,7 @@ public extension Like {
     
     // MARK: Create
     
-    func create(success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    func create(success: ((Like) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Like.create(video.id!, success: { like in
             self.mergeResultsFromObject(like)
             success?(self)
@@ -129,7 +134,7 @@ public extension Like {
     
     // MARK: Destroy
     
-    func destroy(success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    func destroy(success: ((Like) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Like.destroy(video.id!, success: {
             if success != nil {
                 success!(self)

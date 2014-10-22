@@ -50,7 +50,7 @@ public class UserContext: Object {
         super.init(id: "")
     }
     
-    public override init(json: JSON) {
+    public required init(json: JSON) {
         if let token = json["sessionToken"].string {
             sessionToken = token
         }
@@ -74,12 +74,7 @@ public class UserContext: Object {
         super.encodeWithCoder(aCoder)
     }
     
-    public class func authenticate(username: String, password: String, success: UserContextResourceSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
-            let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
-            success?(currentUserContext)
-        }
-        
+    public class func authenticate(username: String, password: String, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let requestConvertible: URLRequestConvertible = {
             if let pushNotificationIdentifier = PushNotificationCredentials.pushNotificationIdentifier {
                 return UserContextRouter.AuthenticateWithPushCredentials(username: username, password: password, deviceId: pushNotificationIdentifier, platform: PushNotificationPlatform)
@@ -89,26 +84,21 @@ public class UserContext: Object {
         }()
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 requestConvertible,
-                success: successHandler,
+                type: UserContext.self,
+                success: success,
                 failure: failure
         )
     }
     
-    public class func updatePushNotificationIdentifier(success: UserContextResourceSuccess? = nil, failure: FailureBlock? = nil) -> APIRequest? {
+    public class func updatePushNotificationIdentifier(success: ((UserContext) -> ())? = nil, failure: ((NSError?) -> ())? = nil) -> APIRequest? {
         if let deviceIdentifier = self.pushNotificationIdentifier {
-            let successHandler: ResourceSuccess = { jsonResponse in
-                let currentUserContext = UserContext(json: jsonResponse["result"]["object"])
-                success?(currentUserContext)
-            }
-            
             return APIManager
-                .sharedInstance()
                 .requestResource(
                     UserContextRouter.Update(deviceIdentifier: deviceIdentifier, platform: PushNotificationPlatform),
-                    success: successHandler,
+                    type: UserContext.self,
+                    success: success,
                     failure: failure
             )
         } else {
@@ -116,22 +106,22 @@ public class UserContext: Object {
         }
     }
     
-    public class func logOut(completion: FailureBlock? = nil) -> APIRequest {
-        let successHandler: ResourceSuccess = { _ in
+    public class func logOut(completion: ((NSError?) -> ())? = nil) -> APIRequest {
+        let successHandler: (UserContext) -> () = { _ in
             if completion != nil {
                 completion!(nil)
             }
         },
-        errorHandler: FailureBlock = { error in
+        errorHandler: (NSError?) -> () = { error in
             if completion != nil {
                 completion!(error)
             }
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 UserContextRouter.Destroy(),
+                type: UserContext.self,
                 success: successHandler,
                 failure: errorHandler
         )

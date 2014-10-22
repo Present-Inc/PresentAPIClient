@@ -24,9 +24,9 @@ class CommentSpec: QuickSpec {
                 Comment.getCommentsForVideo(video, cursor: 0, success: { comments, nextCursor in
                     fetchedComments = comments
                     commentCursor = nextCursor
-                    }, failure: { error in
-                        fetchError = error
-                    })
+                }, failure: { error in
+                    fetchError = error
+                })
                 
                 expect { fetchedComments }.toEventuallyNot(beNil(), timeout: defaultTimeoutLength)
                 expect { commentCursor }.toEventuallyNot(beNil(), timeout: defaultTimeoutLength)

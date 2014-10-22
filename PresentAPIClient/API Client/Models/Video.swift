@@ -93,15 +93,16 @@ public class Video: Object {
         super.init(coder: aDecoder)
     }
     
-    public init(json: JSON, creator: User? = nil) {
+    public convenience init(json: ObjectJSON, creator: User) {
+        self.init(json: json)
+        self.creator = creator
+    }
+    
+    public required init(json: ObjectJSON) {
         super.init(json: json["object"])
         
         self.initializeWithObject(json["object"])
         
-        if let user = creator {
-            self.creator = user
-        }
-
         if let objectId = self.id {
             self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
             UserSession.currentSession()?.storeObjectMeta(self.subjectiveObjectMeta, forKey: self.id!)
@@ -136,12 +137,12 @@ public class Video: Object {
         
         creator = User(json: json["creatorUser"])
         
-        if let mostRecentLikes = json["likes"]["results"].array {
-            for jsonLike: JSON in mostRecentLikes {
-                let like = Like(json: jsonLike["object"], video: self)
-                self.likesCollection.addObject(like)
-            }
-        }
+//        if let mostRecentLikes = json["likes"]["results"].array {
+//            for jsonLike: JSON in mostRecentLikes {
+//                let like = Like(json: jsonLike["object"], video: self)
+//                self.likesCollection.addObject(like)
+//            }
+//        }
         
         if let likeCount = json["likes"]["count"].int {
             self.likesCollection.cursor = likeCount
@@ -213,34 +214,29 @@ public extension Video {
 
     // MARK: Create
     
-    public class func create(startDateISOString: String, success: VideoResourceSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
-            let video = Video(json: jsonResponse["result"])
-            success?(video)
-        }
-        
+    public class func create(startDateISOString: String, success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestResource(
                 VideoRouter.Create(startDateISOString: startDateISOString),
-                success: successHandler,
+                type: Video.self,
+                success: success,
                 failure: failure
-        )
+            )
     }
     
     // MARK: Destroy
     
-    public class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
+    public class func destroy(videoId: String, success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: (Video) -> () = { _ in
             if success != nil {
                 success!()
             }
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 VideoRouter.Destroy(id: videoId),
+                type: Video.self,
                 success: successHandler,
                 failure: failure
         )
@@ -248,17 +244,17 @@ public extension Video {
     
     // MARK: Hide
     
-    public class func hide(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
+    public class func hide(videoId: String, success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: (Video) -> () = { jsonResponse in
             if success != nil {
                 success!()
             }
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 VideoRouter.Hide(id: videoId),
+                type: Video.self,
                 success: successHandler,
                 failure: failure
         )
@@ -266,7 +262,7 @@ public extension Video {
     
     // MARK: Append
     // !!!: This doesn't return a request...
-    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: VoidBlock?, failure: FailureBlock?) {
+    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: (() -> ())?, failure: ((NSError?) -> ())?) {
         let parameters = [
             "video_id": videoId as NSString,
             "media_sequence": mediaSequence
@@ -289,24 +285,24 @@ public extension Video {
     
     // MARK: Search
 
-    public class func search(queryString: String, cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    public class func search(queryString: String, cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 VideoRouter.Search(query: queryString, cursor: cursor!),
-                success: collectionSuccessWithCompletion(success),
+                type: Video.self,
+                success: success,
                 failure: failure
         )
     }
     
     // MARK: Fetch
     
-    public class func getVideoWithId(id: String, success: VideoResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    public class func getVideoWithId(id: String, success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestResource(
                 VideoRouter.VideoForId(id: id),
-                success: resourceSuccessWithCompletion(success),
+                type: Video.self,
+                success: success,
                 failure: failure
         )
     }
@@ -314,25 +310,22 @@ public extension Video {
     // MARK: List
     
     // !!!: This is a big old red flag for what I'm trying to avoid.
-    public class func getVideosForUser(user: User, cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    public class func getVideosForUser(user: User, cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 VideoRouter.VideosForUser(userId: user.id!, cursor: cursor!),
-                success: { jsonArray, nextCursor in
-                    let videos = jsonArray.map { Video(json: $0, creator: user) }
-                    success?(videos, nextCursor)
-                },
+                type: Video.self,
+                success: success,
                 failure: failure
         )
     }
     
-    public class func getHomeVideos(cursor: Int? = 0, success: VideoCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    public class func getHomeVideos(cursor: Int? = 0, success: (([Video], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 VideoRouter.HomeFeed(cursor: cursor!),
-                success: collectionSuccessWithCompletion(success),
+                type: Video.self,
+                success: success,
                 failure: failure
         )
     }
@@ -341,7 +334,7 @@ public extension Video {
     
     // MARK: Create
     
-    public func create(success: VideoResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func create(success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Video.create(NSDate.ISOStringFromDate(startDate), success: { video in
             self.mergeResultsFromObject(video)
             success?(self)
@@ -350,7 +343,7 @@ public extension Video {
     
     // MARK: Destroy
     
-    public func destroy(success: VideoResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func destroy(success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Video.destroy(self.id!, success: {
             if success != nil {
                 success!(self)
@@ -360,7 +353,7 @@ public extension Video {
     
     // MARK: Hide
     
-    public func hide(success: VideoResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func hide(success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Video.hide(self.id!, success: {
             if success != nil {
                 success!(self)
@@ -370,15 +363,11 @@ public extension Video {
     
     // MARK: Update Caption
     
-    public func updateCaption(caption: String, success: VideoResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func updateCaption(caption: String, success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         self.caption = caption
         
-        let successHandler: ResourceSuccess = { jsonResponse in
-            var videoResponse = Video(json: jsonResponse)
-            self.mergeResultsFromObject(videoResponse)
-            
-            Video.logger.debug("Successfully updated video \(self)")
-            
+        let successHandler: (Video) -> () = { video in
+            self.mergeResultsFromObject(video)
             success?(self)
         }
 
@@ -386,41 +375,42 @@ public extension Video {
             .sharedInstance()
             .requestResource(
                 VideoRouter.Update(id: self.id!, caption: caption),
+                type: Video.self,
                 success: successHandler,
                 failure: failure
-        )
+            )
     }
 }
 
 // MARK: Video Resource Helpers
 
 public extension Video {
-    public func refreshComments(success: CommentCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func refreshComments(success: (([Comment], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         commentsCollection.reset()
         return getComments(commentsCursor, success: success, failure: failure)
     }
     
-    public func loadMoreComments(success: CommentCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func loadMoreComments(success: (([Comment], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return getComments(commentsCursor, success: success, failure: failure)
     }
     
-    public func refreshLikes(success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func refreshLikes(success: (([Like], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         likesCollection.reset()
         return getLikes(likesCursor, success: success, failure: failure)
     }
     
-    public func loadMoreLikes(success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func loadMoreLikes(success: (([Like], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return getLikes(likesCursor, success: success, failure: failure)
     }
     
-    public func createLike(success: LikeResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func createLike(success: ((Like) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let like = Like(user: UserSession.currentUser()!, video: self)
         addLike(like)
         
         return like.create(success, failure: failure)
     }
     
-    public func destroyLike(success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
+    public func destroyLike(success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Like.destroy(self.id!, success: {
             // Delete the like from the collection
             for like in self.likes {
@@ -436,7 +426,7 @@ public extension Video {
 // MARK: - Convenience
 
 private extension Video {
-    func getComments(cursor: Int, success: CommentCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    func getComments(cursor: Int, success: (([Comment], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Comment.getCommentsForVideo(self, cursor: cursor, success: { comments, nextCursor in
             self.commentsCollection.addObjects(comments)
             self.commentsCollection.cursor = nextCursor
@@ -448,7 +438,7 @@ private extension Video {
         })
     }
     
-    func getLikes(cursor: Int, success: LikeCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
+    func getLikes(cursor: Int, success: (([Like], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Like.getBackwardLikes(self, cursor: cursor, success: { likeResults, nextCursor in
             self.likesCollection.addObjects(likeResults)
             self.likesCollection.cursor = nextCursor
@@ -458,26 +448,5 @@ private extension Video {
             Video.logger.error("Failed to load more likes.\n\(error)")
             failure?(error)
         })
-    }
-}
-
-// MARK: - Serialization
-
-private extension Video {
-    class func resourceSuccessWithCompletion(completion: VideoResourceSuccess?) -> ResourceSuccess {
-        return { jsonResponse in
-            let video = Video(json: jsonResponse)
-            completion?(video)
-        }
-    }
-    
-    class func collectionSuccessWithCompletion(completion: VideoCollectionSuccess?) -> CollectionSuccess {
-        return { jsonArray, nextCursor in
-            let videos = jsonArray.map { Video(json: $0) }
-            
-            if completion != nil {
-                completion!(videos, nextCursor)
-            }
-        }
     }
 }

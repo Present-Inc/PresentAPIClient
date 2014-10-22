@@ -12,7 +12,7 @@ import Swell
 import Alamofire
 
 public class Comment: Object {
-    public internal(set) var video: Video
+    public private(set) var video: Video!
     public private(set) var author: User
     public private(set) var body: String
     
@@ -28,7 +28,12 @@ public class Comment: Object {
         super.init()
     }
     
-    public init(json: JSON, video: Video? = nil) {
+    public convenience init(json: JSON, video: Video) {
+        self.init(json: json)
+        self.video = video
+    }
+    
+    public required init(json: ObjectJSON) {
         if let bodyString = json["body"].string {
             self.body = bodyString
         } else {
@@ -36,120 +41,81 @@ public class Comment: Object {
         }
         
         self.author = User(json: json["sourceUser"])
-        
-        if let video = video {
-            self.video = video
-        } else {
-            self.video = Video(json: json["targetVideo"])
-        }
+        self.video = Video(json: json["targetVideo"])
         
         super.init(json: json)
-    }
-    
-    internal func setVideo(video: Video) {
-        self.video = video
     }
 }
 
 extension Comment {
     // MARK: Class Methods
     
-    public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: CommentCollectionSuccess?, failure: FailureBlock) -> APIRequest {
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
-            let commentResults = jsonArray.map { Comment(json: $0["object"], video: video) }
-            success?(commentResults, nextCursor)
-        }
-        
+    public class func getCommentsForVideo(video: Video, cursor: Int? = 0, success: (([Comment], Int) -> ())?, failure: ((NSError?) -> ())) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 CommentRouter.CommentsForVideo(videoId: video.id!, cursor: cursor!),
-                success: collectionSuccessWithCompletion(success),
+                type: Comment.self,
+                success: success,
                 failure: failure
         )
     }
     
-    public class func getCommentWithId(id: String, success: CommentResourceSuccess?, failure: FailureBlock) -> APIRequest {
+    public class func getCommentWithId(id: String, success: ((Comment) -> ())?, failure: ((NSError?) -> ())) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestResource(
                 CommentRouter.CommentForId(commentId: id),
-                success: resourceSuccessWithCompletion(success),
+                type: Comment.self,
+                success: success,
                 failure: failure
         )
     }
     
     // MARK: Instance Methods
     
-    public func create(success: CommentResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func create(success: ((Comment) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         if body.isEmpty {
             let error = NSError(domain: "CommentErrorDomain", code: 100, userInfo: [NSLocalizedDescriptionKey: "Comment body is empty."])
             failure?(error)
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 CommentRouter.Create(videoId: video.id!, body: body),
-                success: instanceSuccessWithCompletion(success),
+                type: Comment.self,
+                success: { comment in
+                    self.mergeResultsFromObject(comment)
+                    success?(self)
+                },
                 failure: failure
         )
     }
     
-    public func destroy(success: CommentResourceSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
+    public func destroy(success: ((Comment) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: (Comment) -> () = { _ in
             if success != nil {
                 success!(self)
             }
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 CommentRouter.Destroy(commentId: self.id!),
-                success: successHandler,
+                type: Comment.self,
+                success: success,
                 failure: failure
         )
     }
     
-    public func updateBody(newBody: String, success: CommentResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    public func updateBody(newBody: String, success: ((Comment) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestResource(
                 CommentRouter.Update(commentId: self.id!, body: self.body),
-                success: instanceSuccessWithCompletion(success),
+                type: Comment.self,
+                success: { comment in
+                    self.mergeResultsFromObject(comment)
+                    success?(comment)
+                },
                 failure: failure
         )
     }
-}
-
-// MARK: Serialization
-private extension Comment {
-    
-    // MARK: Class Level
-    
-    class func resourceSuccessWithCompletion(completion: CommentResourceSuccess?) -> ResourceSuccess {
-        return { jsonResponse in
-            var comment = Comment(json: jsonResponse["object"])
-            completion?(comment)
-        }
-    }
-    
-    class func collectionSuccessWithCompletion(completion: CommentCollectionSuccess?) -> CollectionSuccess {
-        return { jsonArray, nextCursor in
-            var commentResults = jsonArray.map { Comment(json: $0["object"]) }
-            completion?(commentResults, nextCursor)
-        }
-    }
-    
-    // MARK: Instance Level
-    
-    func instanceSuccessWithCompletion(completion: CommentResourceSuccess?) -> ResourceSuccess {
-        return { jsonResponse in
-            let commentResponse = Comment(json: jsonResponse["object"])
-            self.mergeResultsFromObject(commentResponse)
-            completion?(self)
-        }
-    }
-    
 }

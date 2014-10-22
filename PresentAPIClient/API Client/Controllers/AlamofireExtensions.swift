@@ -13,85 +13,71 @@ import SwiftyJSON
 
 typealias AlamofireResponseCompletionBlock = (NSURLRequest, NSHTTPURLResponse?, AnyObject?, NSError?) -> Void
 
-typealias APIResourceResponseCompletionBlock = (NSURLRequest, NSHTTPURLResponse?, JSON?, NSError?) -> Void
-typealias APICollectionResponseCompletionBlock = (NSURLRequest, NSHTTPURLResponse?, [JSON]?, Int?, NSError?) -> Void
-
 internal extension Alamofire.Request {
-    func collectionResponseJSON(completionHandler: APICollectionResponseCompletionBlock) -> Self {
-        let completion: AlamofireResponseCompletionBlock = { request, response, json, error in
-            var jsonData: JSON!,
-                results: [JSON]?,
-                nextCursor: Int!,
-                requestError: NSError?
-            
-            if let data: AnyObject = json {
-                jsonData = JSON(data)
-                
-                if error != nil {
-                    requestError = self.serializeRequestError(jsonData, error: error!)
-                } else {
-                    results = jsonData["results"].array
-                    nextCursor = jsonData["nextCursor"].int
-                }
-            }
-            
-            completionHandler(request, response, results, nextCursor, requestError ?? error)
-        }
-        
-        return response(
-            queue: APIManager.sharedInstance().callbackQueue,
-            serializer: Request.JSONResponseSerializer(),
-            completionHandler: completion
-        )
+    var callbackQueue: dispatch_queue_t {
+        return APIManager.sharedInstance().callbackQueue
     }
     
-    func resourceResponseJSON(completionHandler: APIResourceResponseCompletionBlock) -> Self {
-        let completion: AlamofireResponseCompletionBlock = { request, response, json, error in
-            var jsonData: JSON!,
-                requestError: NSError?
+    // TODO: These don't handle errors
+    func collectionResponseJSON<T: JSONSerializable>(type: T.Type, completionHandler: ((NSURLRequest, NSHTTPURLResponse?, [T]?, Int?, NSError?) -> Void)) -> Self {
+        return responseSwiftyJSON(queue: self.callbackQueue, options: .MutableContainers, completionHandler: { request, response, json, error in
+            let collectionResponse = CollectionResponse<T>(json: json)
             
-            if let data: AnyObject = json {
-                jsonData = JSON(data)
-                
-                if error != nil {
-                    requestError = self.serializeRequestError(jsonData, error: error)
-                }
-            }
+            completionHandler(request, response, collectionResponse.results, collectionResponse.nextCursor, error)
+        })
+    }
+    
+    func resourceResponseJSON<T: JSONSerializable>(type: T.Type, completionHandler: ((NSURLRequest, NSHTTPURLResponse?, T?, NSError?) -> Void)) -> Self {
+        return responseSwiftyJSON(queue: self.callbackQueue, options: .MutableContainers, completionHandler: { request, response, json, error in
+            let resourceResponse = ResourceResponse<T>(json: json)
             
-            completionHandler(request, response, jsonData, requestError ?? error)
-        }
-        
-        return response(
-            queue: APIManager.sharedInstance().callbackQueue,
-            serializer: Request.JSONResponseSerializer(),
-            completionHandler: completion
-        )
+            completionHandler(request, response, resourceResponse.result, error)
+        })
+    }
+}
+
+// MARK: - Request for Swift JSON
+
+extension Request {
+    
+    /**
+    Adds a handler to be called once the request has finished.
+    
+    :param: completionHandler A closure to be executed once the request has finished. The closure takes 4 arguments: the URL request, the URL response, if one was received, the SwiftyJSON enum, if one could be created from the URL response and data, and any error produced while creating the SwiftyJSON enum.
+    
+    :returns: The request.
+    */
+    public func responseSwiftyJSON(completionHandler: (NSURLRequest, NSHTTPURLResponse?, SwiftyJSON.JSON, NSError?) -> Void) -> Self {
+        return responseSwiftyJSON(queue:nil, options:NSJSONReadingOptions.AllowFragments, completionHandler:completionHandler)
     }
     
     /**
-    *  Attempts to serialize error json into an NSError object.
-    *  @discussion If `json` is nil, returns `error`
-    *
-    *  @param json JSONValue representing the error
-    *  @param error NSError that came back from Alamofire
-    *
-    *  @return NSError with JSON error serialized in userInfo["APIError"]
+    Adds a handler to be called once the request has finished.
+    
+    :param: queue The queue on which the completion handler is dispatched.
+    :param: options The JSON serialization reading options. `.AllowFragments` by default.
+    :param: completionHandler A closure to be executed once the request has finished. The closure takes 4 arguments: the URL request, the URL response, if one was received, the SwiftyJSON enum, if one could be created from the URL response and data, and any error produced while creating the SwiftyJSON enum.
+    
+    :returns: The request.
     */
-    private func serializeRequestError(json: JSON?, error: NSError?) -> NSError? {
-        var apiError: Error?,
-            requestError: NSError? = error
+    public func responseSwiftyJSON(queue: dispatch_queue_t? = nil, options: NSJSONReadingOptions = .AllowFragments, completionHandler: (NSURLRequest, NSHTTPURLResponse?, JSON, NSError?) -> Void) -> Self {
         
-        if let jsonError: JSON = json {
-            apiError = Error(json: jsonError)
-        }
-        
-        if apiError != nil {
-            requestError = NSError(domain: "APIManagerErrorDomain", code: apiError!.code ?? -1111, userInfo: [
-                "APIError": apiError!
-                ])
-        }
-        
-        return requestError
+        return response(queue: queue, serializer: Request.JSONResponseSerializer(options: options), completionHandler: { (request, response, object, error) -> Void in
+            
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
+                
+                var responseJSON: JSON
+                if error != nil || object == nil{
+                    responseJSON = JSON.nullJSON
+                } else {
+                    responseJSON = SwiftyJSON.JSON(object!)
+                }
+                
+                dispatch_async(queue ?? dispatch_get_main_queue(), {
+                    completionHandler(self.request, self.response, responseJSON, error)
+                })
+            })
+        })
     }
 }
 

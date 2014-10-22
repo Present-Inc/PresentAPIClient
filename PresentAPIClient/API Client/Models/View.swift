@@ -11,17 +11,17 @@ import SwiftyJSON
 import Alamofire
 
 public class View: Object {
-    var user: User
-    var video: Video
+    let user: User
+    let video: Video
     
-    init(user: User, video: Video) {
+    public init(user: User, video: Video) {
         self.user = user
         self.video = video
         
         super.init()
     }
     
-    override init(json: JSON) {
+    public required init(json: JSON) {
         self.user = User(json: json["sourceUser"])
         self.video = Video(json: json["targetVideo"])
         
@@ -34,18 +34,16 @@ public extension View {
     
     // MARK: Create
     
-    class func create(videoId: String, success: ViewResourceSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
+    class func create(videoId: String, success: ((View) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: (View) -> () = { view in
             UserSession.currentSession()?.getObjectMetaForKey(videoId).view?.forward = true
-            
-            let view = View(json: jsonResponse)
             success?(view)
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 ViewRouter.Create(videoId: videoId),
+                type: View.self,
                 success: successHandler,
                 failure: failure
         )
@@ -53,8 +51,8 @@ public extension View {
     
     // MARK: Destroy
     
-    class func destroy(videoId: String, success: VoidBlock?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: ResourceSuccess = { jsonResponse in
+    class func destroy(videoId: String, success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let successHandler: (View) -> () = { view in
             UserSession.currentSession()?.getObjectMetaForKey(videoId).view?.forward = false
             
             if success != nil {
@@ -63,9 +61,9 @@ public extension View {
         }
         
         return APIManager
-            .sharedInstance()
             .requestResource(
                 ViewRouter.Destroy(videoId: videoId),
+                type: View.self,
                 success: successHandler,
                 failure: failure
         )
@@ -73,34 +71,24 @@ public extension View {
     
     // MARK: Forward Views For User
     
-    class func listForwardViewsForUser(user: User, cursor: Int? = 0, success: ViewCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
-            let views = jsonArray.map { View(json: $0["object"]) }
-            success?(views, nextCursor)
-        }
-        
+    class func listForwardViewsForUser(user: User, cursor: Int? = 0, success: (([View], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 ViewRouter.ForwardViews(userId: user.id!, cursor: cursor!),
-                success: successHandler,
+                type: View.self,
+                success: success,
                 failure: failure
         )
     }
     
     // MARK: Backward Views For Video
     
-    class func listBackwardViewsForVideo(video: Video, cursor: Int? = 0, success: ViewCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
-        let successHandler: CollectionSuccess = { jsonArray, nextCursor in
-            var views = jsonArray.map { View(json: $0["object"]) }
-            success?(views, nextCursor)
-        }
-        
+    class func listBackwardViewsForVideo(video: Video, cursor: Int? = 0, success: (([View], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
-            .sharedInstance()
             .requestCollection(
                 ViewRouter.BackwardViews(videoId: video.id!, cursor: cursor!),
-                success: successHandler,
+                type: View.self,
+                success: success,
                 failure: failure
         )
     }
@@ -109,7 +97,7 @@ public extension View {
     
     // MARK: Create
     
-    func create(success: ViewResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    func create(success: ((View) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return View.create(video.id!, success: { view in
             self.mergeResultsFromObject(view)
             success?(self)
@@ -118,7 +106,7 @@ public extension View {
     
     // MARK: Destroy
     
-    func destroy(success: ViewResourceSuccess?, failure: FailureBlock?) -> APIRequest {
+    func destroy(success: ((View) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return View.destroy(video.id!, success: {
             if success != nil {
                 success!(self)
