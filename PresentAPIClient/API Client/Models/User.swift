@@ -35,7 +35,7 @@ public class User: Object {
     public private(set) var twitterData: SocialData = SocialData()
     
     public var profileImageUrl: NSURL {
-        return NSURL(string: self.profileImageUrlString)
+        return NSURL(string: self.profileImageUrlString)!
     }
     
     public var linkedWithFacebook: Bool {
@@ -303,7 +303,7 @@ public extension User {
     class func batchSearch(parameters: [UserBatchSearchType: [String]], cursor: Int? = 0, success: UserCollectionSuccess?, failure: FailureBlock?) -> APIRequest {
         var requestParameters = [String: [String]]()
         for (key, value) in parameters {
-            requestParameters[key.toRaw()] = value
+            requestParameters[key.rawValue] = value
         }
         
         return APIManager

@@ -32,7 +32,7 @@ public class APIManager {
         multipartManager = AFHTTPRequestOperationManager(baseURL: baseURL)
         //self.multipartManager.securityPolicy.allowInvalidCertificates = true
         multipartManager.requestSerializer = AFHTTPRequestSerializer()
-        multipartManager.responseSerializer = AFJSONResponseSerializer()
+        multipartManager.responseSerializer = AFJSONResponseSerializer(readingOptions: NSJSONReadingOptions.MutableContainers)
         
         setValue(Version, forHeaderKey: PresentVersionHeader)
         configureManager()
