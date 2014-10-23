@@ -19,6 +19,8 @@ private func urlWithPath(path: String) -> NSURL {
     return APIEnvironment.baseUrl.URLByAppendingPathComponent(path)
 }
 
+// MARK: - Activity Router
+
 enum ActivityRouter: URLRequestConvertible {
     case Activities(cursor: Int)
     case MarkAsRead(activityIds: [String])
@@ -62,6 +64,8 @@ enum ActivityRouter: URLRequestConvertible {
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
 }
+
+// MARK: - Comment Router
 
 enum CommentRouter: URLRequestConvertible {
     case Create(videoId: String, body: String)
@@ -124,6 +128,8 @@ enum CommentRouter: URLRequestConvertible {
     }
 }
 
+// MARK: - Friendship Router
+
 enum FriendshipRouter: URLRequestConvertible {
     case ForwardFriendships(userId: String, cursor: Int)
     case BackwardFriendships(userId: String, cursor: Int)
@@ -178,6 +184,8 @@ enum FriendshipRouter: URLRequestConvertible {
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
 }
+
+// MARK: - Like Router
 
 enum LikeRouter: URLRequestConvertible {
     case Create(videoId: String)
@@ -234,6 +242,8 @@ enum LikeRouter: URLRequestConvertible {
     }
 }
 
+// MARK: User Router
+
 enum UserRouter: URLRequestConvertible {
     case Create(username: String, password: String, email: String)
     case Search(query: String, cursor: Int)
@@ -289,7 +299,7 @@ enum UserRouter: URLRequestConvertible {
                 ])
             case .RequestPasswordReset(let email):
                 return ("users/request_password_reset", [
-                    "email": email
+                    "username": email
                 ])
             }
         }()
@@ -300,6 +310,8 @@ enum UserRouter: URLRequestConvertible {
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
 }
+
+// MARK: - User Context Router
 
 enum UserContextRouter: URLRequestConvertible {
     case Authenticate(username: String, password: String)
@@ -346,6 +358,8 @@ enum UserContextRouter: URLRequestConvertible {
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
 }
+
+// MARK: - Video Router
 
 enum VideoRouter: URLRequestConvertible {
     case Search(query: String, cursor: Int)
@@ -422,6 +436,8 @@ enum VideoRouter: URLRequestConvertible {
         return self.encoding.encode(URLRequest, parameters: parameters).0
     }
 }
+
+// MARK: - View Router
 
 enum ViewRouter: URLRequestConvertible {
     case Create(videoId: String)

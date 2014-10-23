@@ -7,7 +7,6 @@
 //
 
 import Foundation
-import SwiftyJSON
 
 internal struct APIEnvironment {
     static let Version = "2014-09-09"
