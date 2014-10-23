@@ -18,20 +18,47 @@ internal extension Alamofire.Request {
         return APIManager.sharedInstance().callbackQueue
     }
     
-    // TODO: These don't handle errors
     func collectionResponseJSON<T: JSONSerializable>(completionHandler: ((NSURLRequest, NSHTTPURLResponse?, [T]?, Int?, NSError?) -> Void)) -> Self {
         return responseSwiftyJSON(queue: self.callbackQueue, options: .MutableContainers, completionHandler: { request, response, json, error in
-            let collectionResponse = CollectionResponse<T>(json: json)
+            var collectionResponse: CollectionResponse<T>?
+            var errorResponse: ErrorResponse
+            var requestError: NSError?
             
-            completionHandler(request, response, collectionResponse.results, collectionResponse.nextCursor, error)
+            if error != nil {
+                errorResponse = ErrorResponse(json: json)
+                
+                var userInfo = error!.userInfo ?? [String: AnyObject]()
+                userInfo["APIError"] = errorResponse.error ?? NSNull()
+                requestError = NSError(domain: error!.domain, code: error!.code, userInfo: userInfo)
+            } else {
+                collectionResponse = CollectionResponse<T>(json: json)
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                completionHandler(request, response, collectionResponse?.results, collectionResponse?.nextCursor, requestError)
+            })
         })
     }
     
     func resourceResponseJSON<T: JSONSerializable>(completionHandler: ((NSURLRequest, NSHTTPURLResponse?, T?, NSError?) -> Void)) -> Self {
         return responseSwiftyJSON(queue: self.callbackQueue, options: .MutableContainers, completionHandler: { request, response, json, error in
-            let resourceResponse = ResourceResponse<T>(json: json)
+            var resourceResponse: ResourceResponse<T>?
+            var errorResponse: ErrorResponse
+            var requestError: NSError?
             
-            completionHandler(request, response, resourceResponse.result, error)
+            if error != nil {
+                errorResponse = ErrorResponse(json: json)
+
+                var userInfo = error!.userInfo ?? [String: AnyObject]()
+                userInfo["APIError"] = errorResponse.error ?? NSNull()
+                requestError = NSError(domain: error!.domain, code: error!.code, userInfo: userInfo)
+            } else {
+                resourceResponse = ResourceResponse<T>(json: json)
+            }
+            
+            dispatch_async(dispatch_get_main_queue(), {
+                completionHandler(request, response, resourceResponse?.result, requestError)
+            })
         })
     }
 }
@@ -67,7 +94,7 @@ extension Request {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
                 
                 var responseJSON: JSON
-                if error != nil || object == nil{
+                if object == nil{
                     responseJSON = JSON.nullJSON
                 } else {
                     responseJSON = SwiftyJSON.JSON(object!)

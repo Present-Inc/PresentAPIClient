@@ -9,8 +9,14 @@
 import UIKit
 import Alamofire
 
+protocol PresetRouterProtocol {
+    var method: Alamofire.Method { get }
+    var encoding: Alamofire.ParameterEncoding { get }
+    var requestTuple: (path: String, parameters: [String: AnyObject]?) { get }
+}
+
 private func urlWithPath(path: String) -> NSURL {
-    return baseURL.URLByAppendingPathComponent(path)
+    return APIEnvironment.baseUrl.URLByAppendingPathComponent(path)
 }
 
 enum ActivityRouter: URLRequestConvertible {

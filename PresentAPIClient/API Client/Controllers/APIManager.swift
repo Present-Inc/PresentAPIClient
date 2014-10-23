@@ -11,6 +11,8 @@ import Alamofire
 import SwiftyJSON
 import Swell
 
+let CallbackQueueIdentifier = "tv.Present.Present.PresentAPIClient.serializationQueue"
+
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
     
@@ -29,12 +31,12 @@ public class APIManager {
     }
     
     init() {
-        multipartManager = AFHTTPRequestOperationManager(baseURL: baseURL)
+        multipartManager = AFHTTPRequestOperationManager(baseURL: APIEnvironment.baseUrl)
         //self.multipartManager.securityPolicy.allowInvalidCertificates = true
         multipartManager.requestSerializer = AFHTTPRequestSerializer()
         multipartManager.responseSerializer = AFJSONResponseSerializer(readingOptions: NSJSONReadingOptions.MutableContainers)
         
-        setValue(Version, forHeaderKey: PresentVersionHeader)
+        setValue(APIEnvironment.Version, forHeaderKey: APIEnvironment.PresentVersionHeader)
         configureManager()
     }
     
@@ -65,15 +67,15 @@ public class APIManager {
     }
     
     func setUserContextHeaders(userContext: UserContext) {
-        setValue(userContext.sessionToken, forHeaderKey: SessionTokenHeader)
-        setValue(userContext.user.id, forHeaderKey: UserIdHeader)
+        setValue(userContext.sessionToken, forHeaderKey: APIEnvironment.SessionTokenHeader)
+        setValue(userContext.user.id, forHeaderKey: APIEnvironment.UserIdHeader)
         
         configureManager()
     }
     
     func clearUserContextHeaders() {
-        setValue(nil, forHeaderKey: SessionTokenHeader)
-        setValue(nil, forHeaderKey: UserIdHeader)
+        setValue(nil, forHeaderKey: APIEnvironment.SessionTokenHeader)
+        setValue(nil, forHeaderKey: APIEnvironment.UserIdHeader)
 
         configureManager()
     }
