@@ -22,10 +22,10 @@ public class View: Object, JSONSerializable {
     }
     
     public required init(json: ObjectJSON) {
-        self.user = User(json: json["sourceUser"])
-        self.video = Video(json: json["targetVideo"])
+        self.user = User(json: json["object"]["sourceUser"])
+        self.video = Video(json: json["object"]["targetVideo"])
         
-        super.init(json: json)
+        super.init(json: json["object"])
     }
 }
 

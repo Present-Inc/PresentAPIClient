@@ -27,10 +27,10 @@ public class Friendship: Object, JSONSerializable {
     }
     
     public required init(json: ObjectJSON) {
-        self.targetUser = User(json: json["targetUser"])
-        self.sourceUser = User(json: json["sourceUser"])
+        self.targetUser = User(json: json["object"]["targetUser"])
+        self.sourceUser = User(json: json["object"]["sourceUser"])
         
-        super.init(json: json)
+        super.init(json: json["object"])
     }
 }
 

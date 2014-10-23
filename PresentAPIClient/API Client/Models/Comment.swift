@@ -34,16 +34,16 @@ public class Comment: Object, JSONSerializable {
     }
     
     public required init(json: ObjectJSON) {
-        if let bodyString = json["body"].string {
+        if let bodyString = json["object"]["body"].string {
             self.body = bodyString
         } else {
             self.body = ""
         }
         
-        self.author = User(json: json["sourceUser"])
-        self.video = Video(json: json["targetVideo"])
+        self.author = User(json: json["object"]["sourceUser"])
+        self.video = Video(json: json["object"]["targetVideo"])
         
-        super.init(json: json)
+        super.init(json: json["object"])
     }
 }
 

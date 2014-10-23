@@ -57,7 +57,7 @@ public class UserContext: Object, JSONSerializable {
         
         user = User(json: json["object"]["user"])
         
-        super.init(json: json)
+        super.init(json: json["object"])
     }
     
     public override init(coder aDecoder: NSCoder!) {

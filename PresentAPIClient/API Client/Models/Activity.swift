@@ -40,22 +40,22 @@ public class Activity: Object, JSONSerializable {
     }
     
     public required init(json: ObjectJSON) {
-        if let isUnread = json["isUnread"].bool {
+        if let isUnread = json["object"]["isUnread"].bool {
             self.unread = isUnread
         }
         
-        if let subjectString = json["subject"].string {
+        if let subjectString = json["object"]["subject"].string {
             self.subject = subjectString
         }
         
-        if let activityType = json["type"].string {
+        if let activityType = json["object"]["type"].string {
             self.type = ActivityType(rawValue: activityType) ?? .Invalid
         }
         
-        self.fromUser = User(json: json["sourceUser"])
-        self.video = Video(json: json["video"])
+        self.fromUser = User(json: json["object"]["sourceUser"])
+        self.video = Video(json: json["object"]["video"])
         
-        super.init(json: json)
+        super.init(json: json["object"])
     }
 }
 
