@@ -212,7 +212,7 @@
 		7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentAPIClient.swift; sourceTree = "<group>"; };
 		7C4733B619A5288C009124FA /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		7C4CDD6A19BE37A1009AF31B /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = View.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		7C6568B419F5667C006D6AD4 /* APIRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = APIRequest.swift; path = ../Controllers/APIRequest.swift; sourceTree = "<group>"; };
+		7C6568B419F5667C006D6AD4 /* APIRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		7C79D47819B9018C0015468E /* AlamofireExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtensions.swift; sourceTree = "<group>"; };
 		7C81563119DCEBFD0046653D /* SocialData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocialData.swift; sourceTree = "<group>"; };
 		7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PresentAPIClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -366,7 +366,6 @@
 			children = (
 				7CCFEB0C199C16AA00D87880 /* APIManager.swift */,
 				7C79D47819B9018C0015468E /* AlamofireExtensions.swift */,
-				7CF0837919F04CDF00BDF411 /* Router.swift */,
 			);
 			name = Controllers;
 			path = "API Client/Controllers";
@@ -375,6 +374,7 @@
 		7CCFEB0D199C16AA00D87880 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				7CF0837919F04CDF00BDF411 /* Router.swift */,
 				7C6568B419F5667C006D6AD4 /* APIRequest.swift */,
 				7CCFEB54199C1FF600D87880 /* Activity.swift */,
 				7CCFEB0E199C16AA00D87880 /* Comment.swift */,
