@@ -23,7 +23,7 @@ public enum ActivityType: String {
     case Invalid = "invalid"
 
     public func isVideoType() -> Bool {
-        return (self == .NewComment || self == .NewCommentMention || self == .NewVideoByFriend || self == NewVideoMention)
+        return (self == .NewComment || self == .NewCommentMention || self == .NewVideoByFriend || self == .NewVideoMention || .NewLike)
     }
 }
 
