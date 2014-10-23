@@ -86,10 +86,9 @@ public class UserContext: Object {
         return APIManager
             .requestResource(
                 requestConvertible,
-                type: UserContext.self,
                 success: success,
                 failure: failure
-        )
+            )
     }
     
     public class func updatePushNotificationIdentifier(success: ((UserContext) -> ())? = nil, failure: ((NSError?) -> ())? = nil) -> APIRequest? {
@@ -97,10 +96,9 @@ public class UserContext: Object {
             return APIManager
                 .requestResource(
                     UserContextRouter.Update(deviceIdentifier: deviceIdentifier, platform: PushNotificationPlatform),
-                    type: UserContext.self,
                     success: success,
                     failure: failure
-            )
+                )
         } else {
             return nil
         }
@@ -121,9 +119,8 @@ public class UserContext: Object {
         return APIManager
             .requestResource(
                 UserContextRouter.Destroy(),
-                type: UserContext.self,
                 success: successHandler,
                 failure: errorHandler
-        )
+            )
     }
 }

@@ -43,7 +43,6 @@ public extension View {
         return APIManager
             .requestResource(
                 ViewRouter.Create(videoId: videoId),
-                type: View.self,
                 success: successHandler,
                 failure: failure
         )
@@ -63,7 +62,6 @@ public extension View {
         return APIManager
             .requestResource(
                 ViewRouter.Destroy(videoId: videoId),
-                type: View.self,
                 success: successHandler,
                 failure: failure
         )
@@ -75,7 +73,6 @@ public extension View {
         return APIManager
             .requestCollection(
                 ViewRouter.ForwardViews(userId: user.id!, cursor: cursor!),
-                type: View.self,
                 success: success,
                 failure: failure
         )
@@ -87,7 +84,6 @@ public extension View {
         return APIManager
             .requestCollection(
                 ViewRouter.BackwardViews(videoId: video.id!, cursor: cursor!),
-                type: View.self,
                 success: success,
                 failure: failure
         )

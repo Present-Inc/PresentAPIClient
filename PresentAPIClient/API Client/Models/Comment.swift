@@ -54,7 +54,6 @@ extension Comment {
         return APIManager
             .requestCollection(
                 CommentRouter.CommentsForVideo(videoId: video.id!, cursor: cursor!),
-                type: Comment.self,
                 success: success,
                 failure: failure
         )
@@ -64,10 +63,9 @@ extension Comment {
         return APIManager
             .requestResource(
                 CommentRouter.CommentForId(commentId: id),
-                type: Comment.self,
                 success: success,
                 failure: failure
-        )
+            )
     }
     
     // MARK: Instance Methods
@@ -81,13 +79,12 @@ extension Comment {
         return APIManager
             .requestResource(
                 CommentRouter.Create(videoId: video.id!, body: body),
-                type: Comment.self,
-                success: { comment in
+                success: { (comment: Comment) in
                     self.mergeResultsFromObject(comment)
                     success?(self)
                 },
                 failure: failure
-        )
+            )
     }
     
     public func destroy(success: ((Comment) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
@@ -100,22 +97,20 @@ extension Comment {
         return APIManager
             .requestResource(
                 CommentRouter.Destroy(commentId: self.id!),
-                type: Comment.self,
                 success: success,
                 failure: failure
-        )
+            )
     }
     
     public func updateBody(newBody: String, success: ((Comment) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
             .requestResource(
                 CommentRouter.Update(commentId: self.id!, body: self.body),
-                type: Comment.self,
-                success: { comment in
+                success: { (comment: Comment) in
                     self.mergeResultsFromObject(comment)
                     success?(comment)
                 },
                 failure: failure
-        )
+            )
     }
 }

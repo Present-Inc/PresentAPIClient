@@ -218,7 +218,6 @@ public extension Video {
         return APIManager
             .requestResource(
                 VideoRouter.Create(startDateISOString: startDateISOString),
-                type: Video.self,
                 success: success,
                 failure: failure
             )
@@ -236,7 +235,6 @@ public extension Video {
         return APIManager
             .requestResource(
                 VideoRouter.Destroy(id: videoId),
-                type: Video.self,
                 success: successHandler,
                 failure: failure
         )
@@ -254,7 +252,6 @@ public extension Video {
         return APIManager
             .requestResource(
                 VideoRouter.Hide(id: videoId),
-                type: Video.self,
                 success: successHandler,
                 failure: failure
         )
@@ -289,7 +286,6 @@ public extension Video {
         return APIManager
             .requestCollection(
                 VideoRouter.Search(query: queryString, cursor: cursor!),
-                type: Video.self,
                 success: success,
                 failure: failure
         )
@@ -301,7 +297,6 @@ public extension Video {
         return APIManager
             .requestResource(
                 VideoRouter.VideoForId(id: id),
-                type: Video.self,
                 success: success,
                 failure: failure
         )
@@ -314,7 +309,6 @@ public extension Video {
         return APIManager
             .requestCollection(
                 VideoRouter.VideosForUser(userId: user.id!, cursor: cursor!),
-                type: Video.self,
                 success: success,
                 failure: failure
         )
@@ -324,7 +318,6 @@ public extension Video {
         return APIManager
             .requestCollection(
                 VideoRouter.HomeFeed(cursor: cursor!),
-                type: Video.self,
                 success: success,
                 failure: failure
         )
@@ -375,7 +368,6 @@ public extension Video {
             .sharedInstance()
             .requestResource(
                 VideoRouter.Update(id: self.id!, caption: caption),
-                type: Video.self,
                 success: successHandler,
                 failure: failure
             )

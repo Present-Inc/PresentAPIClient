@@ -19,7 +19,7 @@ internal extension Alamofire.Request {
     }
     
     // TODO: These don't handle errors
-    func collectionResponseJSON<T: JSONSerializable>(type: T.Type, completionHandler: ((NSURLRequest, NSHTTPURLResponse?, [T]?, Int?, NSError?) -> Void)) -> Self {
+    func collectionResponseJSON<T: JSONSerializable>(completionHandler: ((NSURLRequest, NSHTTPURLResponse?, [T]?, Int?, NSError?) -> Void)) -> Self {
         return responseSwiftyJSON(queue: self.callbackQueue, options: .MutableContainers, completionHandler: { request, response, json, error in
             let collectionResponse = CollectionResponse<T>(json: json)
             
@@ -27,7 +27,7 @@ internal extension Alamofire.Request {
         })
     }
     
-    func resourceResponseJSON<T: JSONSerializable>(type: T.Type, completionHandler: ((NSURLRequest, NSHTTPURLResponse?, T?, NSError?) -> Void)) -> Self {
+    func resourceResponseJSON<T: JSONSerializable>(completionHandler: ((NSURLRequest, NSHTTPURLResponse?, T?, NSError?) -> Void)) -> Self {
         return responseSwiftyJSON(queue: self.callbackQueue, options: .MutableContainers, completionHandler: { request, response, json, error in
             let resourceResponse = ResourceResponse<T>(json: json)
             

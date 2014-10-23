@@ -309,7 +309,6 @@ public extension User {
         return APIManager
             .requestCollection(
                 UserRouter.BatchSearch(parameters: requestParameters),
-                type: User.self,
                 success: success,
                 failure: failure
         )
@@ -319,7 +318,6 @@ public extension User {
         return APIManager
             .requestCollection(
                 UserRouter.Search(query: queryString, cursor: cursor!),
-                type: User.self,
                 success: success,
                 failure: failure
         )
@@ -337,7 +335,6 @@ public extension User {
         return APIManager
             .requestResource(
                 UserRouter.RequestPasswordReset(email: email),
-                type: User.self,
                 success: successHandler,
                 failure: failure
         )
@@ -364,7 +361,6 @@ public extension User {
             .sharedInstance()
             .requestResource(
                 UserRouter.Create(username: username, password: password!, email: email!),
-                type: User.self,
                 success: successHandler,
                 failure: failure
         )
@@ -382,7 +378,6 @@ public extension User {
             .sharedInstance()
             .requestResource(
                 UserRouter.Update(properties: properties),
-                type: User.self,
                 success: successHandler,
                 failure: failure
         )
@@ -459,7 +454,6 @@ private extension User {
         return APIManager
             .requestResource(
                 requestConvertible,
-                type: User.self,
                 success: success,
                 failure: failure
         )

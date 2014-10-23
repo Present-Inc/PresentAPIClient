@@ -66,7 +66,6 @@ public extension Activity {
         return APIManager
             .requestCollection(
                 ActivityRouter.Activities(cursor: cursor!),
-                type: Activity.self,
                 success: success,
                 failure: failure
         )
@@ -74,7 +73,7 @@ public extension Activity {
     
     public class func markAsRead(activities: [Activity], success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let markAsRead = activities.filter { !$0.isNew }.map { $0.id! }
-        let successHandler: ([Activity], Int) -> () = { jsonArray, nextCursor in
+        let successHandler: ([Activity], Int) -> () = { _, _ in
             if success != nil {
                 success!()
             }
@@ -83,7 +82,6 @@ public extension Activity {
         return APIManager
             .requestCollection(
                 ActivityRouter.MarkAsRead(activityIds: markAsRead),
-                type: Activity.self,
                 success: successHandler,
                 failure: failure
         )

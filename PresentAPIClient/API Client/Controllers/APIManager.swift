@@ -80,21 +80,23 @@ public class APIManager {
     
     // MARK: GET
     
-    class func requestResource<T: JSONSerializable>(request: URLRequestConvertible, type: T.Type, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        return self.sharedInstance().requestResource(request, type: type, success: success, failure: failure)
+    class func requestResource<T: JSONSerializable>(request: URLRequestConvertible, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        return self.sharedInstance().requestResource(request, success: success, failure: failure)
     }
     
-    class func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, type: T.Type, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        return self.sharedInstance().requestCollection(request, type: type, success: success, failure: failure)
+    class func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        return self.sharedInstance().requestCollection(request, success: success, failure: failure)
     }
     
-    func requestResource<T: JSONSerializable>(request: URLRequestConvertible, type: T.Type, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        let networkRequest = self.request(request).resourceResponseJSON(type, resourceCompletionHandler(success, failure: failure))
+    func requestResource<T: JSONSerializable>(request: URLRequestConvertible, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let networkRequest = self.request(request).resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
+        
         return APIRequest(request: networkRequest)
     }
     
-    func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, type: T.Type, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        let networkRequest = self.request(request).collectionResponseJSON(type, completionHandler: collectionCompletionHandler(success, failure: failure))
+    func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        let networkRequest = self.request(request).collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
+        
         return APIRequest(request: networkRequest)
     }
     

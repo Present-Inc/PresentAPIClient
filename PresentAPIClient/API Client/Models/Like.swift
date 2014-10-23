@@ -57,7 +57,6 @@ public extension Like {
         return APIManager
             .requestResource(
                 LikeRouter.Create(videoId: videoId),
-                type: Like.self,
                 success: successHandler,
                 failure: failure
         )
@@ -74,7 +73,6 @@ public extension Like {
         return APIManager
             .requestResource(
                 LikeRouter.Destroy(videoId: videoId),
-                type: Like.self,
                 success: successHandler,
                 failure: failure
         )
@@ -94,7 +92,6 @@ public extension Like {
         return APIManager
             .requestCollection(
                 LikeRouter.ForwardLikes(userId: user.id!, cursor: cursor!),
-                type: Like.self,
                 success: successHandler,
                 failure: failure
         )
@@ -114,7 +111,6 @@ public extension Like {
         return APIManager
             .requestCollection(
                 LikeRouter.BackwardLikes(videoId: video.id!, cursor: cursor!),
-                type: Like.self,
                 success: successHandler,
                 failure: failure
         )

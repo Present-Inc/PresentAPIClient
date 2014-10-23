@@ -48,7 +48,6 @@ public extension Friendship {
         return APIManager
             .requestResource(
                 FriendshipRouter.Create(userId: targetUserId),
-                type: Friendship.self,
                 success: successHandler,
                 failure: failure
         )
@@ -65,7 +64,6 @@ public extension Friendship {
         return APIManager
             .requestResource(
                 FriendshipRouter.Destroy(userId: targetUserId),
-                type: Friendship.self,
                 success: successHandler,
                 failure: failure
         )
@@ -85,7 +83,6 @@ public extension Friendship {
         return APIManager
             .requestCollection(
                 FriendshipRouter.ForwardFriendships(userId: user.id!, cursor: cursor!),
-                type: Friendship.self,
                 success: successHandler,
                 failure: failure
         )
@@ -105,7 +102,6 @@ public extension Friendship {
         return APIManager
             .requestCollection(
                 FriendshipRouter.BackwardFriendships(userId: user.id!, cursor: cursor!),
-                type: Friendship.self,
                 success: successHandler,
                 failure: failure
         )
