@@ -108,7 +108,7 @@ public class APIManager {
     
     // MARK: Multi-part POST
     
-    func multipartPost(fileUrl: NSURL, name: String, fileName: String, mimeType: String, resource: String, parameters: [String: AnyObject]?, success: (() -> ())?, failure: ((NSError?) -> ())?) {
+    func multipartPost(fileUrl: NSURL, name: String, fileName: String, mimeType: String, resource: String, parameters: [String: AnyObject]?, success: ((AnyObject?) -> ())?, failure: ((NSError?) -> ())?) {
         if let data = NSData(contentsOfURL: fileUrl) {
             multipartPost(
                 resource,
@@ -129,7 +129,7 @@ public class APIManager {
         }
     }
     
-    func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, success: (() -> ())?, failure: ((NSError?) -> ())?) {
+    func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, success: ((AnyObject?) -> ())?, failure: ((NSError?) -> ())?) {
         let constructingBlock: (AFMultipartFormData!) -> Void = { formData in
             formData.appendPartWithFileData(data, name: name, fileName: fileName, mimeType: mimeType)
         }
@@ -140,7 +140,7 @@ public class APIManager {
             constructingBodyWithBlock: constructingBlock,
             success: { dataTask, response in
                 self.logger.debug("Multi-part POST \(dataTask.response?.URL!) succeeded.")
-                success?()
+                success?(response)
             },
             failure: { dataTask, error in
                 self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(error)")
