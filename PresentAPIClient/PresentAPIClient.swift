@@ -9,12 +9,24 @@
 import Foundation
 import SwiftyJSON
 
-let baseURL = NSURL(string: "https://api-staging.present.tv/v1/")!
-
-let Version = "2014-09-09"
-
-let PresentVersionHeader = "Present-Version"
-let SessionTokenHeader = "Present-User-Context-Session-Token"
-let UserIdHeader = "Present-User-Context-User-Id"
-
-let CallbackQueueIdentifier = "tv.Present.Present.PresentAPIClient.serializationQueue"
+public struct APIEnvironment {
+    static let Version = "2014-09-09"
+    static let PresentVersionHeader = "Present-Version"
+    static let SessionTokenHeader = "Present-User-Context-Session-Token"
+    static let UserIdHeader = "Present-User-Context-User-Id"
+    
+    static let baseUrl: NSURL = {
+        var subdomain: String
+        var version: String = "v1"
+        
+        #if DEVELOPMENT
+            subdomain = "api-dev"
+        #elseif STAGING
+            subdomain = "api-staging"
+        #else
+            subdomain = "api"
+        #endif
+        
+        return NSURL(string: "https://\(subdomain).present.tv/\(version)/")!
+    }()
+}
