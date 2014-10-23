@@ -12,7 +12,7 @@ import SwiftyJSON
 import Swell
 import Alamofire
 
-public class User: Object {
+public class User: Object, JSONSerializable {
     public private(set) var username: String!
     public private(set) var password: String?
     public private(set) var fullName: String = "No Name"
@@ -70,7 +70,7 @@ public class User: Object {
         super.init(id: "")
     }
     
-    public required init(json: JSON) {
+    public required init(json: ObjectJSON) {
         super.init(json: json["object"])
         
         self.initializeWithObject(json["object"])
@@ -81,7 +81,7 @@ public class User: Object {
         }
     }
     
-    private func initializeWithObject(json: JSON) {
+    private func initializeWithObject(json: ObjectJSON) {
         if let admin = json["_isAdmin"].bool {
             self.isAdmin = admin
         }

@@ -40,7 +40,7 @@ public class Error: NSObject, Printable {
         return " {\n\tcode: \(self.code)\n\tdescription: \(self.errorDescription)\n\tmessage: \(self.message)\n\tresult: \(self.result)}"
     }
     
-    init(json: JSON) {
+    init(json: ObjectJSON) {
         if let errorCode = json["errorCode"].int {
             _code = errorCode
         }

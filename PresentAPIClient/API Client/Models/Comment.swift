@@ -11,7 +11,7 @@ import SwiftyJSON
 import Swell
 import Alamofire
 
-public class Comment: Object {
+public class Comment: Object, JSONSerializable {
     public private(set) var video: Video!
     public private(set) var author: User
     public private(set) var body: String
@@ -28,7 +28,7 @@ public class Comment: Object {
         super.init()
     }
     
-    public convenience init(json: JSON, video: Video) {
+    public convenience init(json: ObjectJSON, video: Video) {
         self.init(json: json)
         self.video = video
     }

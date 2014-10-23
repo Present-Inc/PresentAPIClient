@@ -62,6 +62,7 @@ public class UserSession: NSObject, NSCoding {
 
     public class func login(username: String, password: String, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) {
         var successBlock: ((UserContext) -> ()) = { userContext in
+            println(userContext)
             self.setCurrentSession(UserSession(userContext: userContext))
             
             UserSession.currentUser()?.fetch(success: { _ in

@@ -11,7 +11,7 @@ import SwiftyJSON
 import Swell
 import Alamofire
 
-public class Like: Object {
+public class Like: Object, JSONSerializable {
     public internal(set) var user: User
     public internal(set) var video: Video
     
@@ -23,7 +23,7 @@ public class Like: Object {
     }
     
     
-    public convenience init(json: JSON, user: User?, video: Video?) {
+    public convenience init(json: ObjectJSON, user: User?, video: Video?) {
         self.init(json: json)
 
         if let user = user {
@@ -35,7 +35,7 @@ public class Like: Object {
         }
     }
     
-    public required init(json: JSON) {
+    public required init(json: ObjectJSON) {
         self.user = User(json: json["sourceUser"])
         self.video = Video(json: json["targetVideo"])
 

@@ -27,7 +27,7 @@ public enum ActivityType: String {
     }
 }
 
-public class Activity: Object {
+public class Activity: Object, JSONSerializable {
     public private(set) var subject: String = ""
     public private(set) var fromUser: User
     public private(set) var comment: Comment?
@@ -39,7 +39,7 @@ public class Activity: Object {
         return self._logger("Activity")
     }
     
-    public required init(json: JSON) {
+    public required init(json: ObjectJSON) {
         if let isUnread = json["isUnread"].bool {
             self.unread = isUnread
         }

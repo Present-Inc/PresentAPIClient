@@ -36,7 +36,7 @@ public class Object: NSObject, ObjectSubclass, JSONSerializable {
         super.init()
     }
     
-    public required init(json: JSON) {
+    public required init(json: ObjectJSON) {
         if let createdAt = json["_creationDate"].string {
             creationDate = NSDate.dateFromISOString(createdAt)
         }

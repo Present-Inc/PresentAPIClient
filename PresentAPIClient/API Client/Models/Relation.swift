@@ -24,7 +24,7 @@ public class Relation: NSObject {
         super.init()
     }
     
-    public init(json: JSON) {
+    public init(json: ObjectJSON) {
         if let forwardJSON = json["forward"].bool {
             forward = forwardJSON
         }

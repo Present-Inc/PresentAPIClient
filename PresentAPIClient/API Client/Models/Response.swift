@@ -14,16 +14,24 @@ public enum ResponseStatus: String {
     case Unknown = "UNKNOWN"
 }
 
-class Response: JSONSerializable {
+class Response: JSONSerializable, Printable {
     let status: ResponseStatus?
+    
+    var description: String {
+        return "{\n\tstatus: \(status?.rawValue)\n}"
+    }
     
     required init(json: ObjectJSON) {
         self.status = ResponseStatus(rawValue: json["status"].stringValue)
     }
 }
 
-class ResourceResponse<T: JSONSerializable>: Response {
+class ResourceResponse<T: JSONSerializable>: Response, Printable {
     let result: T?
+    
+    override var description: String {
+        return "{\n\tstatus: \(status?.rawValue)\n\tresult: \(result)\n}"
+    }
     
     required init(json: ObjectJSON) {
         super.init(json: json)
@@ -32,9 +40,13 @@ class ResourceResponse<T: JSONSerializable>: Response {
     }
 }
 
-class CollectionResponse<T: JSONSerializable>: Response {
+class CollectionResponse<T: JSONSerializable>: Response, Printable {
     let results: [T]?
     let nextCursor: Int?
+    
+    override var description: String {
+        return "{\n\tstatus: \(status?.rawValue)\n\tresults: \(results)\n\tnextCursor: \(nextCursor)\n}"
+    }
     
     required init(json: ObjectJSON) {
         super.init(json: json)

@@ -11,7 +11,7 @@ import SwiftyJSON
 import Swell
 import Alamofire
 
-public class Friendship: Object {
+public class Friendship: Object, JSONSerializable {
     public internal(set) var sourceUser: User
     public internal(set) var targetUser: User
     
@@ -26,7 +26,7 @@ public class Friendship: Object {
         super.init()
     }
     
-    public required init(json: JSON) {
+    public required init(json: ObjectJSON) {
         self.targetUser = User(json: json["targetUser"])
         self.sourceUser = User(json: json["sourceUser"])
         

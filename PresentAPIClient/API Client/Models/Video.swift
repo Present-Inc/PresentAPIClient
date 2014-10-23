@@ -11,7 +11,7 @@ import SwiftyJSON
 import Swell
 import Alamofire
 
-public class Video: Object {
+public class Video: Object, JSONSerializable {
     /**
         These are set as implicitly unwrapped in order to use the initializeWithObject(...)
         inside init.
@@ -109,7 +109,7 @@ public class Video: Object {
         }
     }
     
-    private func initializeWithObject(json: JSON) {
+    private func initializeWithObject(json: ObjectJSON) {
         if let caption = json["title"].string {
             self.caption = caption
         }
@@ -138,7 +138,7 @@ public class Video: Object {
         creator = User(json: json["creatorUser"])
         
 //        if let mostRecentLikes = json["likes"]["results"].array {
-//            for jsonLike: JSON in mostRecentLikes {
+//            for jsonLike: ObjectJSON in mostRecentLikes {
 //                let like = Like(json: jsonLike["object"], video: self)
 //                self.likesCollection.addObject(like)
 //            }
@@ -149,7 +149,7 @@ public class Video: Object {
         }
         
         if let mostRecentComments = json["comments"]["results"].array {
-            for jsonComment: JSON in mostRecentComments {
+            for jsonComment: ObjectJSON in mostRecentComments {
                 var comment = Comment(json: jsonComment["object"], video: self)
                 self.commentsCollection.addObject(comment)
             }

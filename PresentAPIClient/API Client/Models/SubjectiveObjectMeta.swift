@@ -25,7 +25,7 @@ public class SubjectiveObjectMeta: NSObject {
         super.init()
     }
     
-    public init(json: JSON) {
+    public init(json: ObjectJSON) {
         self.friendship = Relation(json: json["friendship"])
         self.like = Relation(json: json["like"])
         self.view = Relation(json: json["view"])

@@ -10,7 +10,7 @@ import UIKit
 import SwiftyJSON
 import Alamofire
 
-public class View: Object {
+public class View: Object, JSONSerializable {
     let user: User
     let video: Video
     
@@ -21,7 +21,7 @@ public class View: Object {
         super.init()
     }
     
-    public required init(json: JSON) {
+    public required init(json: ObjectJSON) {
         self.user = User(json: json["sourceUser"])
         self.video = Video(json: json["targetVideo"])
         

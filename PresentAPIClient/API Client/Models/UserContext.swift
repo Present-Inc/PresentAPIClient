@@ -17,7 +17,7 @@ let PushNotificationPlatform = "APNS_SANDBOX"
 let PushNotificationPlatform = "APNS"
 #endif
 
-public class UserContext: Object {
+public class UserContext: Object, JSONSerializable {
     public var sessionToken: String!
     public var user: User!
     
@@ -50,12 +50,12 @@ public class UserContext: Object {
         super.init(id: "")
     }
     
-    public required init(json: JSON) {
-        if let token = json["sessionToken"].string {
+    public required init(json: ObjectJSON) {
+        if let token = json["object"]["sessionToken"].string {
             sessionToken = token
         }
         
-        user = User(json: json["user"])
+        user = User(json: json["object"]["user"])
         
         super.init(json: json)
     }
