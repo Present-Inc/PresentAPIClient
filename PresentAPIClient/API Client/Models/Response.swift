@@ -55,3 +55,17 @@ class CollectionResponse<T: JSONSerializable>: Response, Printable {
         self.nextCursor = json["nextCursor"].int
     }
 }
+
+class ErrorResponse: Response, Printable {
+    let error: Error?
+    
+    override var description: String {
+        return "{\n\tstatus: \(status?.rawValue)\n\terror: \(error)\n}"
+    }
+    
+    required init(json: ObjectJSON) {
+        super.init(json: json)
+        
+        self.error = Error(json: json["result"])
+    }
+}
