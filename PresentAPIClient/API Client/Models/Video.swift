@@ -267,8 +267,8 @@ public extension Video {
     // MARK: Append
     // !!!: This doesn't return a request...
     public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: VoidBlock?, failure: FailureBlock?) {
-        let parameters = [
-            "video_id": videoId as NSString,
+        let parameters: [String: AnyObject] = [
+            "video_id": videoId,
             "media_sequence": mediaSequence
         ]
         
@@ -281,7 +281,11 @@ public extension Video {
                 mimeType: "application/octet-stream",
                 resource: "videos/append",
                 parameters: parameters,
-                success: success,
+                success: { _ in
+                    if success != nil {
+                        success!()
+                    }
+                },
                 failure: failure
             )
 

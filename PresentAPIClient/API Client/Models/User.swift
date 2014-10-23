@@ -392,7 +392,14 @@ public extension User {
                 name: "profile_picture",
                 fileName: "profile_picture_\(self.id!).png",
                 mimeType: "image/png",
-                success: success,
+                success: { responseData in
+                    let json = JSON(responseData)
+                    let user = User(json: json["result"])
+                    
+                    self.mergeResultsFromObject(user)
+
+                    success?()
+                },
                 failure: failure
         )
     }
