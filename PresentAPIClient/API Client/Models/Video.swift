@@ -12,10 +12,6 @@ import Swell
 import Alamofire
 
 public class Video: Object, JSONSerializable {
-    /**
-        These are set as implicitly unwrapped in order to use the initializeWithObject(...)
-        inside init.
-     */
     public private(set) var caption: String?
     public private(set) var startDate: NSDate!
     public private(set) var endDate: NSDate?
@@ -137,12 +133,12 @@ public class Video: Object, JSONSerializable {
         
         creator = User(json: json["creatorUser"])
         
-//        if let mostRecentLikes = json["likes"]["results"].array {
-//            for jsonLike: ObjectJSON in mostRecentLikes {
-//                let like = Like(json: jsonLike["object"], video: self)
-//                self.likesCollection.addObject(like)
-//            }
-//        }
+        if let mostRecentLikes = json["likes"]["results"].array {
+            for jsonLike: ObjectJSON in mostRecentLikes {
+                let like = Like(json: jsonLike, video: self)
+                self.likesCollection.addObject(like)
+            }
+        }
         
         if let likeCount = json["likes"]["count"].int {
             self.likesCollection.cursor = likeCount
@@ -150,7 +146,7 @@ public class Video: Object, JSONSerializable {
         
         if let mostRecentComments = json["comments"]["results"].array {
             for jsonComment: ObjectJSON in mostRecentComments {
-                var comment = Comment(json: jsonComment["object"], video: self)
+                var comment = Comment(json: jsonComment, video: self)
                 self.commentsCollection.addObject(comment)
             }
         }
