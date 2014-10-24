@@ -23,16 +23,14 @@ public class Like: Object, JSONSerializable {
     }
     
     
-    public convenience init(json: ObjectJSON, user: User?, video: Video?) {
+    public convenience init(json: ObjectJSON, video: Video) {
         self.init(json: json)
-
-        if let user = user {
-            self.user = user
-        }
-
-        if let video = video {
-            self.video = video
-        }
+        self.video = video
+    }
+    
+    public convenience init(json: ObjectJSON, user: User) {
+        self.init(json: json)
+        self.user = user
     }
     
     public required init(json: ObjectJSON) {
