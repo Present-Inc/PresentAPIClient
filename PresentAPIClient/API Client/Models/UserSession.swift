@@ -65,11 +65,6 @@ public class UserSession: NSObject, NSCoding {
             println(userContext)
             self.setCurrentSession(UserSession(userContext: userContext))
             
-            UserSession.currentUser()?.fetch(success: { _ in
-                println("Successfully refreshed current user")
-                UserSession.currentSession()?.save()
-            }, failure: nil)
-            
             success?(userContext)
         }
         

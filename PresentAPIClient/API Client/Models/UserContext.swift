@@ -11,7 +11,9 @@ import SwiftyJSON
 import Swell
 import Alamofire
 
-#if DEBUG
+#if DEVELOPMENT
+let PushNotificationPlatform = "APNS_SANDBOX"
+#elseif STAGING
 let PushNotificationPlatform = "APNS_SANDBOX"
 #else
 let PushNotificationPlatform = "APNS"
