@@ -65,15 +65,20 @@ public class UserSession: NSObject, NSCoding {
             println(userContext)
             self.setCurrentSession(UserSession(userContext: userContext))
             
-            UserSession.currentUser()?.fetch(success: { _ in
-                println("Successfully refreshed current user")
-                UserSession.currentSession()?.save()
-            }, failure: nil)
+            UserSession.refreshCurrentUser()
             
             success?(userContext)
         }
         
         UserContext.authenticate(username, password: password, success: successBlock, failure: failure)
+    }
+    
+    public class func refreshCurrentUser(success: ((User) -> ())? = nil, failure: ((NSError?) -> ())? = nil) {
+        User.getCurrentUser(success: { (user: User) in
+            UserSession.currentUser()?.mergeResultsFromObject(user)
+            UserSession.currentSession()?.save()
+        },
+        failure: failure)
     }
 
     public class func register(user: User, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) {

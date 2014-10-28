@@ -346,10 +346,7 @@ public extension User {
         return APIManager
             .requestResource(
                 UserRouter.CurrentUser(),
-                success: { (user: User) in
-                    self.mergeResultsFromObject(user)
-                    success?(user)
-                },
+                success: success,
                 failure: failure
             )
     }
