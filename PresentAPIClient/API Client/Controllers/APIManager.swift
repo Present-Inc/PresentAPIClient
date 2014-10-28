@@ -173,4 +173,14 @@ private extension APIManager {
             }
         }
     }
+    
+    func checkForUserContextError(error: NSError) {
+        if let userInfo = error.userInfo {
+            if let error = userInfo["APIError"] as? Error {
+                if error.code == 10002 {
+                    println("User context is invalid, force log out")
+                }
+            }
+        }
+    }
 }
