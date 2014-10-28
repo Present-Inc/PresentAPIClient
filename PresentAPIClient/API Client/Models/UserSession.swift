@@ -65,6 +65,8 @@ public class UserSession: NSObject, NSCoding {
             self.setCurrentSession(UserSession(userContext: userContext))
 
             UserSession.refreshCurrentUser()
+            
+            success?(userContext)
         }
         
         UserContext.authenticate(username, password: password, success: successBlock, failure: failure)
@@ -74,6 +76,8 @@ public class UserSession: NSObject, NSCoding {
         User.getCurrentUser(success: { (user: User) in
             UserSession.currentUser()?.mergeResultsFromObject(user)
             UserSession.currentSession()?.save()
+            
+            success?(user)
         },
         failure: failure)
     }

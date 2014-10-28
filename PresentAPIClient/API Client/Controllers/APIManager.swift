@@ -182,7 +182,7 @@ private extension APIManager {
         if let userInfo = error?.userInfo {
             if let error = userInfo["APIError"] as? Error {
                 if error.code == 10002 {
-                    NSNotificationCenter.defaultCenter().postNotificationName(InvalidUserContextNotification, object: nil)
+                    NSNotificationCenter.defaultCenter().postNotificationName(InvalidUserContextNotification, object: error)
                 }
             }
         }
