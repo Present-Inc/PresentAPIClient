@@ -144,6 +144,7 @@ public class APIManager {
             },
             failure: { dataTask, error in
                 self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(error)")
+                self.checkForUserContextError(error)
                 failure?(error)
         })
     }
@@ -154,6 +155,7 @@ private extension APIManager {
         return { request, response, object, error in
             if error != nil {
                 self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\(error)")
+                self.checkForUserContextError(error)
                 failure?(error)
             } else {
                 self.logger.debug("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) succeeded.")
@@ -166,6 +168,7 @@ private extension APIManager {
         return { request, response, results, nextCursor, error in
             if error != nil {
                 self.logger.error("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) failed with error:\n\(error)")
+                self.checkForUserContextError(error)
                 failure?(error)
             } else {
                 self.logger.debug("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) succeeded.")
@@ -174,11 +177,11 @@ private extension APIManager {
         }
     }
     
-    func checkForUserContextError(error: NSError) {
-        if let userInfo = error.userInfo {
+    func checkForUserContextError(error: NSError?) {
+        if let userInfo = error?.userInfo {
             if let error = userInfo["APIError"] as? Error {
                 if error.code == 10002 {
-                    println("User context is invalid, force log out")
+                    println("\n\nUser context is invalid, force log out\n\n")
                 }
             }
         }
