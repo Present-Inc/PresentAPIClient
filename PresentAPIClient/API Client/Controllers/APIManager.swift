@@ -12,7 +12,7 @@ import SwiftyJSON
 import Swell
 
 let CallbackQueueIdentifier = "tv.Present.Present.PresentAPIClient.serializationQueue"
-let InvalidUserContextNotification = "InvalidUserContextNotification"
+public let InvalidUserContextNotification = "InvalidUserContextNotification"
 
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
