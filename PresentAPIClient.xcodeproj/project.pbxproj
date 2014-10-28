@@ -504,16 +504,16 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7CCFEAE6199C15BC00D87880 /* PresentAPIClient.h in Headers */,
+				7CF0832419F016B300BDF411 /* AFNetworking.h in Headers */,
 				7CF0832F19F016B300BDF411 /* AFURLSessionManager.h in Headers */,
 				7CF0832B19F016B300BDF411 /* AFURLRequestSerialization.h in Headers */,
-				7CCFEAE6199C15BC00D87880 /* PresentAPIClient.h in Headers */,
 				7CF0831E19F016B300BDF411 /* AFHTTPRequestOperation.h in Headers */,
 				7CF0832219F016B300BDF411 /* AFHTTPSessionManager.h in Headers */,
 				7CF0832919F016B300BDF411 /* AFURLConnectionOperation.h in Headers */,
 				7CF0832519F016B300BDF411 /* AFNetworkReachabilityManager.h in Headers */,
 				7CF0832719F016B300BDF411 /* AFSecurityPolicy.h in Headers */,
 				7CF0832019F016B300BDF411 /* AFHTTPRequestOperationManager.h in Headers */,
-				7CF0832419F016B300BDF411 /* AFNetworking.h in Headers */,
 				7CF0832D19F016B300BDF411 /* AFURLResponseSerialization.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -906,6 +906,7 @@
 		7CCFEAF4199C15BC00D87880 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -933,6 +934,7 @@
 		7CCFEAF5199C15BC00D87880 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ALLOW_NON_MODULAR_INCLUDES_IN_FRAMEWORK_MODULES = NO;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;

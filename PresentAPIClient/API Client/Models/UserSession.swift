@@ -64,10 +64,8 @@ public class UserSession: NSObject, NSCoding {
         var successBlock: ((UserContext) -> ()) = { userContext in
             println(userContext)
             self.setCurrentSession(UserSession(userContext: userContext))
-            
+
             UserSession.refreshCurrentUser()
-            
-            success?(userContext)
         }
         
         UserContext.authenticate(username, password: password, success: successBlock, failure: failure)

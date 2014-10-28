@@ -220,6 +220,8 @@ public class User: Object, JSONSerializable {
     public override func mergeResultsFromObject(object: Object) {
         let user = object as User
         
+        self.isAdmin = user.isAdmin
+        
         if self.website != user.website && user.website != nil {
             self.website = user.website
         }
