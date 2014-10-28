@@ -337,10 +337,19 @@ public extension User {
                 UserRouter.RequestPasswordReset(email: email),
                 success: successHandler,
                 failure: failure
-        )
+            )
     }
     
     // MARK: Fetch User
+    
+    class func getCurrentUser(success: ((User) -> ())? = nil, failure: ((NSError?) -> ())? = nil) -> APIRequest {
+        return APIManager
+            .requestResource(
+                UserRouter.CurrentUser(),
+                success: success,
+                failure: failure
+            )
+    }
     
     func fetch(success: ((User) -> ())? = nil, failure: ((NSError?) -> ())? = nil) -> APIRequest {
         return User.getUserWithId(self.id!, success: { user in

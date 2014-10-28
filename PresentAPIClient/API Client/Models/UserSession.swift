@@ -108,6 +108,7 @@ public class UserSession: NSObject, NSCoding {
         } else {
             APIManager.sharedInstance().clearUserContextHeaders()
             PFileManager.deleteFile("UserSession", inSearchPathDirectory: .DocumentDirectory)
+            // TODO: This should cancel all outstanding requests for the APIManager
         }
     }
 
