@@ -249,6 +249,7 @@ enum UserRouter: URLRequestConvertible {
     case Search(query: String, cursor: Int)
     case Update(properties: [String: AnyObject])
     case BatchSearch(parameters: [String: [String]])
+    case CurrentUser()
     case UserForId(id: String)
     case UserForUsername(username: String)
     case RequestPasswordReset(email: String)
@@ -257,7 +258,7 @@ enum UserRouter: URLRequestConvertible {
         switch self {
         case .Create, .Update, .BatchSearch, .RequestPasswordReset:
             return .POST
-        case .UserForId, .UserForUsername, .Search:
+        case .UserForId, .UserForUsername, .Search, .CurrentUser():
             return .GET
         }
     }
@@ -266,7 +267,7 @@ enum UserRouter: URLRequestConvertible {
         switch self {
         case .Create, .Update, .BatchSearch, .RequestPasswordReset:
             return .JSON
-        case .UserForId, .UserForUsername, .Search:
+        case .UserForId, .UserForUsername, .Search, .CurrentUser():
             return .URL
         }
     }
@@ -301,6 +302,8 @@ enum UserRouter: URLRequestConvertible {
                 return ("users/request_password_reset", [
                     "username": email
                 ])
+            case .CurrentUser():
+                return ("users/show_me", nil)
             }
         }()
             

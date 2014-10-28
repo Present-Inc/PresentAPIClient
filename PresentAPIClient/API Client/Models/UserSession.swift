@@ -64,11 +64,19 @@ public class UserSession: NSObject, NSCoding {
         var successBlock: ((UserContext) -> ()) = { userContext in
             println(userContext)
             self.setCurrentSession(UserSession(userContext: userContext))
-            
-            success?(userContext)
+
+            UserSession.refreshCurrentUser()
         }
         
         UserContext.authenticate(username, password: password, success: successBlock, failure: failure)
+    }
+    
+    public class func refreshCurrentUser(success: ((User) -> ())? = nil, failure: ((NSError?) -> ())? = nil) {
+        User.getCurrentUser(success: { (user: User) in
+            UserSession.currentUser()?.mergeResultsFromObject(user)
+            UserSession.currentSession()?.save()
+        },
+        failure: failure)
     }
 
     public class func register(user: User, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) {
@@ -103,6 +111,7 @@ public class UserSession: NSObject, NSCoding {
         } else {
             APIManager.sharedInstance().clearUserContextHeaders()
             PFileManager.deleteFile("UserSession", inSearchPathDirectory: .DocumentDirectory)
+            // TODO: This should cancel all outstanding requests for the APIManager
         }
     }
 
