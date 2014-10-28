@@ -9,12 +9,18 @@
 import UIKit
 
 public class PFileManager: NSObject {
+    public class var fileManager: NSFileManager {
+        return NSFileManager.defaultManager()
+    }
+    
+    // MARK: - Files
+    
     public class func pathToSearchPathDirectory(directory: NSSearchPathDirectory) -> String {
         return NSSearchPathForDirectoriesInDomains(directory, NSSearchPathDomainMask.UserDomainMask, true).first as String
     }
     
     public class func pathToFile(file: String, inSearchPathDirectory directory: NSSearchPathDirectory) -> String {
-        return self.pathToFile(file, inDirectory: self.pathToSearchPathDirectory(directory))
+        return pathToFile(file, inDirectory: self.pathToSearchPathDirectory(directory))
     }
     
     public class func pathToFile(file: String, inDirectory directory: String) -> String {
@@ -22,7 +28,7 @@ public class PFileManager: NSObject {
     }
     
     public class func fileExists(fileName: String) -> Bool {
-        return NSFileManager.defaultManager().fileExistsAtPath(fileName)
+        return fileManager.fileExistsAtPath(fileName)
     }
     
     public class func fileExists(file: String, inSearchPathDirectory directory: NSSearchPathDirectory) -> Bool {
@@ -33,7 +39,7 @@ public class PFileManager: NSObject {
     // TODO: Add `createIntermediateDirectories` option
     public class func createFile(fileName: String, withData data: NSData) -> Bool {
         if !fileExists(fileName) {
-            return NSFileManager.defaultManager().createFileAtPath(fileName, contents: data, attributes: nil)
+            return fileManager.createFileAtPath(fileName, contents: data, attributes: nil)
         }
          
         return false
@@ -50,7 +56,7 @@ public class PFileManager: NSObject {
     // MARK: File Deletion
     public class func deleteFileWithName(fileName: String) -> Bool {
         var error: NSError?
-        if !NSFileManager.defaultManager().removeItemAtPath(fileName, error: &error) {
+        if !fileManager.removeItemAtPath(fileName, error: &error) {
             // TODO: Handle the error... AKA Swell
             return false
         } else {
@@ -73,8 +79,6 @@ public class PFileManager: NSObject {
     // MARK: File Enumeration
     
     public class func enumerateFilesInDirectory(directoryName: String, withBlock block: ((String) -> ())?) {
-        var fileManager = NSFileManager.defaultManager()
-        
         if let enumerator = fileManager.enumeratorAtPath(directoryName) {
             while let filePath = enumerator.nextObject() as? String {
                 block?(filePath)
@@ -82,11 +86,12 @@ public class PFileManager: NSObject {
         }
     }
     
+    // MARK: - Directories
+    
     // MARK: Directory Creation
     
     public class func createDirectory(directoryName: String, inSearchPathDirectory directory: NSSearchPathDirectory) -> Bool {
-        var fileManager = NSFileManager.defaultManager(),
-            fullPath = pathToFile(directoryName, inSearchPathDirectory: directory)
+        let fullPath = pathToFile(directoryName, inSearchPathDirectory: directory)
         
         if !fileManager.fileExistsAtPath(fullPath) {
             return fileManager.createDirectoryAtPath(fullPath, withIntermediateDirectories: true, attributes: nil, error: nil)
@@ -102,7 +107,15 @@ public class PFileManager: NSObject {
         return false
     }
     
-    // MARK: I/O
+//    public class func listContentsOfDirectory(directoryUrl: NSURL) -> [NSURL]? {
+//        
+//    }
+//    
+//    public class func listContentsOfDirectory(directoryName: String, inSearchPathDirectory directory: NSSearchPathDirectory) -> [NSURL]? {
+//        
+//    }
+    
+    // MARK: - I/O
     
     public class func saveObject(object: AnyObject, location: String, inSearchPathDirectory directory: NSSearchPathDirectory) -> Bool {
         var archivePath = pathToFile(location, inSearchPathDirectory: directory)

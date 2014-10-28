@@ -366,7 +366,7 @@ enum VideoRouter: URLRequestConvertible {
     case VideoForId(id: String)
     case VideosForUser(userId: String, cursor: Int)
     case HomeFeed(cursor: Int)
-    case Create(startDateISOString: String)
+    case Create(startDateISOString: String, caption: String?)
     case Destroy(id: String)
     case Hide(id: String)
     case Update(id: String, caption: String)
@@ -405,10 +405,16 @@ enum VideoRouter: URLRequestConvertible {
                 return ("videos/list_home_videos", [
                     "cursor": cursor
                 ])
-            case .Create(let startDate):
-                return ("videos/create", [
+            case .Create(let startDate, var caption):
+                var parameters = [
                     "creation_time_range_start_date": startDate
-                ])
+                ]
+                
+                if caption != nil {
+                    parameters["title"] = caption
+                }
+                
+                return ("videos/create", parameters)
             case .Destroy(let id):
                 return ("videos/destroy", [
                     "video_id": id

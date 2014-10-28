@@ -12,7 +12,8 @@ import Swell
 import Alamofire
 
 public class Video: Object, JSONSerializable {
-    public private(set) var caption: String?
+    // !!!: This isn't immutable...
+    public var caption: String?
     public private(set) var startDate: NSDate!
     public private(set) var endDate: NSDate?
     public private(set) var coverUrl: NSURL!
@@ -210,10 +211,10 @@ public extension Video {
 
     // MARK: Create
     
-    public class func create(startDateISOString: String, success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+    public class func create(startDateISOString: String, caption: String?, success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
             .requestResource(
-                VideoRouter.Create(startDateISOString: startDateISOString),
+                VideoRouter.Create(startDateISOString: startDateISOString, caption: caption),
                 success: success,
                 failure: failure
             )
@@ -328,7 +329,7 @@ public extension Video {
     // MARK: Create
     
     public func create(success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        return Video.create(NSDate.ISOStringFromDate(startDate), success: { video in
+        return Video.create(NSDate.ISOStringFromDate(startDate), caption: self.caption, success: { video in
             self.mergeResultsFromObject(video)
             success?(self)
         }, failure: failure)
