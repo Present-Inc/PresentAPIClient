@@ -12,6 +12,7 @@ import SwiftyJSON
 import Swell
 
 let CallbackQueueIdentifier = "tv.Present.Present.PresentAPIClient.serializationQueue"
+let InvalidUserContextNotification = "InvalidUserContextNotification"
 
 public class APIManager {
     private let logger = Swell.getLogger("APILogger")
@@ -181,7 +182,7 @@ private extension APIManager {
         if let userInfo = error?.userInfo {
             if let error = userInfo["APIError"] as? Error {
                 if error.code == 10002 {
-                    println("\n\nUser context is invalid, force log out\n\n")
+                    NSNotificationCenter.defaultCenter().postNotificationName(InvalidUserContextNotification, object: nil)
                 }
             }
         }

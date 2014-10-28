@@ -342,7 +342,7 @@ public extension User {
     
     // MARK: Fetch User
     
-    class func getCurrentUser(success: ((User) -> ())? = nil, failure: ((NSError?) -> ())? = nil) -> APIRequest {
+    internal class func getCurrentUser(success: ((User) -> ())? = nil, failure: ((NSError?) -> ())? = nil) -> APIRequest {
         return APIManager
             .requestResource(
                 UserRouter.CurrentUser(),
