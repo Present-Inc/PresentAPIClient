@@ -17,7 +17,3 @@
 [submodule "PresentAPIClient/External/SwiftyJSON"]
 	path = PresentAPIClient/External/SwiftyJSON
 	url = https://github.com/SwiftyJSON/SwiftyJSON.git
-
-[submodule "PresentAPIClient/External/Swell"]
-	path = PresentAPIClient/External/Swell
-	url = https://github.com/hubertr/Swell.git
