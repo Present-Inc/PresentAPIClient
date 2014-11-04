@@ -142,7 +142,7 @@ public class Video: Object, JSONSerializable {
         }
         
         if let likeCount = json["likes"]["count"].int {
-            self.likesCollection.cursor = likeCount
+            self.likesCollection.count = likeCount
         }
         
         if let mostRecentComments = json["comments"]["results"].array {

@@ -13,9 +13,9 @@ public class PushNotification: NSObject {
     public let contentAvailable: Int?
     public let badge: Int?
     public let activityId: String?
-    public let type: ActivityType?
+    public let type: ActivityType = .Invalid
     
-    init(dictionary: [NSObject: AnyObject]) {
+    public init(dictionary: [NSObject: AnyObject]) {
         if let aps = dictionary["aps"] as? [NSObject: AnyObject] {
             alert = aps["alert"] as? String
             contentAvailable = aps["contentAvailable"] as? Int
@@ -25,9 +25,7 @@ public class PushNotification: NSObject {
         activityId = dictionary["_id"] as? String
         
         if let rawType = dictionary["type"] as? String {
-            type = ActivityType(rawValue: rawType)
-        } else {
-            type = .Invalid
+            type = ActivityType(rawValue: rawType) ?? .Invalid
         }
     }
 }
