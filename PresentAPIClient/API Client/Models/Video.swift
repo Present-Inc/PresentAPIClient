@@ -357,8 +357,17 @@ public extension Video {
     
     // MARK: Update Caption
     
-    public func updateCaption(caption: String, success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+    public func updateCaption(caption: String, success: ((Video) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest? {
         self.caption = caption
+        
+        if self.isNew {
+            let error = NSError(domain: "VideoErrorDomain", code: -1, userInfo: [
+                NSLocalizedDescriptionKey: "Video is not created yet."
+            ])
+            
+            failure?(error)
+            return nil
+        }
         
         let successHandler: (Video) -> () = { video in
             self.mergeResultsFromObject(video)
