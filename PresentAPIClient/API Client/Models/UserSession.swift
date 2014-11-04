@@ -57,7 +57,7 @@ public class UserSession: NSObject, NSCoding {
     }
 
     public class func isValid() -> Bool {
-        return self.currentSession()? != nil
+        return self.currentSession() != nil
     }
 
     public class func login(username: String, password: String, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) {
