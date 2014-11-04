@@ -15,7 +15,7 @@ public class PushNotification: NSObject {
     public let activityId: String?
     public let type: ActivityType?
     
-    init(dictionary: [NSObject: AnyObject]) {
+    public init(dictionary: [NSObject: AnyObject]) {
         if let aps = dictionary["aps"] as? [NSObject: AnyObject] {
             alert = aps["alert"] as? String
             contentAvailable = aps["contentAvailable"] as? Int
