@@ -22,6 +22,12 @@ public class Like: Object, JSONSerializable {
         super.init()
     }
     
+    /**
+        Creates a like on behalf of the current user
+     */
+    public convenience init(video: Video) {
+        self.init(user: UserSession.currentUser()!, video: video)
+    }
     
     public convenience init(json: ObjectJSON, video: Video) {
         self.init(json: json)
@@ -121,6 +127,7 @@ public extension Like {
     func create(success: ((Like) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Like.create(video.id!, success: { like in
             self.mergeResultsFromObject(like)
+
             success?(self)
         }, failure: failure)
 

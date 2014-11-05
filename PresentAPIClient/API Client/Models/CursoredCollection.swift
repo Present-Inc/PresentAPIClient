@@ -26,6 +26,7 @@ public class CursoredCollection<T: Equatable> {
     
     public func addObject(object: T) {
         self._collection.append(object)
+        count++
     }
     
     public func addObjects(objects: [T]) {
@@ -37,6 +38,7 @@ public class CursoredCollection<T: Equatable> {
     public func removeObject(index: Int) -> Bool {
         if index >= 0 && index < self._collection.count {
             self._collection.removeAtIndex(index)
+            count--
             return true
         }
         

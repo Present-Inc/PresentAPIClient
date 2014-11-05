@@ -39,9 +39,7 @@ public class Video: Object, JSONSerializable {
         return commentsCollection.cursor
     }
     
-    public var commentsCount: Int {
-        return commentsCollection.count
-    }
+    public var commentsCount: Int = 0
     
     public var likes: [Like] {
         return likesCollection.collection
@@ -51,9 +49,7 @@ public class Video: Object, JSONSerializable {
         return likesCollection.cursor
     }
     
-    public var likesCount: Int {
-        return likesCollection.count
-    }
+    public var likesCount: Int = 0
     
     public var isViewed: Bool {
         return subjectiveObjectMeta.view?.forward ?? false
@@ -142,7 +138,7 @@ public class Video: Object, JSONSerializable {
         }
         
         if let likeCount = json["likes"]["count"].int {
-            self.likesCollection.count = likeCount
+            self.likesCount = likeCount
         }
         
         if let mostRecentComments = json["comments"]["results"].array {
@@ -153,7 +149,7 @@ public class Video: Object, JSONSerializable {
         }
         
         if let commentCount = json["comments"]["count"].int {
-            self.commentsCollection.count = commentCount
+            self.commentsCount = commentCount
         }
     }
     

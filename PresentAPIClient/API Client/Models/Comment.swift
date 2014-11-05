@@ -81,6 +81,7 @@ extension Comment {
                 CommentRouter.Create(videoId: video.id!, body: body),
                 success: { (comment: Comment) in
                     self.mergeResultsFromObject(comment)
+                    self.video.addComment(comment)
                     success?(self)
                 },
                 failure: failure
@@ -89,6 +90,7 @@ extension Comment {
     
     public func destroy(success: ((Comment) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let successHandler: (Comment) -> () = { _ in
+            self.video.deleteComment(self)
             if success != nil {
                 success!(self)
             }
