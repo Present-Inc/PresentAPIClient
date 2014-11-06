@@ -22,6 +22,9 @@ public class Like: Object, JSONSerializable {
         super.init()
     }
     
+    public convenience init(video: Video) {
+        self.init(user: UserSession.currentUser()!, video: video)
+    }
     
     public convenience init(json: ObjectJSON, video: Video) {
         self.init(json: json)
