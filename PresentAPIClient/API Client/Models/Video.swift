@@ -429,6 +429,10 @@ public extension Video {
 public extension Video {
     func getComments(cursor: Int, success: (([Comment], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Comment.getCommentsForVideo(self, cursor: cursor, success: { comments, nextCursor in
+            if cursor <= 0 {
+                self.commentsCollection.reset()
+            }
+            
             self.commentsCollection.addObjects(comments)
             self.commentsCollection.cursor = nextCursor
             
@@ -441,6 +445,10 @@ public extension Video {
     
     func getLikes(cursor: Int, success: (([Like], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Like.getBackwardLikes(self, cursor: cursor, success: { likeResults, nextCursor in
+            if cursor == 0 {
+                self.likesCollection.reset()
+            }
+            
             self.likesCollection.addObjects(likeResults)
             self.likesCollection.cursor = nextCursor
             
