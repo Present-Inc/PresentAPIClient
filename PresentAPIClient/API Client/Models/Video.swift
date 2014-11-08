@@ -426,17 +426,16 @@ public extension Video {
 }
 
 // MARK: - Convenience
-
-private extension Video {
+public extension Video {
     func getComments(cursor: Int, success: (([Comment], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Comment.getCommentsForVideo(self, cursor: cursor, success: { comments, nextCursor in
             self.commentsCollection.addObjects(comments)
             self.commentsCollection.cursor = nextCursor
             
             success?(comments, nextCursor)
-            }, failure: { error in
-                Video.logger.error("Failed to load more coments.\n\(error)")
-                failure?(error)
+        }, failure: { error in
+            Video.logger.error("Failed to load more coments.\n\(error)")
+            failure?(error)
         })
     }
     
