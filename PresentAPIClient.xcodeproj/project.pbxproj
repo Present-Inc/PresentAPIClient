@@ -62,7 +62,6 @@
 
 /* Begin PBXFileReference section */
 		7C27196B1A0C28BD0023B944 /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = "../../../Library/Developer/Xcode/DerivedData/PresentAPIClient-eybdbacwubseydgpmtqolgnojoei/Build/Products/Debug-iphoneos/Alamofire.framework"; sourceTree = "<group>"; };
-		7C27196D1A0C28C40023B944 /* Quick.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Quick.framework; path = "../../../Library/Developer/Xcode/DerivedData/PresentAPIClient-eybdbacwubseydgpmtqolgnojoei/Build/Products/Debug/Quick.framework"; sourceTree = "<group>"; };
 		7C27196F1A0C28CB0023B944 /* Swell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swell.framework; path = "../../../Library/Developer/Xcode/DerivedData/PresentAPIClient-eybdbacwubseydgpmtqolgnojoei/Build/Products/Debug-iphoneos/Swell.framework"; sourceTree = "<group>"; };
 		7C2719711A0C28CE0023B944 /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = "../../../Library/Developer/Xcode/DerivedData/PresentAPIClient-eybdbacwubseydgpmtqolgnojoei/Build/Products/Debug-iphoneos/SwiftyJSON.framework"; sourceTree = "<group>"; };
 		7C2BE55119B603FB00BDCB4A /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Error.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -144,7 +143,6 @@
 			children = (
 				7C2719711A0C28CE0023B944 /* SwiftyJSON.framework */,
 				7C27196F1A0C28CB0023B944 /* Swell.framework */,
-				7C27196D1A0C28C40023B944 /* Quick.framework */,
 				7C27196B1A0C28BD0023B944 /* Alamofire.framework */,
 				7CCFEAE2199C15BC00D87880 /* PresentAPIClient */,
 				7CCFEAE1199C15BC00D87880 /* Products */,
