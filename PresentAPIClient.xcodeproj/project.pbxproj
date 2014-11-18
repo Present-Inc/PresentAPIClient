@@ -15,8 +15,6 @@
 		7C41299519F1AFD4007096A7 /* PresentAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */; };
 		7C4733B719A5288C009124FA /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4733B619A5288C009124FA /* UserSession.swift */; };
 		7C4CDD6B19BE37A1009AF31B /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4CDD6A19BE37A1009AF31B /* View.swift */; };
-		7C5762811A1668FD00ABB966 /* Reachability.h in Headers */ = {isa = PBXBuildFile; fileRef = 7C57627F1A1668FD00ABB966 /* Reachability.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		7C5762821A1668FD00ABB966 /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = 7C5762801A1668FD00ABB966 /* Reachability.m */; };
 		7C5762841A166B4700ABB966 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C5762831A166B4700ABB966 /* SystemConfiguration.framework */; };
 		7C6568B519F5667C006D6AD4 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6568B419F5667C006D6AD4 /* APIRequest.swift */; };
 		7C79D47919B9018C0015468E /* AlamofireExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C79D47819B9018C0015468E /* AlamofireExtensions.swift */; };
@@ -71,8 +69,6 @@
 		7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentAPIClient.swift; sourceTree = "<group>"; };
 		7C4733B619A5288C009124FA /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		7C4CDD6A19BE37A1009AF31B /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = View.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		7C57627F1A1668FD00ABB966 /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Reachability.h; path = PresentAPIClient/External/Reachability/Reachability.h; sourceTree = SOURCE_ROOT; };
-		7C5762801A1668FD00ABB966 /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Reachability.m; path = PresentAPIClient/External/Reachability/Reachability.m; sourceTree = SOURCE_ROOT; };
 		7C5762831A166B4700ABB966 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		7C6568B419F5667C006D6AD4 /* APIRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		7C79D47819B9018C0015468E /* AlamofireExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtensions.swift; sourceTree = "<group>"; };
@@ -145,15 +141,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7C57627E1A1668EE00ABB966 /* Reachability */ = {
-			isa = PBXGroup;
-			children = (
-				7C57627F1A1668FD00ABB966 /* Reachability.h */,
-				7C5762801A1668FD00ABB966 /* Reachability.m */,
-			);
-			name = Reachability;
-			sourceTree = "<group>";
-		};
 		7CCFEAD6199C15BC00D87880 = {
 			isa = PBXGroup;
 			children = (
@@ -199,7 +186,6 @@
 		7CCFEB0B199C16AA00D87880 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				7C57627E1A1668EE00ABB966 /* Reachability */,
 				7CCFEB0C199C16AA00D87880 /* APIManager.swift */,
 				7C79D47819B9018C0015468E /* AlamofireExtensions.swift */,
 			);
@@ -299,7 +285,6 @@
 				7CF0832519F016B300BDF411 /* AFNetworkReachabilityManager.h in Headers */,
 				7CF0832719F016B300BDF411 /* AFSecurityPolicy.h in Headers */,
 				7CF0832019F016B300BDF411 /* AFHTTPRequestOperationManager.h in Headers */,
-				7C5762811A1668FD00ABB966 /* Reachability.h in Headers */,
 				7CF0832D19F016B300BDF411 /* AFURLResponseSerialization.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -406,7 +391,6 @@
 				7CCFEB24199C16AA00D87880 /* Relation.swift in Sources */,
 				7C81563219DCEBFD0046653D /* SocialData.swift in Sources */,
 				7CF0837A19F04CDF00BDF411 /* Router.swift in Sources */,
-				7C5762821A1668FD00ABB966 /* Reachability.m in Sources */,
 				7CF0833019F016B300BDF411 /* AFURLSessionManager.m in Sources */,
 				7CCFEB26199C16AA00D87880 /* SubjectiveObjectMeta.swift in Sources */,
 				7CCFEB2A199C16AA00D87880 /* Video.swift in Sources */,
