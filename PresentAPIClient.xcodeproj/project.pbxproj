@@ -15,7 +15,6 @@
 		7C41299519F1AFD4007096A7 /* PresentAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */; };
 		7C4733B719A5288C009124FA /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4733B619A5288C009124FA /* UserSession.swift */; };
 		7C4CDD6B19BE37A1009AF31B /* View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4CDD6A19BE37A1009AF31B /* View.swift */; };
-		7C5762841A166B4700ABB966 /* SystemConfiguration.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7C5762831A166B4700ABB966 /* SystemConfiguration.framework */; };
 		7C6568B519F5667C006D6AD4 /* APIRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C6568B419F5667C006D6AD4 /* APIRequest.swift */; };
 		7C79D47919B9018C0015468E /* AlamofireExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C79D47819B9018C0015468E /* AlamofireExtensions.swift */; };
 		7C81563219DCEBFD0046653D /* SocialData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C81563119DCEBFD0046653D /* SocialData.swift */; };
@@ -69,7 +68,6 @@
 		7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentAPIClient.swift; sourceTree = "<group>"; };
 		7C4733B619A5288C009124FA /* UserSession.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserSession.swift; sourceTree = "<group>"; };
 		7C4CDD6A19BE37A1009AF31B /* View.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = View.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		7C5762831A166B4700ABB966 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
 		7C6568B419F5667C006D6AD4 /* APIRequest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = APIRequest.swift; sourceTree = "<group>"; };
 		7C79D47819B9018C0015468E /* AlamofireExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtensions.swift; sourceTree = "<group>"; };
 		7C81563119DCEBFD0046653D /* SocialData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocialData.swift; sourceTree = "<group>"; };
@@ -123,7 +121,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7C5762841A166B4700ABB966 /* SystemConfiguration.framework in Frameworks */,
 				7C2719721A0C28CE0023B944 /* SwiftyJSON.framework in Frameworks */,
 				7C2719701A0C28CB0023B944 /* Swell.framework in Frameworks */,
 				7C27196C1A0C28BD0023B944 /* Alamofire.framework in Frameworks */,
@@ -144,7 +141,6 @@
 		7CCFEAD6199C15BC00D87880 = {
 			isa = PBXGroup;
 			children = (
-				7C5762831A166B4700ABB966 /* SystemConfiguration.framework */,
 				7C2719711A0C28CE0023B944 /* SwiftyJSON.framework */,
 				7C27196F1A0C28CB0023B944 /* Swell.framework */,
 				7C27196B1A0C28BD0023B944 /* Alamofire.framework */,
