@@ -285,7 +285,7 @@ enum UserRouter: URLRequestConvertible {
                 return ("users/update", properties)
             case .Search(let query, let cursor):
                 return ("users/search", [
-                    "query": "username:*\(query)* OR profile.fullName:*\(query)*",
+                    "query": "username:*\(query)* OR username:\(query)* OR profile.fullName:*\(query)*",
                     "cursor": cursor
                 ])
             case .BatchSearch(let batchSearchParameters):

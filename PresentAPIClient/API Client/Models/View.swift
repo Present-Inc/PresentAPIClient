@@ -14,6 +14,10 @@ public class View: Object, JSONSerializable {
     let user: User
     let video: Video
     
+    public convenience init(video: Video) {
+        self.init(user: UserSession.currentUser()!, video: video)
+    }
+    
     public init(user: User, video: Video) {
         self.user = user
         self.video = video

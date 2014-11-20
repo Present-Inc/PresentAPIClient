@@ -84,11 +84,11 @@ public class APIManager {
     // MARK: GET
     
     class func requestResource<T: JSONSerializable>(request: URLRequestConvertible, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        return self.sharedInstance().requestResource(request, success: success, failure: failure)
+        return sharedInstance().requestResource(request, success: success, failure: failure)
     }
     
     class func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        return self.sharedInstance().requestCollection(request, success: success, failure: failure)
+        return sharedInstance().requestCollection(request, success: success, failure: failure)
     }
     
     func requestResource<T: JSONSerializable>(request: URLRequestConvertible, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
@@ -148,6 +148,40 @@ public class APIManager {
                 self.checkForUserContextError(error)
                 failure?(error)
         })
+    }
+    
+    func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, progress: ((Double) -> ())?, success: ((AnyObject?) -> ())?, failure: ((NSError?) -> ())?) {
+        let serializer = multipartManager.requestSerializer
+        let constructingBlock: (AFMultipartFormData!) -> Void = { formData in
+            formData.appendPartWithFileData(data, name: name, fileName: fileName, mimeType: mimeType)
+        }
+        
+        var urlString = APIEnvironment.baseUrl.absoluteString!.stringByAppendingPathComponent(resource)
+        
+        var requestError: NSError?
+        let request = serializer.multipartFormRequestWithMethod(
+            Alamofire.Method.POST.rawValue,
+            URLString: urlString,
+            parameters: parameters,
+            constructingBodyWithBlock: constructingBlock,
+            error: &requestError
+        )
+        
+        let manager = AFHTTPRequestOperationManager()
+        let operation = manager.HTTPRequestOperationWithRequest(request, success: { operation, response in
+            success?(response)
+            return
+        }, failure: { dataTask, error in
+            self.checkForUserContextError(error)
+            failure?(error)
+        })
+        
+        operation.setUploadProgressBlock { _, totalBytesWritten, totalBytesExpectedToWrite in
+            let percentComplete = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+            progress?(percentComplete)
+        }
+        
+        operation.start()
     }
 }
 
