@@ -256,28 +256,56 @@ public extension Video {
     
     // MARK: Append
     // !!!: This doesn't return a request...
-    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, success: (() -> ())?, failure: ((NSError?) -> ())?) {
+    public class func append(videoId: String, segmentUrl: NSURL, mediaSequence: Int, progress: ((Double) -> ())?, success: (() -> ())?, failure: ((NSError?) -> ())?) {
         let parameters: [String: AnyObject] = [
             "video_id": videoId,
             "media_sequence": mediaSequence
         ]
         
+        var videoData: NSData!
+        if let data = NSData(contentsOfURL: segmentUrl) {
+            videoData = data
+        } else {
+            let invalidDataError = NSError(domain: "VideoErrorDomain", code: 1000, userInfo: [
+                NSLocalizedDescriptionKey: "\(segmentUrl) did not contain valid data"
+            ])
+            
+            failure?(invalidDataError)
+        }
+        
         APIManager
             .sharedInstance()
             .multipartPost(
-                segmentUrl,
+                "videos/append",
+                parameters: parameters,
+                data: videoData,
                 name: "media_segment",
                 fileName: "index.ts",
                 mimeType: "application/octet-stream",
-                resource: "videos/append",
-                parameters: parameters,
+                progress: progress,
                 success: { _ in
-                    if success != nil {
-                        success!()
-                    }
+                    success?()
+                    return
                 },
                 failure: failure
             )
+        
+//        APIManager
+//            .sharedInstance()
+//            .multipartPost(
+//                segmentUrl,
+//                name: "media_segment",
+//                fileName: "index.ts",
+//                mimeType: "application/octet-stream",
+//                resource: "videos/append",
+//                parameters: parameters,
+//                success: { _ in
+//                    if success != nil {
+//                        success!()
+//                    }
+//                },
+//                failure: failure
+//            )
 
     }
     
