@@ -15,17 +15,19 @@ internal struct APIEnvironment {
     static let UserIdHeader = "Present-User-Context-User-Id"
     
     static let baseUrl: NSURL = {
+        var webProtocol: String = "https"
         var subdomain: String
         var version: String = "v1"
         
         #if DEVELOPMENT
             subdomain = "api-dev"
+            webProtocol = "http"
         #elseif STAGING
             subdomain = "api-staging"
         #else
             subdomain = "api"
         #endif
         
-        return NSURL(string: "https://\(subdomain).present.tv/\(version)/")!
+        return NSURL(string: "\(webProtocol)://\(subdomain).present.tv/\(version)/")!
     }()
 }
