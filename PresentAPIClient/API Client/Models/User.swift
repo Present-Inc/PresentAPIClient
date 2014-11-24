@@ -61,11 +61,12 @@ public class User: Object, JSONSerializable {
         return User._logger("User")
     }
 
-    public init(username: String, password: String, fullName: String, email: String) {
+    public init(username: String, password: String, fullName: String, email: String, phoneNumber: String? = nil) {
         self.username = username
         self.password = password
         self.fullName = fullName
         self.email = email
+        self.phoneNumber = phoneNumber
         
         super.init(id: "")
     }
