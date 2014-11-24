@@ -147,7 +147,8 @@ public class APIManager {
                 self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(error)")
                 self.checkForUserContextError(error)
                 failure?(error)
-        })
+            }
+        )
     }
     
     func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, progress: ((Double) -> ())?, success: ((AnyObject?) -> ())?, failure: ((NSError?) -> ())?) {
@@ -168,12 +169,16 @@ public class APIManager {
         )
         
         let manager = AFHTTPRequestOperationManager()
-        let operation = manager.HTTPRequestOperationWithRequest(request, success: { operation, response in
+        let operation = manager.HTTPRequestOperationWithRequest(request, success: { dataTask, response in
+            self.logger.debug("Multi-part POST \(dataTask.response?.URL!) succeeded.")
             success?(response)
             return
         }, failure: { dataTask, error in
-            self.checkForUserContextError(error)
-            failure?(error)
+            let requestError = self.serializeErrorResponse(dataTask.responseObject, error: error)
+            
+            self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(requestError)")
+            self.checkForUserContextError(requestError)
+            failure?(requestError)
         })
         
         operation.setUploadProgressBlock { _, totalBytesWritten, totalBytesExpectedToWrite in
@@ -185,6 +190,7 @@ public class APIManager {
     }
 }
 
+// MARK: - Completion Handlers
 private extension APIManager {
     func resourceCompletionHandler<T: JSONSerializable>(success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> ((NSURLRequest, NSHTTPURLResponse?, T?, NSError?) -> Void) {
         return { request, response, object, error in
@@ -209,6 +215,27 @@ private extension APIManager {
                 self.logger.debug("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) succeeded.")
                 success?(results!, nextCursor!)
             }
+        }
+    }
+}
+
+// MARK: - Error Utilities
+private extension APIManager {
+    func serializeErrorResponse(responseObject: AnyObject?, error: NSError?) -> NSError? {
+        if let responseObject: AnyObject = responseObject {
+            let jsonResponse = JSON(responseObject)
+            
+            // Create an ErrorResponse object
+            let errorResponse = ErrorResponse(json: jsonResponse)
+            
+            // Add the error to the userInfo dictionary
+            var userInfo = error!.userInfo ?? [String: AnyObject]()
+            userInfo["APIError"] = errorResponse.error ?? NSNull()
+            
+            // Create a new NSError to be returned with the new user info
+            return NSError(domain: error!.domain, code: error!.code, userInfo: userInfo)
+        } else {
+            return error
         }
     }
     
