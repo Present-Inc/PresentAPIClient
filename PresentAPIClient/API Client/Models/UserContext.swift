@@ -11,14 +11,6 @@ import SwiftyJSON
 import Swell
 import Alamofire
 
-#if DEVELOPMENT
-let PushNotificationPlatform = "APNS_SANDBOX"
-#elseif STAGING
-let PushNotificationPlatform = "APNS_SANDBOX"
-#else
-let PushNotificationPlatform = "APNS"
-#endif
-
 public class UserContext: Object, JSONSerializable {
     public var sessionToken: String!
     public var user: User!
@@ -79,7 +71,7 @@ public class UserContext: Object, JSONSerializable {
     public class func authenticate(username: String, password: String, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let requestConvertible: URLRequestConvertible = {
             if let pushNotificationIdentifier = PushNotificationCredentials.pushNotificationIdentifier {
-                return UserContextRouter.AuthenticateWithPushCredentials(username: username, password: password, deviceId: pushNotificationIdentifier, platform: PushNotificationPlatform)
+                return UserContextRouter.AuthenticateWithPushCredentials(username: username, password: password, deviceId: pushNotificationIdentifier, platform: APIEnvironment.PushNotificationPlatform)
             } else {
                 return UserContextRouter.Authenticate(username: username, password: password)
             }
@@ -97,7 +89,7 @@ public class UserContext: Object, JSONSerializable {
         if let deviceIdentifier = self.pushNotificationIdentifier {
             return APIManager
                 .requestResource(
-                    UserContextRouter.Update(deviceIdentifier: deviceIdentifier, platform: PushNotificationPlatform),
+                    UserContextRouter.Update(deviceIdentifier: deviceIdentifier, platform: APIEnvironment.PushNotificationPlatform),
                     success: success,
                     failure: failure
                 )
