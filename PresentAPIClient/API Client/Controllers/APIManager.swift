@@ -84,11 +84,11 @@ public class APIManager {
     // MARK: GET
     
     class func requestResource<T: JSONSerializable>(request: URLRequestConvertible, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        return self.sharedInstance().requestResource(request, success: success, failure: failure)
+        return sharedInstance().requestResource(request, success: success, failure: failure)
     }
     
     class func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        return self.sharedInstance().requestCollection(request, success: success, failure: failure)
+        return sharedInstance().requestCollection(request, success: success, failure: failure)
     }
     
     func requestResource<T: JSONSerializable>(request: URLRequestConvertible, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
@@ -147,10 +147,50 @@ public class APIManager {
                 self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(error)")
                 self.checkForUserContextError(error)
                 failure?(error)
+            }
+        )
+    }
+    
+    func multipartPost(resource: String, parameters: [String: AnyObject]?, data: NSData, name: String, fileName: String, mimeType: String, progress: ((Double) -> ())?, success: ((AnyObject?) -> ())?, failure: ((NSError?) -> ())?) {
+        let serializer = multipartManager.requestSerializer
+        let constructingBlock: (AFMultipartFormData!) -> Void = { formData in
+            formData.appendPartWithFileData(data, name: name, fileName: fileName, mimeType: mimeType)
+        }
+        
+        var urlString = APIEnvironment.baseUrl.absoluteString!.stringByAppendingPathComponent(resource)
+        
+        var requestError: NSError?
+        let request = serializer.multipartFormRequestWithMethod(
+            Alamofire.Method.POST.rawValue,
+            URLString: urlString,
+            parameters: parameters,
+            constructingBodyWithBlock: constructingBlock,
+            error: &requestError
+        )
+        
+        let manager = AFHTTPRequestOperationManager()
+        let operation = manager.HTTPRequestOperationWithRequest(request, success: { dataTask, response in
+            self.logger.debug("Multi-part POST \(dataTask.response?.URL!) succeeded.")
+            success?(response)
+            return
+        }, failure: { dataTask, error in
+            let requestError = self.serializeErrorResponse(dataTask.responseObject, error: error)
+            
+            self.logger.error("Multi-part POST \(dataTask.response?.URL!) failed with error: \(requestError)")
+            self.checkForUserContextError(requestError)
+            failure?(requestError)
         })
+        
+        operation.setUploadProgressBlock { _, totalBytesWritten, totalBytesExpectedToWrite in
+            let percentComplete = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
+            progress?(percentComplete)
+        }
+        
+        operation.start()
     }
 }
 
+// MARK: - Completion Handlers
 private extension APIManager {
     func resourceCompletionHandler<T: JSONSerializable>(success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> ((NSURLRequest, NSHTTPURLResponse?, T?, NSError?) -> Void) {
         return { request, response, object, error in
@@ -175,6 +215,27 @@ private extension APIManager {
                 self.logger.debug("\(request.HTTPMethod!) \(request.URL) (\(response?.statusCode)) succeeded.")
                 success?(results!, nextCursor!)
             }
+        }
+    }
+}
+
+// MARK: - Error Utilities
+private extension APIManager {
+    func serializeErrorResponse(responseObject: AnyObject?, error: NSError?) -> NSError? {
+        if let responseObject: AnyObject = responseObject {
+            let jsonResponse = JSON(responseObject)
+            
+            // Create an ErrorResponse object
+            let errorResponse = ErrorResponse(json: jsonResponse)
+            
+            // Add the error to the userInfo dictionary
+            var userInfo = error!.userInfo ?? [String: AnyObject]()
+            userInfo["APIError"] = errorResponse.error ?? NSNull()
+            
+            // Create a new NSError to be returned with the new user info
+            return NSError(domain: error!.domain, code: error!.code, userInfo: userInfo)
+        } else {
+            return error
         }
     }
     
