@@ -4,82 +4,50 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Headers/Swell-Swift.h</key>
+		<key>Resources/Info.plist</key>
 		<data>
-		tF92srsRaN2kvEF8zWMvY0YdDZE=
-		</data>
-		<key>Headers/Swell.h</key>
-		<data>
-		EQ/9bbTKn6RvJQSySapD/XtDsIM=
-		</data>
-		<key>Info.plist</key>
-		<data>
-		VAv+IvHPDK2mo0Ou5Tiw6NCff1k=
-		</data>
-		<key>Modules/Swell.swiftmodule/arm.swiftdoc</key>
-		<data>
-		HAJRvV2dNNgsdWIRLi7wUVXJ2sw=
-		</data>
-		<key>Modules/Swell.swiftmodule/arm.swiftmodule</key>
-		<data>
-		oR1vC7DMM9RosBpXmd8mwQXPIaY=
-		</data>
-		<key>Modules/Swell.swiftmodule/arm64.swiftdoc</key>
-		<data>
-		HAJRvV2dNNgsdWIRLi7wUVXJ2sw=
-		</data>
-		<key>Modules/Swell.swiftmodule/arm64.swiftmodule</key>
-		<data>
-		G5TFlzdX9slH3HY9bX9g7aBIJh8=
-		</data>
-		<key>Modules/module.modulemap</key>
-		<data>
-		0n9QGgJ70PbScTmoCwpjTMwzNeE=
+		nzWu6irPxmyQAsivtjyHIjThml8=
 		</data>
 	</dict>
 	<key>files2</key>
 	<dict>
-		<key>Headers/Swell-Swift.h</key>
+		<key>Headers/SwiftyJSON-Swift.h</key>
 		<data>
-		tF92srsRaN2kvEF8zWMvY0YdDZE=
+		6PaYDOYlhXv5EIF1qEIumF4Rf4E=
 		</data>
-		<key>Headers/Swell.h</key>
+		<key>Headers/SwiftyJSON.h</key>
 		<data>
-		EQ/9bbTKn6RvJQSySapD/XtDsIM=
+		/iaqOFrPEApzxmn+e08McetVlLw=
 		</data>
-		<key>Modules/Swell.swiftmodule/arm.swiftdoc</key>
+		<key>Modules/SwiftyJSON.swiftmodule/x86_64.swiftdoc</key>
 		<data>
-		HAJRvV2dNNgsdWIRLi7wUVXJ2sw=
+		U8F7egsZ4J+tp/tNKOVBJIGXUmw=
 		</data>
-		<key>Modules/Swell.swiftmodule/arm.swiftmodule</key>
+		<key>Modules/SwiftyJSON.swiftmodule/x86_64.swiftmodule</key>
 		<data>
-		oR1vC7DMM9RosBpXmd8mwQXPIaY=
-		</data>
-		<key>Modules/Swell.swiftmodule/arm64.swiftdoc</key>
-		<data>
-		HAJRvV2dNNgsdWIRLi7wUVXJ2sw=
-		</data>
-		<key>Modules/Swell.swiftmodule/arm64.swiftmodule</key>
-		<data>
-		G5TFlzdX9slH3HY9bX9g7aBIJh8=
+		Alo4ntshsw+BT3EIvLrw+vgPbxA=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
-		0n9QGgJ70PbScTmoCwpjTMwzNeE=
+		1GXV+34Deld62yvTP9esfhoOTpk=
+		</data>
+		<key>Resources/Info.plist</key>
+		<data>
+		nzWu6irPxmyQAsivtjyHIjThml8=
 		</data>
 	</dict>
 	<key>rules</key>
 	<dict>
-		<key>^</key>
+		<key>^Resources/</key>
 		<true/>
-		<key>^.*\.lproj/</key>
+		<key>^Resources/.*\.lproj/</key>
 		<dict>
 			<key>optional</key>
 			<true/>
 			<key>weight</key>
 			<real>1000</real>
 		</dict>
-		<key>^.*\.lproj/locversion.plist$</key>
+		<key>^Resources/.*\.lproj/locversion.plist$</key>
 		<dict>
 			<key>omit</key>
 			<true/>
@@ -95,11 +63,6 @@
 		<dict>
 			<key>weight</key>
 			<real>11</real>
-		</dict>
-		<key>^</key>
-		<dict>
-			<key>weight</key>
-			<real>20</real>
 		</dict>
 		<key>^(.*/)?\.DS_Store$</key>
 		<dict>
@@ -117,20 +80,6 @@
 		</dict>
 		<key>^.*</key>
 		<true/>
-		<key>^.*\.lproj/</key>
-		<dict>
-			<key>optional</key>
-			<true/>
-			<key>weight</key>
-			<real>1000</real>
-		</dict>
-		<key>^.*\.lproj/locversion.plist$</key>
-		<dict>
-			<key>omit</key>
-			<true/>
-			<key>weight</key>
-			<real>1100</real>
-		</dict>
 		<key>^Info\.plist$</key>
 		<dict>
 			<key>omit</key>
@@ -144,6 +93,25 @@
 			<true/>
 			<key>weight</key>
 			<real>20</real>
+		</dict>
+		<key>^Resources/</key>
+		<dict>
+			<key>weight</key>
+			<real>20</real>
+		</dict>
+		<key>^Resources/.*\.lproj/</key>
+		<dict>
+			<key>optional</key>
+			<true/>
+			<key>weight</key>
+			<real>1000</real>
+		</dict>
+		<key>^Resources/.*\.lproj/locversion.plist$</key>
+		<dict>
+			<key>omit</key>
+			<true/>
+			<key>weight</key>
+			<real>1100</real>
 		</dict>
 		<key>^[^/]+$</key>
 		<dict>
