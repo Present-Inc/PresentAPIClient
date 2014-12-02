@@ -1,6 +1,3 @@
 [submodule "PresentAPIClient/External/AFNetworking"]
 	path = PresentAPIClient/External/AFNetworking
 	url = https://github.com/AFNetworking/AFNetworking.git
-[submodule "PresentAPIClient/External/PFileManager"]
-	path = PresentAPIClient/External/PFileManager
-	url = https://github.com/Present-Inc/PFileManager.git
