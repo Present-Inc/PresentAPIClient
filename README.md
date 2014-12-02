@@ -9,7 +9,8 @@ PresentAPIClient uses [Carthage](https://github.com/Carthage/Carthage) and `git 
 
 0. [Install Carthage](https://github.com/Carthage/Carthage/releases)
 1. Clone the repository
-2. Run `carthage update`
-3. Open the `.xcodeproj`
-4. Link the frameworks in `Carthage.build` to the project
-5. `import PresentAPIClient` wherever you need to use the framework
+2. Run `git submodule update --init`
+3. Run `carthage update`
+4. Open the `.xcodeproj`
+5. Link the frameworks in `Carthage.build` to the project
+6. `import PresentAPIClient` wherever you need to use the framework
