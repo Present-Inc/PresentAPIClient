@@ -1,0 +1,10 @@
+framework module Swell {
+  umbrella header "Swell.h"
+
+  export *
+  module * { export * }
+}
+
+module Swell.Swift {
+    header "Swell-Swift.h"
+}
