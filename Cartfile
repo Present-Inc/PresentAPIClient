@@ -1,5 +1,5 @@
 # Require Alamofire
-github "Alamofire/Alamofire" ~> 1.1.1
+github "ishkawa/Alamofire" ~> 1.1.1
 
 # Require SwiftyJSON
 github "Present-Inc/SwiftyJSON" ~> 2.1.2
