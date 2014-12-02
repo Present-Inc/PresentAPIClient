@@ -8,6 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		7C2BE55219B603FC00BDCB4A /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C2BE55119B603FB00BDCB4A /* Error.swift */; };
+		7C3CADAE1A2E5E7F00FDFE9E /* Alamofire.framework in Copy External Dependencies */ = {isa = PBXBuildFile; fileRef = 7C5E109A1A2E243A00333E8B /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7C3CADAF1A2E5E8800FDFE9E /* Swell.framework in Copy External Dependencies */ = {isa = PBXBuildFile; fileRef = 7C5E109C1A2E244300333E8B /* Swell.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		7C3CADB01A2E5EC600FDFE9E /* SwiftyJSON.framework in Copy External Dependencies */ = {isa = PBXBuildFile; fileRef = 7C5E10971A2E22A700333E8B /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7C3DBD1319AE326600A657C4 /* PresentAPIClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */; };
 		7C41299519F1AFD4007096A7 /* PresentAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */; };
 		7C4733B719A5288C009124FA /* UserSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4733B619A5288C009124FA /* UserSession.swift */; };
@@ -60,6 +63,22 @@
 		7CF2E69C19F816A0003EE95B /* JSONSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF2E69B19F816A0003EE95B /* JSONSerializable.swift */; };
 		7CF2E6AA19F824CF003EE95B /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF2E6A919F824CF003EE95B /* Response.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7C3CADAD1A2E5E6300FDFE9E /* Copy External Dependencies */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				7C3CADB01A2E5EC600FDFE9E /* SwiftyJSON.framework in Copy External Dependencies */,
+				7C3CADAF1A2E5E8800FDFE9E /* Swell.framework in Copy External Dependencies */,
+				7C3CADAE1A2E5E7F00FDFE9E /* Alamofire.framework in Copy External Dependencies */,
+			);
+			name = "Copy External Dependencies";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7C2BE55119B603FB00BDCB4A /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Error.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -299,6 +318,7 @@
 				7CCFEADC199C15BC00D87880 /* Frameworks */,
 				7CCFEADD199C15BC00D87880 /* Headers */,
 				7CCFEADE199C15BC00D87880 /* Resources */,
+				7C3CADAD1A2E5E6300FDFE9E /* Copy External Dependencies */,
 			);
 			buildRules = (
 			);
