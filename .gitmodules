@@ -1,3 +1,0 @@
-[submodule "PresentAPIClient/External/AFNetworking"]
-	path = PresentAPIClient/External/AFNetworking
-	url = https://github.com/AFNetworking/AFNetworking.git
