@@ -2,21 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:PresentAPIClient/External/SwiftyJSON/SwiftyJSON.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:PresentAPIClient/External/Swell/Swell.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:PresentAPIClient/External/Alamofire/Alamofire.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:PresentAPIClient/External/Quick/Quick/Quick.xcodeproj">
-   </FileRef>
-   <FileRef
-      location = "group:PresentAPIClient/External/Nimble/Nimble.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "container:PresentAPIClient.xcodeproj">
    </FileRef>
 </Workspace>
