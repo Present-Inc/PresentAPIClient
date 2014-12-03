@@ -142,8 +142,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7C5E10981A2E22A700333E8B /* SwiftyJSON.framework in Frameworks */,
 				7C5E109B1A2E243A00333E8B /* Alamofire.framework in Frameworks */,
+				7C5E10981A2E22A700333E8B /* SwiftyJSON.framework in Frameworks */,
 				7C5E109D1A2E244300333E8B /* Swell.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
