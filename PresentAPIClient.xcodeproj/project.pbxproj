@@ -20,9 +20,6 @@
 		7CBFA31E1A2F892800595FEE /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBFA31B1A2F892800595FEE /* Alamofire.framework */; };
 		7CBFA31F1A2F892800595FEE /* Swell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBFA31C1A2F892800595FEE /* Swell.framework */; };
 		7CBFA3201A2F892800595FEE /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBFA31D1A2F892800595FEE /* SwiftyJSON.framework */; };
-		7CBFA3211A2F892C00595FEE /* Alamofire.framework in Copy External Dependencies */ = {isa = PBXBuildFile; fileRef = 7CBFA31B1A2F892800595FEE /* Alamofire.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		7CBFA3221A2F892C00595FEE /* Swell.framework in Copy External Dependencies */ = {isa = PBXBuildFile; fileRef = 7CBFA31C1A2F892800595FEE /* Swell.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		7CBFA3231A2F892C00595FEE /* SwiftyJSON.framework in Copy External Dependencies */ = {isa = PBXBuildFile; fileRef = 7CBFA31D1A2F892800595FEE /* SwiftyJSON.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		7CCFEAE6199C15BC00D87880 /* PresentAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7CCFEB1C199C16AA00D87880 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB0C199C16AA00D87880 /* APIManager.swift */; };
 		7CCFEB1D199C16AA00D87880 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB0E199C16AA00D87880 /* Comment.swift */; };
@@ -63,22 +60,6 @@
 		7CF2E69C19F816A0003EE95B /* JSONSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF2E69B19F816A0003EE95B /* JSONSerializable.swift */; };
 		7CF2E6AA19F824CF003EE95B /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF2E6A919F824CF003EE95B /* Response.swift */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		7C3CADAD1A2E5E6300FDFE9E /* Copy External Dependencies */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				7CBFA3211A2F892C00595FEE /* Alamofire.framework in Copy External Dependencies */,
-				7CBFA3221A2F892C00595FEE /* Swell.framework in Copy External Dependencies */,
-				7CBFA3231A2F892C00595FEE /* SwiftyJSON.framework in Copy External Dependencies */,
-			);
-			name = "Copy External Dependencies";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		7C2BE55119B603FB00BDCB4A /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Error.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -318,7 +299,6 @@
 				7CCFEADC199C15BC00D87880 /* Frameworks */,
 				7CCFEADD199C15BC00D87880 /* Headers */,
 				7CCFEADE199C15BC00D87880 /* Resources */,
-				7C3CADAD1A2E5E6300FDFE9E /* Copy External Dependencies */,
 			);
 			buildRules = (
 			);
