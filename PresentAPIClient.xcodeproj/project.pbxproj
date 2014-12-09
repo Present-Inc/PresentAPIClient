@@ -17,9 +17,6 @@
 		7C79D47919B9018C0015468E /* AlamofireExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C79D47819B9018C0015468E /* AlamofireExtensions.swift */; };
 		7C81563219DCEBFD0046653D /* SocialData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C81563119DCEBFD0046653D /* SocialData.swift */; };
 		7CA98D0D1A08494D007BE355 /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CA98D0C1A08494D007BE355 /* PushNotification.swift */; };
-		7CBFA31E1A2F892800595FEE /* Alamofire.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBFA31B1A2F892800595FEE /* Alamofire.framework */; };
-		7CBFA31F1A2F892800595FEE /* Swell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBFA31C1A2F892800595FEE /* Swell.framework */; };
-		7CBFA3201A2F892800595FEE /* SwiftyJSON.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBFA31D1A2F892800595FEE /* SwiftyJSON.framework */; };
 		7CCFEAE6199C15BC00D87880 /* PresentAPIClient.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7CCFEB1C199C16AA00D87880 /* APIManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB0C199C16AA00D87880 /* APIManager.swift */; };
 		7CCFEB1D199C16AA00D87880 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB0E199C16AA00D87880 /* Comment.swift */; };
@@ -61,6 +58,18 @@
 		7CF2E6AA19F824CF003EE95B /* Response.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF2E6A919F824CF003EE95B /* Response.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		7C613FBA1A3614F300D5A44B /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		7C2BE55119B603FB00BDCB4A /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Error.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PresentAPIClient.swift; sourceTree = "<group>"; };
@@ -71,9 +80,6 @@
 		7C79D47819B9018C0015468E /* AlamofireExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlamofireExtensions.swift; sourceTree = "<group>"; };
 		7C81563119DCEBFD0046653D /* SocialData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SocialData.swift; sourceTree = "<group>"; };
 		7CA98D0C1A08494D007BE355 /* PushNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
-		7CBFA31B1A2F892800595FEE /* Alamofire.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Alamofire.framework; path = Carthage.build/iOS/Alamofire.framework; sourceTree = SOURCE_ROOT; };
-		7CBFA31C1A2F892800595FEE /* Swell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Swell.framework; path = Carthage.build/iOS/Swell.framework; sourceTree = SOURCE_ROOT; };
-		7CBFA31D1A2F892800595FEE /* SwiftyJSON.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftyJSON.framework; path = Carthage.build/iOS/SwiftyJSON.framework; sourceTree = SOURCE_ROOT; };
 		7CCFEAE0199C15BC00D87880 /* PresentAPIClient.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PresentAPIClient.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		7CCFEAE4199C15BC00D87880 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PresentAPIClient.h; sourceTree = "<group>"; };
@@ -123,9 +129,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				7CBFA31F1A2F892800595FEE /* Swell.framework in Frameworks */,
-				7CBFA31E1A2F892800595FEE /* Alamofire.framework in Frameworks */,
-				7CBFA3201A2F892800595FEE /* SwiftyJSON.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -223,9 +226,6 @@
 		7CCFEB2B199C16B300D87880 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				7CBFA31B1A2F892800595FEE /* Alamofire.framework */,
-				7CBFA31C1A2F892800595FEE /* Swell.framework */,
-				7CBFA31D1A2F892800595FEE /* SwiftyJSON.framework */,
 				7CF0830A19F016B300BDF411 /* AFNetworking */,
 				7CF0834719F01ACB00BDF411 /* PFileManager */,
 			);
@@ -299,6 +299,7 @@
 				7CCFEADC199C15BC00D87880 /* Frameworks */,
 				7CCFEADD199C15BC00D87880 /* Headers */,
 				7CCFEADE199C15BC00D87880 /* Resources */,
+				7C613FBA1A3614F300D5A44B /* CopyFiles */,
 			);
 			buildRules = (
 			);
