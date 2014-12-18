@@ -131,10 +131,11 @@ public class Video: Object, JSONSerializable {
         creator = User(json: json["creatorUser"])
         
         if let mostRecentLikes = json["likes"]["results"].array {
-            for jsonLike: ObjectJSON in mostRecentLikes {
-                let like = Like(json: jsonLike, video: self)
-                self.likesCollection.addObject(like)
-            }
+            let likes = mostRecentLikes.map({ json in
+                Like(json: json, video: self)
+            })
+            
+            likesCollection.addObjects(likes)
         }
         
         if let likeCount = json["likes"]["count"].int {
@@ -142,10 +143,11 @@ public class Video: Object, JSONSerializable {
         }
         
         if let mostRecentComments = json["comments"]["results"].array {
-            for jsonComment: ObjectJSON in mostRecentComments {
-                var comment = Comment(json: jsonComment, video: self)
-                self.commentsCollection.addObject(comment)
+            let comments = mostRecentComments.map { json in
+                Comment(json: json, video: self)
             }
+            
+            commentsCollection.addObjects(comments)
         }
         
         if let commentCount = json["comments"]["count"].int {
@@ -162,19 +164,23 @@ public class Video: Object, JSONSerializable {
     }
     
     public func addComment(comment: Comment) {
-        self.commentsCollection.addObject(comment)
+        commentsCollection.addObject(comment)
+        commentsCount++
     }
     
     public func deleteComment(comment: Comment) {
-        self.commentsCollection.removeObject(comment)
+        commentsCollection.removeObject(comment)
+        commentsCount--
     }
     
     public func addLike(like: Like) {
-        self.likesCollection.addObject(like)
+        likesCollection.addObject(like)
+        likesCount++
     }
     
     public func deleteLike(like: Like) {
-        self.likesCollection.removeObject(like)
+        likesCollection.removeObject(like)
+        likesCount--
     }
     
     public override func mergeResultsFromObject(object: Object) {
@@ -438,6 +444,7 @@ public extension Video {
     
     public func destroyLike(success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return Like.destroy(self.id!, success: {
+            
             // Delete the like from the collection
             for like in self.likes {
                 if like.user == UserSession.currentUser()! {
