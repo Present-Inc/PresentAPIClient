@@ -51,7 +51,12 @@ public class User: Object, JSONSerializable {
     }
     
     public var isFollowed: Bool {
-        return UserSession.currentSession()?.getObjectMetaForObject(self)?.friendship?.forward ?? false
+        get {
+            return UserSession.currentSession()?.getObjectMetaForObject(self)?.friendship?.forward ?? false
+        }
+        set {
+            UserSession.currentSession()?.getObjectMetaForObject(self)?.friendship?.forward = newValue
+        }
     }
     
     private var profileImageUrlString: String = "https://user-assets.present.tv/profile-pictures/default.png"
