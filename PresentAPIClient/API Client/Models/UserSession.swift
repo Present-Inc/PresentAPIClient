@@ -143,12 +143,42 @@ public extension UserSession {
     
     func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forObject object: Object) {
         if let key = object.id {
-            self.storeObjectMeta(objectMeta, forKey: key)
+            storeObjectMeta(objectMeta, forKey: key)
+        }
+    }
+    
+    func storeLike(relation: Relation, forObject object: Object) {
+        if let key = object.id {
+            storeLike(relation, forKey: key)
+        }
+    }
+    
+    func storeView(relation: Relation, forObject object: Object) {
+        if let key = object.id {
+            storeView(relation, forKey: key)
+        }
+    }
+    
+    func storeFriendship(relation: Relation, forObject object: Object) {
+        if let key = object.id {
+            storeFriendship(relation, forKey: key)
         }
     }
     
     func storeObjectMeta(objectMeta: SubjectiveObjectMeta, forKey key: String) {
-        self.relationStore.store(objectMeta, forKey: key)
+        relationStore.store(objectMeta, forKey: key)
+    }
+    
+    func storeLike(likeRelation: Relation, forKey key: String) {
+        relationStore.storeLike(likeRelation, forKey: key)
+    }
+    
+    func storeView(viewRelation: Relation, forKey key: String) {
+        relationStore.storeView(viewRelation, forKey: key)
+    }
+    
+    func storeFriendship(friendshipRelation: Relation, forKey key: String) {
+        relationStore.storeFriendship(friendshipRelation, forKey: key)
     }
     
     // MARK: Retrieving Object Meta
@@ -163,9 +193,9 @@ public extension UserSession {
     
     func getObjectMetaForKey(key: String) -> SubjectiveObjectMeta {
         return SubjectiveObjectMeta(
-            like: self.relationStore.getLike(key),
-            friendship: self.relationStore.getFriendship(key),
-            view: self.relationStore.getView(key)
+            like: relationStore.getLike(key),
+            friendship: relationStore.getFriendship(key),
+            view: relationStore.getView(key)
         )
     }
 }

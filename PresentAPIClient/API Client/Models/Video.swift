@@ -56,7 +56,12 @@ public class Video: Object, JSONSerializable {
     }
     
     public var isLiked: Bool {
-        return subjectiveObjectMeta.like?.forward ?? false
+        get {
+            return subjectiveObjectMeta.like?.forward ?? false
+        }
+        set {
+            subjectiveObjectMeta.like?.forward = newValue
+        }
     }
     
     private var liveUrl: NSURL!
@@ -96,9 +101,9 @@ public class Video: Object, JSONSerializable {
         
         self.initializeWithObject(json["object"])
         
-        if let objectId = self.id {
-            self.subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
-            UserSession.currentSession()?.storeObjectMeta(self.subjectiveObjectMeta, forKey: self.id!)
+        if let objectId = id {
+            subjectiveObjectMeta = SubjectiveObjectMeta(json: json["subjectiveObjectMeta"])
+            UserSession.currentSession()?.storeObjectMeta(self.subjectiveObjectMeta, forKey: objectId)
         }
     }
     
@@ -439,10 +444,14 @@ public extension Video {
         let like = Like(user: UserSession.currentUser()!, video: self)
         addLike(like)
         
+        isLiked = true
+        
         return like.create(success, failure: failure)
     }
     
     public func destroyLike(success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        isLiked = false
+        
         return Like.destroy(self.id!, success: {
             
             // Delete the like from the collection

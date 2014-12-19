@@ -86,4 +86,13 @@ public extension Activity {
                 failure: failure
         )
     }
+    
+    public class func show(activityId: String, success: ((Activity) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+        return APIManager
+            .requestResource(
+                ActivityRouter.Show(activityId: activityId),
+                success: success,
+                failure: failure
+        )
+    }
 }

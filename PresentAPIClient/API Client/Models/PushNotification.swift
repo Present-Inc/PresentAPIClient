@@ -10,7 +10,7 @@ import Foundation
 
 public class PushNotification: NSObject {
     public let alert: String?
-    public let contentAvailable: Int?
+    public let contentAvailable: Bool = false
     public let badge: Int?
     public let activityId: String?
     public let type: ActivityType = .Invalid
@@ -18,7 +18,11 @@ public class PushNotification: NSObject {
     public init(dictionary: [NSObject: AnyObject]) {
         if let aps = dictionary["aps"] as? [NSObject: AnyObject] {
             alert = aps["alert"] as? String
-            contentAvailable = aps["contentAvailable"] as? Int
+            
+            if let contentAvailable = aps["contentAvailable"] as? Int {
+                self.contentAvailable = (contentAvailable == 1) ? true : false
+            }
+
             badge = aps["badge"] as? Int
         }
         

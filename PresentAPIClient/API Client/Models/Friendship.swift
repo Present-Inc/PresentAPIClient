@@ -41,7 +41,14 @@ public extension Friendship {
     
     class func create(targetUserId: String, success: ((Friendship) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let successHandler: (Friendship) -> () = { friendship in
-            UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship?.forward = true
+            if let friendshipRelation = UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship {
+                friendshipRelation.forward = true
+            } else {
+                let friendshipRelation = Relation(forward: true, backward: false)
+                UserSession.currentSession()?.storeLike(friendshipRelation, forKey: targetUserId)
+            }
+            
+            
             success?(friendship)
         }
         
@@ -57,7 +64,14 @@ public extension Friendship {
     
     class func destroy(targetUserId: String, success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let successHandler: (Friendship) -> () = { _ in
-            UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship?.forward = false
+            if let friendshipRelation = UserSession.currentSession()?.getObjectMetaForKey(targetUserId).friendship {
+                friendshipRelation.forward = false
+            } else {
+                let friendshipRelation = Relation(forward: false, backward: false)
+                UserSession.currentSession()?.storeLike(friendshipRelation, forKey: targetUserId)
+            }
+            
+            
             success?()
         }
         

@@ -54,7 +54,13 @@ public extension Like {
     
     class func create(videoId: String, success: ((Like) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let successHandler: (Like) -> () = { like in
-            UserSession.currentSession()?.getObjectMetaForKey(videoId).like?.forward = true
+            if let likeRelation = UserSession.currentSession()?.getObjectMetaForKey(videoId).like {
+                likeRelation.forward = true
+            } else {
+                let likeRelation = Relation(forward: true, backward: false)
+                UserSession.currentSession()?.storeLike(likeRelation, forKey: videoId)
+            }
+            
             success?(like)
         }
         
@@ -70,7 +76,14 @@ public extension Like {
     
     class func destroy(videoId: String, success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let successHandler: (Like) -> () = { like in
-            UserSession.currentSession()?.getObjectMetaForKey(videoId).like?.forward = false
+            if let likeRelation = UserSession.currentSession()?.getObjectMetaForKey(videoId).like {
+                likeRelation.forward = false
+            } else {
+                let likeRelation = Relation(forward: false, backward: false)
+                UserSession.currentSession()?.storeLike(likeRelation, forKey: videoId)
+            }
+            
+            
             success?()
         }
         

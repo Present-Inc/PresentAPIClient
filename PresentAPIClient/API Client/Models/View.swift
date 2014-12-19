@@ -40,7 +40,14 @@ public extension View {
     
     class func create(videoId: String, success: ((View) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let successHandler: (View) -> () = { view in
-            UserSession.currentSession()?.getObjectMetaForKey(videoId).view?.forward = true
+            if let viewRelation = UserSession.currentSession()?.getObjectMetaForKey(videoId).view {
+                viewRelation.forward = true
+            } else {
+                let viewRelation = Relation(forward: true, backward: false)
+                UserSession.currentSession()?.storeView(viewRelation, forKey: videoId)
+            }
+            
+            
             success?(view)
         }
         
@@ -56,11 +63,14 @@ public extension View {
     
     class func destroy(videoId: String, success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let successHandler: (View) -> () = { view in
-            UserSession.currentSession()?.getObjectMetaForKey(videoId).view?.forward = false
-            
-            if success != nil {
-                success!()
+            if let viewRelation = UserSession.currentSession()?.getObjectMetaForKey(videoId).view {
+                viewRelation.forward = false
+            } else {
+                let viewRelation = Relation(forward: false, backward: false)
+                UserSession.currentSession()?.storeView(viewRelation, forKey: videoId)
             }
+            
+            success?()
         }
         
         return APIManager

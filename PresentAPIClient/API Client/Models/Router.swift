@@ -11,6 +11,8 @@ import Alamofire
 
 protocol PresetRouterProtocol {
     var method: Alamofire.Method { get }
+    var resource: String { get }
+    var path: String { get }
     var encoding: Alamofire.ParameterEncoding { get }
     var requestTuple: (path: String, parameters: [String: AnyObject]?) { get }
 }
@@ -24,10 +26,11 @@ private func urlWithPath(path: String) -> NSURL {
 enum ActivityRouter: URLRequestConvertible {
     case Activities(cursor: Int)
     case MarkAsRead(activityIds: [String])
+    case Show(activityId: String)
     
     var method: Alamofire.Method {
         switch self {
-        case .Activities:
+        case .Activities, .Show:
             return .GET
         case .MarkAsRead:
             return .POST
@@ -36,7 +39,7 @@ enum ActivityRouter: URLRequestConvertible {
     
     var encoding: Alamofire.ParameterEncoding {
         switch self {
-        case .Activities:
+        case .Activities, .Show:
             return .URL
         case .MarkAsRead:
             return .JSON
@@ -54,6 +57,10 @@ enum ActivityRouter: URLRequestConvertible {
             case .MarkAsRead(let activities):
                 return ("activities/batch_update", [
                     "activity_ids": activities
+                ])
+            case .Show(let activityId):
+                return ("activities/show", [
+                    "activity_id": activityId
                 ])
             }
         }()
