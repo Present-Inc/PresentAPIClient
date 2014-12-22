@@ -1,3 +1,12 @@
 [submodule "PresentAPIClient/External/AFNetworking"]
 	path = PresentAPIClient/External/AFNetworking
 	url = https://github.com/AFNetworking/AFNetworking.git
+[submodule "Carthage/Checkouts/Alamofire"]
+	path = Carthage/Checkouts/Alamofire
+	url = https://github.com/ishkawa/Alamofire.git
+[submodule "Carthage/Checkouts/Swell"]
+	path = Carthage/Checkouts/Swell
+	url = https://github.com/Present-Inc/Swell.git
+[submodule "Carthage/Checkouts/SwiftyJSON"]
+	path = Carthage/Checkouts/SwiftyJSON
+	url = https://github.com/SwiftyJSON/SwiftyJSON.git
