@@ -62,10 +62,10 @@ public class Activity: Object, JSONSerializable {
 public extension Activity {
     // MARK: - Class Resource Methods
     
-    public class func getActivities(cursor: Int? = 0, success: (([Activity], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+    public class func getActivities(cursor: Int? = 0, limit: Int? = 100, success: (([Activity], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return APIManager
             .requestCollection(
-                ActivityRouter.Activities(cursor: cursor!),
+                ActivityRouter.Activities(cursor: cursor!, limit: limit!),
                 success: success,
                 failure: failure
         )
@@ -74,9 +74,8 @@ public extension Activity {
     public class func markAsRead(activities: [Activity], success: (() -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let markAsRead = activities.filter { !$0.isNew }.map { $0.id! }
         let successHandler: ([Activity], Int) -> () = { _, _ in
-            if success != nil {
-                success!()
-            }
+            success?()
+            return
         }
         
         return APIManager

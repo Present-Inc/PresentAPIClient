@@ -24,7 +24,7 @@ private func urlWithPath(path: String) -> NSURL {
 // MARK: - Activity Router
 
 enum ActivityRouter: URLRequestConvertible {
-    case Activities(cursor: Int)
+    case Activities(cursor: Int, limit: Int)
     case MarkAsRead(activityIds: [String])
     case Show(activityId: String)
     
@@ -49,10 +49,10 @@ enum ActivityRouter: URLRequestConvertible {
     var URLRequest: NSURLRequest {
         let (path: String, parameters: [String: AnyObject]?) = {
             switch self {
-            case .Activities(let cursor):
+            case .Activities(let cursor, let limit):
                 return ("activities/list_my_activities", [
                     "cursor": cursor,
-                    "limit": 100
+                    "limit": limit
                 ])
             case .MarkAsRead(let activities):
                 return ("activities/batch_update", [
