@@ -23,7 +23,6 @@ public class UserContext: Object, JSONSerializable {
         set {
             PushNotificationCredentials.pushNotificationIdentifier = newValue
         
-            // If the user is logged in and the push notification identifier is not nil, update the current user context
             if newValue != nil && UserSession.currentSession() != nil {
                 UserContext.updatePushNotificationIdentifier()
             }
@@ -69,7 +68,7 @@ public class UserContext: Object, JSONSerializable {
     }
     
     public class func authenticate(username: String, password: String, success: ((UserContext) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        let requestConvertible: URLRequestConvertible = {
+        let requestConvertible: PresentRouter = {
             if let pushNotificationIdentifier = PushNotificationCredentials.pushNotificationIdentifier {
                 return UserContextRouter.AuthenticateWithPushCredentials(username: username, password: password, deviceId: pushNotificationIdentifier, platform: APIEnvironment.PushNotificationPlatform)
             } else {

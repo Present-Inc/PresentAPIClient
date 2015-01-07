@@ -83,27 +83,28 @@ public class APIManager {
     
     // MARK: GET
     
-    class func requestResource<T: JSONSerializable>(request: URLRequestConvertible, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+    class func requestResource<T: JSONSerializable>(request: PresentRouter, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return sharedInstance().requestResource(request, success: success, failure: failure)
     }
     
-    class func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+    class func requestCollection<T: JSONSerializable>(request: PresentRouter, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         return sharedInstance().requestCollection(request, success: success, failure: failure)
     }
     
-    func requestResource<T: JSONSerializable>(request: URLRequestConvertible, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+    func requestResource<T: JSONSerializable>(request: PresentRouter, success: ((T) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let networkRequest = self.request(request).resourceResponseJSON(resourceCompletionHandler(success, failure: failure))
         
         return APIRequest(request: networkRequest)
     }
     
-    func requestCollection<T: JSONSerializable>(request: URLRequestConvertible, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
+    func requestCollection<T: JSONSerializable>(request: PresentRouter, success: (([T], Int) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let networkRequest = self.request(request).collectionResponseJSON(collectionCompletionHandler(success, failure: failure))
         
         return APIRequest(request: networkRequest)
     }
     
-    private func request(request: URLRequestConvertible) -> Request {
+    private func request(route: PresentRouter) -> Request {
+        let request = APIRequestConvertible(router: route)
         return manager.request(request).validate(statusCode: 200..<400)
     }
     

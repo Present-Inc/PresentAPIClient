@@ -9,29 +9,26 @@
 import UIKit
 import Alamofire
 
-enum APIResource: String {
-    case User = "users"
-    case Video = "videos"
-    case Comment = "comments"
-    case Like = "likes"
-    case Activity = "activities"
-}
-
-protocol PresetRouterProtocol {
-    var method: Alamofire.Method { get }
-    var resource: APIResource { get }
-    var path: String { get }
-    var encoding: Alamofire.ParameterEncoding { get }
-    var requestTuple: (path: String, parameters: [String: AnyObject]?) { get }
-}
-
-private func urlWithPath(path: String) -> NSURL {
-    return APIEnvironment.baseUrl.URLByAppendingPathComponent(path)
+struct APIRequestConvertible: URLRequestConvertible {
+    let router: PresentRouter
+    
+    var URLRequest: NSURLRequest {
+        let tuple = router.requestParameters
+        
+        let request = NSMutableURLRequest(URL: urlWithPath(tuple.path))
+        request.HTTPMethod = router.method.rawValue
+        
+        return router.encoding.encode(request, parameters: tuple.parameters).0
+    }
+    
+    private func urlWithPath(path: String) -> NSURL {
+        return APIEnvironment.baseUrl.URLByAppendingPathComponent(path)
+    }
 }
 
 // MARK: - Activity Router
 
-enum ActivityRouter: URLRequestConvertible {
+enum ActivityRouter: PresentRouter {
     case Activities(cursor: Int, limit: Int)
     case MarkAsRead(activityIds: [String])
     case Show(activityId: String)
@@ -54,35 +51,28 @@ enum ActivityRouter: URLRequestConvertible {
         }
     }
     
-    var URLRequest: NSURLRequest {
-        let (path: String, parameters: [String: AnyObject]?) = {
-            switch self {
-            case .Activities(let cursor, let limit):
-                return ("activities/list_my_activities", [
-                    "cursor": cursor,
-                    "limit": limit
-                ])
-            case .MarkAsRead(let activities):
-                return ("activities/batch_update", [
-                    "activity_ids": activities
-                ])
-            case .Show(let activityId):
-                return ("activities/show", [
-                    "activity_id": activityId
-                ])
-            }
-        }()
-            
-        let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.rawValue
-            
-        return self.encoding.encode(URLRequest, parameters: parameters).0
+    var requestParameters: RequestParameters {
+        switch self {
+        case .Activities(let cursor, let limit):
+            return ("activities/list_my_activities", [
+                "cursor": cursor,
+                "limit": limit
+            ])
+        case .MarkAsRead(let activities):
+            return ("activities/batch_update", [
+                "activity_ids": activities
+            ])
+        case .Show(let activityId):
+            return ("activities/show", [
+                "activity_id": activityId
+            ])
+        }
     }
 }
 
 // MARK: - Comment Router
 
-enum CommentRouter: URLRequestConvertible {
+enum CommentRouter: PresentRouter {
     case Create(videoId: String, body: String)
     case Destroy(commentId: String)
     case Update(commentId: String, body: String)
@@ -107,45 +97,38 @@ enum CommentRouter: URLRequestConvertible {
         }
     }
     
-    var URLRequest: NSURLRequest {
-        let (path: String, parameters: [String: AnyObject]?) = {
-            switch self {
-            case .Create(let videoId, let body):
-                return ("comments/create", [
-                    "video_id": videoId,
-                    "body": body
-                ])
-            case .Destroy(let commentId):
-                return ("comments/destroy", [
-                    "comment_id": commentId
-                ])
-            case .Update(let commentId, let body):
-                return ("comments/update", [
-                    "comment_id": commentId,
-                    "body": body
-                ])
-            case .CommentsForVideo(let videoId, let cursor):
-                return ("comments/list_video_comments", [
-                    "video_id": videoId,
-                    "cursor": cursor
-                ])
-            case .CommentForId(let commentId):
-                return ("comments/show", [
-                    "comment_id": commentId
-                ])
-            }
-        }()
-            
-        let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.rawValue
-            
-        return self.encoding.encode(URLRequest, parameters: parameters).0
+    var requestParameters: RequestParameters {
+        switch self {
+        case .Create(let videoId, let body):
+            return ("comments/create", [
+                "video_id": videoId,
+                "body": body
+            ])
+        case .Destroy(let commentId):
+            return ("comments/destroy", [
+                "comment_id": commentId
+            ])
+        case .Update(let commentId, let body):
+            return ("comments/update", [
+                "comment_id": commentId,
+                "body": body
+            ])
+        case .CommentsForVideo(let videoId, let cursor):
+            return ("comments/list_video_comments", [
+                "video_id": videoId,
+                "cursor": cursor
+            ])
+        case .CommentForId(let commentId):
+            return ("comments/show", [
+                "comment_id": commentId
+            ])
+        }
     }
 }
 
 // MARK: - Friendship Router
 
-enum FriendshipRouter: URLRequestConvertible {
+enum FriendshipRouter: PresentRouter {
     case ForwardFriendships(userId: String, cursor: Int)
     case BackwardFriendships(userId: String, cursor: Int)
     case Create(userId: String)
@@ -169,40 +152,33 @@ enum FriendshipRouter: URLRequestConvertible {
         }
     }
     
-    var URLRequest: NSURLRequest {
-        let (path: String, parameters: [String: AnyObject]?) = {
-            switch self {
-            case .Create(let userId):
-                return ("friendships/create", [
-                    "user_id": userId
-                ])
-            case .Destroy(let userId):
-                return ("friendships/destroy", [
-                    "user_id": userId
-                ])
-            case .ForwardFriendships(let userId, let cursor):
-                return ("friendships/list_user_forward_friendships", [
-                    "user_id": userId,
-                    "cursor": cursor
-                ])
-            case .BackwardFriendships(let userId, let cursor):
-                return ("friendships/list_user_backward_friendships", [
-                    "user_id": userId,
-                    "cursor": cursor
-                ])
-            }
-        }()
-            
-        let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.rawValue
-        
-        return self.encoding.encode(URLRequest, parameters: parameters).0
+    var requestParameters: RequestParameters {
+        switch self {
+        case .Create(let userId):
+            return ("friendships/create", [
+                "user_id": userId
+            ])
+        case .Destroy(let userId):
+            return ("friendships/destroy", [
+                "user_id": userId
+            ])
+        case .ForwardFriendships(let userId, let cursor):
+            return ("friendships/list_user_forward_friendships", [
+                "user_id": userId,
+                "cursor": cursor
+            ])
+        case .BackwardFriendships(let userId, let cursor):
+            return ("friendships/list_user_backward_friendships", [
+                "user_id": userId,
+                "cursor": cursor
+            ])
+        }
     }
 }
 
 // MARK: - Like Router
 
-enum LikeRouter: URLRequestConvertible {
+enum LikeRouter: PresentRouter {
     case Create(videoId: String)
     case Destroy(videoId: String)
     case ForwardLikes(userId: String, cursor: Int)
@@ -226,40 +202,33 @@ enum LikeRouter: URLRequestConvertible {
         }
     }
     
-    var URLRequest: NSURLRequest {
-        let (path: String, parameters: [String: AnyObject]?) = {
-            switch self {
-            case .Create(let videoId):
-                return ("likes/create", [
-                    "video_id": videoId
-                ])
-            case .Destroy(let videoId):
-                return ("likes/destroy", [
-                    "video_id": videoId
-                ])
-            case .ForwardLikes(let userId, let cursor):
-                return ("likes/list_user_forward_likes", [
-                    "user_id": userId,
-                    "cursor": cursor
-                ])
-            case .BackwardLikes(let videoId, let cursor):
-                return ("likes/list_video_backward_likes", [
-                    "video_id": videoId,
-                    "cursor": cursor
-                ])
-            }
-        }()
-            
-        let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.rawValue
-        
-        return self.encoding.encode(URLRequest, parameters: parameters).0
+    var requestParameters: RequestParameters {
+        switch self {
+        case .Create(let videoId):
+            return ("likes/create", [
+                "video_id": videoId
+            ])
+        case .Destroy(let videoId):
+            return ("likes/destroy", [
+                "video_id": videoId
+            ])
+        case .ForwardLikes(let userId, let cursor):
+            return ("likes/list_user_forward_likes", [
+                "user_id": userId,
+                "cursor": cursor
+            ])
+        case .BackwardLikes(let videoId, let cursor):
+            return ("likes/list_video_backward_likes", [
+                "video_id": videoId,
+                "cursor": cursor
+            ])
+        }
     }
 }
 
 // MARK: User Router
 
-enum UserRouter: URLRequestConvertible {
+enum UserRouter: PresentRouter {
     case Create(username: String, password: String, email: String)
     case Search(query: String, cursor: Int)
     case Update(properties: [String: AnyObject])
@@ -287,51 +256,44 @@ enum UserRouter: URLRequestConvertible {
         }
     }
     
-    var URLRequest: NSURLRequest {
-        let (path: String, parameters: [String: AnyObject]?) = {
-            switch self {
-            case .Create(let username, let password, let email):
-                return ("users/create", [
-                    "username": username,
-                    "password": password,
-                    "email": email
-                ])
-            case .Update(let properties):
-                return ("users/update", properties)
-            case .Search(let query, let cursor):
-                return ("users/search", [
-                    "query": "username:*\(query)* OR username:\(query)* OR profile.fullName:*\(query)*",
-                    "cursor": cursor
-                ])
-            case .BatchSearch(let batchSearchParameters):
-                return ("users/batch_search", batchSearchParameters)
-            case .UserForId(let id):
-                return ("users/show", [
-                    "user_id": id
-                ])
-            case .UserForUsername(let username):
-                return ("users/show", [
-                    "username": username
-                ])
-            case .RequestPasswordReset(let email):
-                return ("users/request_password_reset", [
-                    "username": email
-                ])
-            case .CurrentUser():
-                return ("users/show_me", nil)
-            }
-        }()
-            
-        let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.rawValue
-            
-        return self.encoding.encode(URLRequest, parameters: parameters).0
+    var requestParameters: RequestParameters {
+        switch self {
+        case .Create(let username, let password, let email):
+            return ("users/create", [
+                "username": username,
+                "password": password,
+                "email": email
+            ])
+        case .Update(let properties):
+            return ("users/update", properties)
+        case .Search(let query, let cursor):
+            return ("users/search", [
+                "query": "username:*\(query)* OR username:\(query)* OR profile.fullName:*\(query)*",
+                "cursor": cursor
+            ])
+        case .BatchSearch(let batchSearchParameters):
+            return ("users/batch_search", batchSearchParameters)
+        case .UserForId(let id):
+            return ("users/show", [
+                "user_id": id
+            ])
+        case .UserForUsername(let username):
+            return ("users/show", [
+                "username": username
+            ])
+        case .RequestPasswordReset(let email):
+            return ("users/request_password_reset", [
+                "username": email
+            ])
+        case .CurrentUser():
+            return ("users/show_me", nil)
+        }
     }
 }
 
 // MARK: - User Context Router
 
-enum UserContextRouter: URLRequestConvertible {
+enum UserContextRouter: PresentRouter {
     case Authenticate(username: String, password: String)
     case AuthenticateWithPushCredentials(username: String, password: String, deviceId: String, platform: String)
     case Update(deviceIdentifier: String, platform: String)
@@ -345,41 +307,34 @@ enum UserContextRouter: URLRequestConvertible {
         return .JSON
     }
     
-    var URLRequest: NSURLRequest {
-        let (path: String, parameters: [String: AnyObject]?) = {
-            switch self {
-            case .Authenticate(let username, let password):
-                return ("user_contexts/create", [
-                    "username": username,
-                    "password": password
-                ])
-            case .AuthenticateWithPushCredentials(let username, let password, let deviceId, let platform):
-                return ("user_contexts/create", [
-                    "username": username,
-                    "password": password,
-                    "device_identifier": deviceId,
-                    "push_notification_platform": platform
-                ])
-            case .Update(let deviceId, let platform):
-                return ("user_contexts/update", [
-                    "device_identifier": deviceId,
-                    "push_notification_platform": platform
-                ])
-            case .Destroy():
-                return ("user_contexts/destroy", nil)
-            }
-        }()
-            
-        let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.rawValue
-            
-        return self.encoding.encode(URLRequest, parameters: parameters).0
+    var requestParameters: RequestParameters {
+        switch self {
+        case .Authenticate(let username, let password):
+            return ("user_contexts/create", [
+                "username": username,
+                "password": password
+            ])
+        case .AuthenticateWithPushCredentials(let username, let password, let deviceId, let platform):
+            return ("user_contexts/create", [
+                "username": username,
+                "password": password,
+                "device_identifier": deviceId,
+                "push_notification_platform": platform
+            ])
+        case .Update(let deviceId, let platform):
+            return ("user_contexts/update", [
+                "device_identifier": deviceId,
+                "push_notification_platform": platform
+            ])
+        case .Destroy():
+            return ("user_contexts/destroy", nil)
+        }
     }
 }
 
 // MARK: - Video Router
 
-enum VideoRouter: URLRequestConvertible {
+enum VideoRouter: PresentRouter {
     case Search(query: String, cursor: Int)
     case VideoForId(id: String)
     case VideosForUser(userId: String, cursor: Int)
@@ -407,63 +362,56 @@ enum VideoRouter: URLRequestConvertible {
         }
     }
     
-    var URLRequest: NSURLRequest {
-        let (path: String, parameters: [String: AnyObject]?) = {
-            switch self {
-            case .Search(let query, let cursor):
-                return ("videos/search", [
-                    "query": query,
-                    "cursor": cursor
-                ])
-            case .VideoForId(let id):
-                return ("videos/show", [
-                    "video_id": id
-                ])
-            case .HomeFeed(let cursor):
-                return ("videos/list_home_videos", [
-                    "cursor": cursor
-                ])
-            case .Create(let startDate, var caption):
-                var parameters = [
-                    "creation_time_range_start_date": startDate
-                ]
-                
-                if caption != nil {
-                    parameters["title"] = caption
-                }
-                
-                return ("videos/create", parameters)
-            case .Destroy(let id):
-                return ("videos/destroy", [
-                    "video_id": id
-                ])
-            case .Hide(let id):
-                return ("videos/hide", [
-                    "video_id": id
-                ])
-            case .Update(let id, let caption):
-                return ("videos/update", [
-                    "video_id": id,
-                    "title": caption
-                ])
-            case .VideosForUser(let userId, let cursor):
-                return ("videos/list_user_videos", [
-                    "user_id": userId,
-                    "cursor": cursor
-                ])
-            }
-        }()
+    var requestParameters: RequestParameters {
+        switch self {
+        case .Search(let query, let cursor):
+            return ("videos/search", [
+                "query": query,
+                "cursor": cursor
+            ])
+        case .VideoForId(let id):
+            return ("videos/show", [
+                "video_id": id
+            ])
+        case .HomeFeed(let cursor):
+            return ("videos/list_home_videos", [
+                "cursor": cursor
+            ])
+        case .Create(let startDate, var caption):
+            var parameters = [
+                "creation_time_range_start_date": startDate
+            ]
             
-        let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.rawValue
-        
-        return self.encoding.encode(URLRequest, parameters: parameters).0
+            if caption != nil {
+                parameters["title"] = caption
+            }
+            
+            return ("videos/create", parameters)
+        case .Destroy(let id):
+            return ("videos/destroy", [
+                "video_id": id
+            ])
+        case .Hide(let id):
+            return ("videos/hide", [
+                "video_id": id
+            ])
+        case .Update(let id, let caption):
+            return ("videos/update", [
+                "video_id": id,
+                "title": caption
+            ])
+        case .VideosForUser(let userId, let cursor):
+            return ("videos/list_user_videos", [
+                "user_id": userId,
+                "cursor": cursor
+            ])
+        }
     }
 }
 
 // MARK: - View Router
 
-enum ViewRouter: URLRequestConvertible {
+enum ViewRouter: PresentRouter {
     case Create(videoId: String)
     case Destroy(videoId: String)
     case ForwardViews(userId: String, cursor: Int)
@@ -487,33 +435,26 @@ enum ViewRouter: URLRequestConvertible {
         }
     }
     
-    var URLRequest: NSURLRequest {
-        let (path: String, parameters: [String: AnyObject]?) = {
-            switch self {
-            case .Create(let videoId):
-                return ("views/create", [
-                    "video_id": videoId
-                ])
-            case .Destroy(let videoId):
-                return ("views/destroy", [
-                    "video_id": videoId
-                ])
-            case .ForwardViews(let userId, let cursor):
-                return ("views/list_user_forward_views", [
-                    "user_id": userId,
-                    "cursor": cursor
-                ])
-            case .BackwardViews(let videoId, let cursor):
-                return ("views/list_video_backward_views", [
-                    "video_id": videoId,
-                    "cursor": cursor
-                ])
-            }
-        }()
-            
-        let URLRequest = NSMutableURLRequest(URL: urlWithPath(path))
-        URLRequest.HTTPMethod = method.rawValue
-            
-        return self.encoding.encode(URLRequest, parameters: parameters).0
+    var requestParameters: RequestParameters {
+        switch self {
+        case .Create(let videoId):
+            return ("views/create", [
+                "video_id": videoId
+            ])
+        case .Destroy(let videoId):
+            return ("views/destroy", [
+                "video_id": videoId
+            ])
+        case .ForwardViews(let userId, let cursor):
+            return ("views/list_user_forward_views", [
+                "user_id": userId,
+                "cursor": cursor
+            ])
+        case .BackwardViews(let videoId, let cursor):
+            return ("views/list_video_backward_views", [
+                "video_id": videoId,
+                "cursor": cursor
+            ])
+        }
     }
 }

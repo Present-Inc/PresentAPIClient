@@ -16,10 +16,8 @@
 		7C4D71D01A5D9DCF00977C6D /* CursoredCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71B61A5D9DCF00977C6D /* CursoredCollection.swift */; };
 		7C4D71D11A5D9DCF00977C6D /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71B71A5D9DCF00977C6D /* Error.swift */; };
 		7C4D71D21A5D9DCF00977C6D /* Friendship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71B81A5D9DCF00977C6D /* Friendship.swift */; };
-		7C4D71D31A5D9DCF00977C6D /* JSONSerializable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71B91A5D9DCF00977C6D /* JSONSerializable.swift */; };
 		7C4D71D41A5D9DCF00977C6D /* Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71BA1A5D9DCF00977C6D /* Like.swift */; };
 		7C4D71D51A5D9DCF00977C6D /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71BB1A5D9DCF00977C6D /* Object.swift */; };
-		7C4D71D61A5D9DCF00977C6D /* ObjectSubclass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71BC1A5D9DCF00977C6D /* ObjectSubclass.swift */; };
 		7C4D71D71A5D9DCF00977C6D /* PushNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71BD1A5D9DCF00977C6D /* PushNotification.swift */; };
 		7C4D71D81A5D9DCF00977C6D /* Relation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71BE1A5D9DCF00977C6D /* Relation.swift */; };
 		7C4D71D91A5D9DCF00977C6D /* RelationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7C4D71BF1A5D9DCF00977C6D /* RelationStore.swift */; };
@@ -59,6 +57,7 @@
 		7CF0832F19F016B300BDF411 /* AFURLSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 7CF0831C19F016B300BDF411 /* AFURLSessionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		7CF0833019F016B300BDF411 /* AFURLSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 7CF0831D19F016B300BDF411 /* AFURLSessionManager.m */; };
 		7CF0834619F01AC700BDF411 /* PFileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CF0834519F01AC700BDF411 /* PFileManager.swift */; };
+		7CFBBFE21A5DA3E300FD5296 /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CFBBFE11A5DA3E300FD5296 /* Protocols.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -70,10 +69,8 @@
 		7C4D71B61A5D9DCF00977C6D /* CursoredCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CursoredCollection.swift; sourceTree = "<group>"; };
 		7C4D71B71A5D9DCF00977C6D /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		7C4D71B81A5D9DCF00977C6D /* Friendship.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Friendship.swift; sourceTree = "<group>"; };
-		7C4D71B91A5D9DCF00977C6D /* JSONSerializable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JSONSerializable.swift; sourceTree = "<group>"; };
 		7C4D71BA1A5D9DCF00977C6D /* Like.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Like.swift; sourceTree = "<group>"; };
 		7C4D71BB1A5D9DCF00977C6D /* Object.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Object.swift; sourceTree = "<group>"; };
-		7C4D71BC1A5D9DCF00977C6D /* ObjectSubclass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectSubclass.swift; sourceTree = "<group>"; };
 		7C4D71BD1A5D9DCF00977C6D /* PushNotification.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PushNotification.swift; sourceTree = "<group>"; };
 		7C4D71BE1A5D9DCF00977C6D /* Relation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Relation.swift; sourceTree = "<group>"; };
 		7C4D71BF1A5D9DCF00977C6D /* RelationStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RelationStore.swift; sourceTree = "<group>"; };
@@ -116,6 +113,7 @@
 		7CF0831C19F016B300BDF411 /* AFURLSessionManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AFURLSessionManager.h; sourceTree = "<group>"; };
 		7CF0831D19F016B300BDF411 /* AFURLSessionManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AFURLSessionManager.m; sourceTree = "<group>"; };
 		7CF0834519F01AC700BDF411 /* PFileManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PFileManager.swift; path = External/PFileManager/PFileManager.swift; sourceTree = "<group>"; };
+		7CFBBFE11A5DA3E300FD5296 /* Protocols.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -158,10 +156,8 @@
 				7C4D71B61A5D9DCF00977C6D /* CursoredCollection.swift */,
 				7C4D71B71A5D9DCF00977C6D /* Error.swift */,
 				7C4D71B81A5D9DCF00977C6D /* Friendship.swift */,
-				7C4D71B91A5D9DCF00977C6D /* JSONSerializable.swift */,
 				7C4D71BA1A5D9DCF00977C6D /* Like.swift */,
 				7C4D71BB1A5D9DCF00977C6D /* Object.swift */,
-				7C4D71BC1A5D9DCF00977C6D /* ObjectSubclass.swift */,
 				7C4D71BD1A5D9DCF00977C6D /* PushNotification.swift */,
 				7C4D71BE1A5D9DCF00977C6D /* Relation.swift */,
 				7C4D71BF1A5D9DCF00977C6D /* RelationStore.swift */,
@@ -174,6 +170,7 @@
 				7C4D71C61A5D9DCF00977C6D /* UserSession.swift */,
 				7C4D71C71A5D9DCF00977C6D /* Video.swift */,
 				7C4D71C81A5D9DCF00977C6D /* View.swift */,
+				7CFBBFE11A5DA3E300FD5296 /* Protocols.swift */,
 			);
 			name = Models;
 			path = APIClient/Models;
@@ -417,10 +414,8 @@
 				7C4D71D11A5D9DCF00977C6D /* Error.swift in Sources */,
 				7C4D71DD1A5D9DCF00977C6D /* SubjectiveObjectMeta.swift in Sources */,
 				7C4D71D71A5D9DCF00977C6D /* PushNotification.swift in Sources */,
-				7C4D71D61A5D9DCF00977C6D /* ObjectSubclass.swift in Sources */,
 				7C4D71CE1A5D9DCF00977C6D /* APIRequest.swift in Sources */,
 				7CF0834619F01AC700BDF411 /* PFileManager.swift in Sources */,
-				7C4D71D31A5D9DCF00977C6D /* JSONSerializable.swift in Sources */,
 				7C4D71E31A5D9DCF00977C6D /* AlamofireExtensions.swift in Sources */,
 				7C4D71D41A5D9DCF00977C6D /* Like.swift in Sources */,
 				7C4D71CF1A5D9DCF00977C6D /* Comment.swift in Sources */,
@@ -428,6 +423,7 @@
 				7C4D71E41A5D9DCF00977C6D /* NSDateExtensions.swift in Sources */,
 				7CF0832619F016B300BDF411 /* AFNetworkReachabilityManager.m in Sources */,
 				7C4D71CD1A5D9DCF00977C6D /* Activity.swift in Sources */,
+				7CFBBFE21A5DA3E300FD5296 /* Protocols.swift in Sources */,
 				7CF0832E19F016B300BDF411 /* AFURLResponseSerialization.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

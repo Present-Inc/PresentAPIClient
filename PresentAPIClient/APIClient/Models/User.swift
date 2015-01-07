@@ -469,7 +469,7 @@ public extension User {
 
 private extension User {
     class func getUserWithParameters(username: String? = nil, id: String? = nil, success: ((User) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
-        let requestConvertible: URLRequestConvertible = {
+        let requestConvertible: PresentRouter = {
             return (username != nil) ? UserRouter.UserForUsername(username: username!) : UserRouter.UserForId(id: id!)
         }()
         
