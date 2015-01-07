@@ -3,7 +3,7 @@
 	url = https://github.com/AFNetworking/AFNetworking.git
 [submodule "Carthage/Checkouts/Alamofire"]
 	path = Carthage/Checkouts/Alamofire
-	url = https://github.com/ishkawa/Alamofire.git
+	url = https://github.com/Alamofire/Alamofire.git
 [submodule "Carthage/Checkouts/Swell"]
 	path = Carthage/Checkouts/Swell
 	url = https://github.com/Present-Inc/Swell.git

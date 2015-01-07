@@ -23,7 +23,7 @@
 		7CCFEB1E199C16AA00D87880 /* CursoredCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB0F199C16AA00D87880 /* CursoredCollection.swift */; };
 		7CCFEB1F199C16AA00D87880 /* Friendship.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB10199C16AA00D87880 /* Friendship.swift */; };
 		7CCFEB20199C16AA00D87880 /* Like.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB11199C16AA00D87880 /* Like.swift */; };
-		7CCFEB21199C16AA00D87880 /* NSDateISO8601.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB12199C16AA00D87880 /* NSDateISO8601.swift */; };
+		7CCFEB21199C16AA00D87880 /* NSDateExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB12199C16AA00D87880 /* NSDateExtensions.swift */; };
 		7CCFEB22199C16AA00D87880 /* Object.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB13199C16AA00D87880 /* Object.swift */; };
 		7CCFEB23199C16AA00D87880 /* ObjectSubclass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB14199C16AA00D87880 /* ObjectSubclass.swift */; };
 		7CCFEB24199C16AA00D87880 /* Relation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CCFEB15199C16AA00D87880 /* Relation.swift */; };
@@ -80,7 +80,7 @@
 		7CCFEB0F199C16AA00D87880 /* CursoredCollection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CursoredCollection.swift; sourceTree = "<group>"; };
 		7CCFEB10199C16AA00D87880 /* Friendship.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Friendship.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		7CCFEB11199C16AA00D87880 /* Like.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Like.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		7CCFEB12199C16AA00D87880 /* NSDateISO8601.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSDateISO8601.swift; sourceTree = "<group>"; };
+		7CCFEB12199C16AA00D87880 /* NSDateExtensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = NSDateExtensions.swift; path = "API Client/Models/NSDateExtensions.swift"; sourceTree = "<group>"; };
 		7CCFEB13199C16AA00D87880 /* Object.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Object.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		7CCFEB14199C16AA00D87880 /* ObjectSubclass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjectSubclass.swift; sourceTree = "<group>"; };
 		7CCFEB15199C16AA00D87880 /* Relation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = Relation.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
@@ -140,6 +140,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		7C4D71AE1A5D97A300977C6D /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				7CCFEB12199C16AA00D87880 /* NSDateExtensions.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
 		7CCFEAD6199C15BC00D87880 = {
 			isa = PBXGroup;
 			children = (
@@ -163,6 +171,7 @@
 				7CCFEAE5199C15BC00D87880 /* PresentAPIClient.h */,
 				7C41299419F1AFD4007096A7 /* PresentAPIClient.swift */,
 				7CCFEB0B199C16AA00D87880 /* Controllers */,
+				7C4D71AE1A5D97A300977C6D /* Extensions */,
 				7CCFEB0D199C16AA00D87880 /* Models */,
 				7CCFEAE3199C15BC00D87880 /* Supporting Files */,
 				7CCFEB2B199C16B300D87880 /* Frameworks */,
@@ -199,7 +208,6 @@
 				7CCFEB0F199C16AA00D87880 /* CursoredCollection.swift */,
 				7CCFEB10199C16AA00D87880 /* Friendship.swift */,
 				7CCFEB11199C16AA00D87880 /* Like.swift */,
-				7CCFEB12199C16AA00D87880 /* NSDateISO8601.swift */,
 				7CCFEB13199C16AA00D87880 /* Object.swift */,
 				7CCFEB14199C16AA00D87880 /* ObjectSubclass.swift */,
 				7CCFEB15199C16AA00D87880 /* Relation.swift */,
@@ -419,7 +427,7 @@
 				7CF2E69C19F816A0003EE95B /* JSONSerializable.swift in Sources */,
 				7CF0832E19F016B300BDF411 /* AFURLResponseSerialization.m in Sources */,
 				7C6568B519F5667C006D6AD4 /* APIRequest.swift in Sources */,
-				7CCFEB21199C16AA00D87880 /* NSDateISO8601.swift in Sources */,
+				7CCFEB21199C16AA00D87880 /* NSDateExtensions.swift in Sources */,
 				7CF2E6AA19F824CF003EE95B /* Response.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
