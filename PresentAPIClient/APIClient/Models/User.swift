@@ -470,11 +470,7 @@ public extension User {
 private extension User {
     class func getUserWithParameters(username: String? = nil, id: String? = nil, success: ((User) -> ())?, failure: ((NSError?) -> ())?) -> APIRequest {
         let requestConvertible: URLRequestConvertible = {
-            if username != nil {
-                return UserRouter.UserForUsername(username: username!)
-            } else {
-                return UserRouter.UserForId(id: id!)
-            }
+            return (username != nil) ? UserRouter.UserForUsername(username: username!) : UserRouter.UserForId(id: id!)
         }()
         
         return APIManager

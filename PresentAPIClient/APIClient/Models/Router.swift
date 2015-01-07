@@ -9,9 +9,17 @@
 import UIKit
 import Alamofire
 
+enum APIResource: String {
+    case User = "users"
+    case Video = "videos"
+    case Comment = "comments"
+    case Like = "likes"
+    case Activity = "activities"
+}
+
 protocol PresetRouterProtocol {
     var method: Alamofire.Method { get }
-    var resource: String { get }
+    var resource: APIResource { get }
     var path: String { get }
     var encoding: Alamofire.ParameterEncoding { get }
     var requestTuple: (path: String, parameters: [String: AnyObject]?) { get }

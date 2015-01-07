@@ -17,9 +17,7 @@ public class UserSession: NSObject, NSCoding {
     lazy var relationStore: RelationStore = RelationStore()
 
     public var isAuthenticated: Bool {
-    get {
-        return context != nil ? true : false
-    }
+        return context != nil
     }
 
     private struct Singleton {
